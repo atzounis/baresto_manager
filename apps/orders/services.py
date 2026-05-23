@@ -6,7 +6,7 @@ from django.utils import timezone
 
 from apps.analytics.utils import log_audit
 from apps.orders.models import Bill, Order, OrderItem
-from apps.realtime import broadcast_order_event, broadcast_table_update
+from apps.realtime import broadcast_order_event, broadcast_table_update, broadcast_waiter_kitchen_ready
 
 
 @transaction.atomic
@@ -84,7 +84,7 @@ def update_item_status(order_item, new_status, user=None, request=None):
 
     order = order_item.order
     items = list(order.items.filter(is_deleted=False))
-    if all(i.status == "ready" for i in items):
+    if items and all(i.status in ("ready", "served") for i in items):
         order.status = "ready"
     elif any(i.status == "ready" for i in items):
         order.status = "partially_ready"
@@ -94,6 +94,15 @@ def update_item_status(order_item, new_status, user=None, request=None):
         log_audit(user, "order_item.status", "orders.OrderItem", order_item.pk, {"status": new_status}, request)
 
     broadcast_order_event(order, event="order_item.updated", extra={"item_id": order_item.pk, "status": new_status})
+
+    if new_status == "ready":
+        item_name = order_item.menu_item.name
+        broadcast_waiter_kitchen_ready(
+            order,
+            item_name=item_name,
+            order_fully_ready=(order.status == "ready"),
+        )
+
     return order_item
 
 
@@ -152,4 +161,50 @@ def close_table_session(session, user, request=None):
     if order:
         log_audit(user, "table.close", "restaurants.TableSession", session.pk, {"order_id": order.pk}, request)
 
+    return order
+
+
+@transaction.atomic
+def finalize_receipt(order, user, request=None):
+    """Mark bill paid, clear kitchen ticket, and record receipt print."""
+    now = timezone.now()
+    for item in order.items.filter(is_deleted=False):
+        if item.status != "served":
+            item.status = "served"
+            item.served_at = item.served_at or now
+            item.save(update_fields=["status", "served_at", "updated_at"])
+
+    order.status = "paid"
+    order.closed_at = order.closed_at or now
+    order.save(update_fields=["status", "closed_at", "updated_at"])
+
+    bill = getattr(order, "bill", None)
+    if bill:
+        bill.is_paid = True
+        bill.paid_at = now
+        bill.receipt_printed = True
+        bill.save(update_fields=["is_paid", "paid_at", "receipt_printed", "updated_at"])
+
+    log_audit(user, "receipt.print", "orders.Order", order.pk, {}, request)
+    broadcast_order_event(order, event="order.closed")
+    return order
+
+
+@transaction.atomic
+def clear_kitchen_ticket(order, user=None, request=None):
+    """
+    Remove a stuck ticket from the kitchen display: ensure bill exists, mark paid/served.
+    """
+    if order.status in ("paid", "cancelled"):
+        return order
+    if not Bill.objects.filter(order=order).exists():
+        if order.items.filter(is_deleted=False).exists():
+            create_bill(order)
+        else:
+            order.status = "cancelled"
+            order.closed_at = timezone.now()
+            order.save(update_fields=["status", "closed_at", "updated_at"])
+            broadcast_order_event(order, event="order.closed")
+            return order
+    finalize_receipt(order, user, request)
     return order

@@ -2,10 +2,12 @@
 {% if floors %}
 <nav class="flex flex-wrap items-center gap-2" aria-label="{% trans 'Filter by floor' %}">
   <span class="mr-1 text-sm text-slate-500">{% trans "Floor" %}:</span>
+  {% if floor_filter_show_all|default:True %}
   <a href="{{ floor_filter_all_url }}"
     class="rounded-lg px-4 py-2 text-sm font-semibold transition {% if not filter_floor_id %}bg-order text-white{% else %}bg-kitchen-elevated text-slate-400 hover:text-white{% endif %}">
     {% trans "All" %}
   </a>
+  {% endif %}
   {% for item in floor_filter_items %}
   <a href="{{ item.url }}"
     class="rounded-lg px-4 py-2 text-sm font-semibold transition {% if filter_floor_id == item.id %}bg-order text-white{% else %}bg-kitchen-elevated text-slate-400 hover:text-white{% endif %}">

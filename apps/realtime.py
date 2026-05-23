@@ -29,6 +29,52 @@ def broadcast_order_event(order, event="order.updated", extra=None):
     _group_send(f"table.{order.session.table_id}", "table.message", payload)
 
 
+def _waiter_staff_ids(order):
+    """Staff who should get kitchen-ready alerts for this order."""
+    ids = []
+    if order.waiter_id:
+        ids.append(order.waiter_id)
+    table = order.session.table
+    if table.assigned_to_id and table.assigned_to_id not in ids:
+        ids.append(table.assigned_to_id)
+    return ids
+
+
+def broadcast_waiter_kitchen_ready(order, *, item_name=None, order_fully_ready=False):
+    """Sound/notification alert for waiter when kitchen advances items to ready."""
+    staff_ids = _waiter_staff_ids(order)
+    if not staff_ids:
+        return
+
+    table_label = str(order.session.table)
+    base = {
+        "order_id": order.pk,
+        "table": table_label,
+        "table_id": order.session.table_id,
+        "order_status": order.status,
+    }
+
+    if item_name:
+        payload = {
+            **base,
+            "event": "order.item_ready",
+            "item_name": item_name,
+            "message": f"{table_label}: {item_name}",
+        }
+        for staff_id in staff_ids:
+            _group_send(f"waiter.{staff_id}", "waiter.message", payload)
+
+    if order_fully_ready:
+        payload = {
+            **base,
+            "event": "order.ready",
+            "message": f"{table_label}",
+            "alert": "order_ready",
+        }
+        for staff_id in staff_ids:
+            _group_send(f"waiter.{staff_id}", "waiter.message", payload)
+
+
 def broadcast_table_update(table):
     branch_id = table.branch.id
     payload = {

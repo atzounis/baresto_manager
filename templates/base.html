@@ -75,6 +75,19 @@
     {% endif %}
     {% block content %}{% endblock %}
   </main>
+  {% if staff_profile and staff_profile.role == "waiter" or staff_profile and staff_profile.role == "cashier" or staff_profile and staff_profile.role == "manager" or staff_profile and staff_profile.role == "admin" %}
+  <script>
+    window.BARESTO_WAITER_ID = {{ staff_profile.pk }};
+    window.BARESTO_ALERT_I18N = {
+      tableLabel: "{% trans 'Table'|escapejs %}",
+      itemReadySuffix: "{% trans 'is ready'|escapejs %}",
+      orderReadySuffix: "{% trans 'order is ready to serve'|escapejs %}",
+      notificationItemTitle: "{% trans 'Dish ready'|escapejs %}",
+      notificationOrderTitle: "{% trans 'Order ready'|escapejs %}",
+    };
+  </script>
+  <script src="{% static 'js/waiter_alerts.js' %}"></script>
+  {% endif %}
   {% block extra_js %}{% endblock %}
 </body>
 </html>

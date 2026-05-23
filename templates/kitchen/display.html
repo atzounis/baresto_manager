@@ -3,7 +3,7 @@
 {% block title %}{% trans "Kitchen Display" %}{% endblock %}
 {% block content %}
 <div class="mb-4 flex items-center justify-between">
-  <h1 class="text-3xl font-bold">{% trans "Kitchen" %} — {{ branch.name }}</h1>
+  <h1 class="text-3xl font-bold">{% trans "Kitchen" %}</h1>
 </div>
 <div class="grid gap-4 md:grid-cols-2 xl:grid-cols-3" id="kds-tickets">
   {% for order in orders %}

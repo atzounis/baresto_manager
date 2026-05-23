@@ -21,6 +21,7 @@ class KitchenDisplayView(RestaurantScopedMixin, RolePermissionMixin, TemplateVie
             Order.objects.filter(
                 session__table__floor__branch=branch,
                 status__in=active_statuses,
+                session__is_active=True,
             )
             .select_related("session__table")
             .prefetch_related(

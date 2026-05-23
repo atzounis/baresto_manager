@@ -1,3 +1,5 @@
+from decimal import Decimal
+
 from django.contrib import messages
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
@@ -8,12 +10,13 @@ from django.views.generic import DetailView
 from apps.common.mixins import RestaurantScopedMixin
 from apps.common.permissions import RolePermissionMixin
 from apps.menus.models import Menu, MenuCategory, MenuItem
-from apps.orders.models import Order
+from apps.orders.models import Bill, Order, OrderItem
 from apps.orders.services import (
     add_item_to_order,
     close_table_session,
     confirm_order,
     create_order,
+    finalize_receipt,
     order_item_quantities,
     order_with_items,
 )
@@ -37,18 +40,54 @@ def _order_menu_context(restaurant, order):
     }
 
 
+def _order_session_context(session, restaurant, open_order=None):
+    """Split session into items already sent to kitchen vs new (open) order."""
+    if open_order is not None:
+        open_order = order_with_items(open_order)
+    else:
+        open_order = (
+            session.orders.filter(status="open", is_deleted=False)
+            .prefetch_related("items__menu_item", "items__modifiers")
+            .first()
+        )
+
+    sent_items = list(
+        OrderItem.objects.filter(
+            order__session=session,
+            order__is_deleted=False,
+            is_deleted=False,
+        )
+        .exclude(order__status__in=["open", "paid", "cancelled"])
+        .select_related("menu_item", "order")
+        .order_by("order__created_at", "created_at")
+    )
+    new_items = list(open_order.active_items) if open_order else []
+    all_items = sent_items + new_items
+
+    session_subtotal = sum((i.line_total for i in all_items), Decimal("0"))
+    new_subtotal = sum((i.line_total for i in new_items), Decimal("0"))
+    sent_subtotal = session_subtotal - new_subtotal
+
+    return {
+        "session": session,
+        "order": open_order,
+        "sent_items": sent_items,
+        "new_items": new_items,
+        "session_subtotal": session_subtotal,
+        "new_subtotal": new_subtotal,
+        "sent_subtotal": sent_subtotal,
+        "session_item_count": sum(i.quantity for i in all_items),
+        "new_item_count": sum(i.quantity for i in new_items),
+        **_order_menu_context(restaurant, open_order),
+    }
+
+
 def _render_order_add_response(request, session, order):
-    order = order_with_items(order)
-    restaurant = order.session.table.restaurant
-    menu_ctx = _order_menu_context(restaurant, order)
+    restaurant = session.table.restaurant
     return render(
         request,
         "mobile/partials/order_add_response.html",
-        {
-            "session": session,
-            "order": order,
-            **menu_ctx,
-        },
+        _order_session_context(session, restaurant, open_order=order),
     )
 
 
@@ -72,12 +111,11 @@ class OrderCreateView(RestaurantScopedMixin, RolePermissionMixin, View):
 
     def get(self, request, session_id):
         session = self.get_session(session_id)
-        order = order_with_items(self.get_or_create_open_order(session))
-        menu_ctx = _order_menu_context(self.get_restaurant(), order)
+        order = self.get_or_create_open_order(session)
         return render(
             request,
             self.template_name,
-            {"session": session, "order": order, **menu_ctx},
+            _order_session_context(session, self.get_restaurant(), open_order=order),
         )
 
     def post(self, request, session_id):
@@ -110,13 +148,86 @@ class CloseTableView(RestaurantScopedMixin, RolePermissionMixin, View):
             is_active=True,
         )
         order = close_table_session(session, request.user, request)
-        messages.success(
-            request,
-            _("Table closed. Order sent to kitchen and bill requested.")
-            if order
-            else _("Table closed."),
-        )
+        if order and Bill.objects.filter(order=order).exists():
+            messages.success(request, _("Table closed. Print the receipt when ready."))
+            return redirect("order_receipt", pk=order.pk)
+        messages.success(request, _("Table closed."))
         return redirect("tables")
+
+
+def _receipt_order_queryset(restaurant):
+    return (
+        Order.objects.filter(session__table__floor__branch__restaurant=restaurant)
+        .select_related("session__table__floor", "waiter__user", "bill")
+        .prefetch_related("items__menu_item", "items__modifiers")
+    )
+
+
+class OrderReceiptView(RestaurantScopedMixin, RolePermissionMixin, View):
+    """Receipt screen after closing a table (bill requested)."""
+
+    required_permission = "modify_order"
+    template_name = "orders/receipt.html"
+
+    def get_order(self, pk):
+        order = get_object_or_404(_receipt_order_queryset(self.get_restaurant()), pk=pk)
+        if order.status not in ("bill_requested", "paid"):
+            from django.core.exceptions import PermissionDenied
+
+            raise PermissionDenied(_("No receipt available for this order."))
+        return order
+
+    def get(self, request, pk):
+        order = self.get_order(pk)
+        restaurant = self.get_restaurant()
+        company = getattr(restaurant, "legal_profile", None)
+        return render(
+            request,
+            self.template_name,
+            {
+                "order": order,
+                "bill": order.bill,
+                "restaurant": restaurant,
+                "company": company,
+                "receipt_finalized": order.status == "paid",
+            },
+        )
+
+    def post(self, request, pk):
+        order = self.get_order(pk)
+        if order.status == "paid":
+            return redirect("order_receipt_print", pk=order.pk)
+        finalize_receipt(order, request.user, request)
+        messages.success(request, _("Receipt printed. Order removed from kitchen."))
+        return redirect("order_receipt_print", pk=order.pk)
+
+
+class OrderReceiptPrintView(RestaurantScopedMixin, RolePermissionMixin, View):
+    """Print-friendly receipt (opens browser print dialog)."""
+
+    required_permission = "modify_order"
+    template_name = "orders/receipt_print.html"
+
+    def get(self, request, pk):
+        order = get_object_or_404(
+            _receipt_order_queryset(self.get_restaurant()),
+            pk=pk,
+            status="paid",
+        )
+        restaurant = self.get_restaurant()
+        company = getattr(restaurant, "legal_profile", None)
+        auto_print = request.GET.get("print") != "0"
+        return render(
+            request,
+            self.template_name,
+            {
+                "order": order,
+                "bill": order.bill,
+                "restaurant": restaurant,
+                "company": company,
+                "auto_print": auto_print,
+            },
+        )
 
 
 class OrderDetailView(RestaurantScopedMixin, DetailView):
@@ -150,12 +261,10 @@ class OrderConfirmView(RestaurantScopedMixin, RolePermissionMixin, View):
             messages.success(request, _("Order sent to kitchen."))
         if request.headers.get("HX-Request"):
             session = order.session
-            order = order_with_items(order)
-            menu_ctx = _order_menu_context(self.get_restaurant(), order)
             return render(
                 request,
                 "mobile/partials/order_summary.html",
-                {"session": session, "order": order, **menu_ctx},
+                _order_session_context(session, self.get_restaurant()),
             )
         return redirect("order_new", session_id=order.session_id)
 

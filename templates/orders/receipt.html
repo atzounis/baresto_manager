@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+{% load i18n menu_i18n %}
+{% block title %}{% trans "Receipt" %} — {{ order.session.table }}{% endblock %}
+{% block content %}
+<div class="mx-auto max-w-lg space-y-6">
+  <div>
+    <a href="{% url 'tables' %}" class="text-sm text-slate-500 hover:text-order-light">← {% trans "Tables" %}</a>
+    <h1 class="text-2xl font-bold">{% trans "Receipt" %}</h1>
+    <p class="text-slate-400">{{ order.session.table }} · {% trans "Order" %} #{{ order.pk }}</p>
+  </div>
+
+  <div class="card space-y-4 p-5">
+    {% if company and company.trade_name_el %}
+    <p class="text-center text-sm font-semibold text-slate-300">{{ company.trade_name_el }}</p>
+    {% else %}
+    <p class="text-center text-sm font-semibold text-slate-300">{{ restaurant.name }}</p>
+    {% endif %}
+
+    <ul class="divide-y divide-kitchen-border text-sm">
+      {% for item in order.active_items %}
+      <li class="flex justify-between gap-2 py-2">
+        <span>{{ item.quantity }}× {{ item.menu_item|localized_name_filter }}</span>
+        <span class="shrink-0 font-medium text-price">€{{ item.line_total }}</span>
+      </li>
+      {% endfor %}
+    </ul>
+
+    <dl class="space-y-1 border-t border-kitchen-border pt-3 text-sm">
+      <div class="flex justify-between">
+        <dt class="text-slate-400">{% trans "Subtotal" %}</dt>
+        <dd>€{{ bill.subtotal }}</dd>
+      </div>
+      <div class="flex justify-between">
+        <dt class="text-slate-400">{% trans "Tax" %}</dt>
+        <dd>€{{ bill.tax }}</dd>
+      </div>
+      {% if bill.discount %}
+      <div class="flex justify-between">
+        <dt class="text-slate-400">{% trans "Discount" %}</dt>
+        <dd>−€{{ bill.discount }}</dd>
+      </div>
+      {% endif %}
+      <div class="flex justify-between text-lg font-bold">
+        <dt>{% trans "Total" %}</dt>
+        <dd class="text-price">€{{ bill.total }}</dd>
+      </div>
+    </dl>
+  </div>
+
+  {% if receipt_finalized %}
+  <p class="text-center text-sm text-order">{% trans "Receipt already printed." %}</p>
+  <div class="flex flex-wrap justify-center gap-3">
+    <a href="{% url 'order_receipt_print' order.pk %}" target="_blank" rel="noopener"
+      class="btn-secondary min-h-12 rounded-xl px-6 py-3 text-sm font-semibold">
+      {% trans "Print again" %}
+    </a>
+    <a href="{% url 'tables' %}" class="btn-primary min-h-12 rounded-xl px-6 py-3 text-sm font-semibold">
+      {% trans "Back to tables" %}
+    </a>
+  </div>
+  {% else %}
+  <p class="text-center text-sm text-slate-400">
+    {% trans "Table closed. Print the receipt to finish and remove this order from the kitchen display." %}
+  </p>
+  <form method="post" action="{% url 'order_receipt' order.pk %}" class="flex justify-center">
+    {% csrf_token %}
+    <button type="submit" class="btn-primary min-h-14 w-full max-w-xs rounded-xl px-6 py-4 text-base font-bold shadow-lg">
+      {% trans "Print Receipt" %}
+    </button>
+  </form>
+  {% endif %}
+</div>
+{% endblock %}

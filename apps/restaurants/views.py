@@ -85,6 +85,17 @@ class TableFloorView(RestaurantScopedMixin, RolePermissionMixin, TemplateView):
     template_name = "restaurants/tables.html"
     required_permission = "take_order"
 
+    def get(self, request, *args, **kwargs):
+        if request.GET.get("view") == "plan" and not _parse_floor_id(request.GET.get("floor")):
+            branch = self.get_branch()
+            if branch:
+                first_floor = Floor.objects.filter(branch=branch).order_by("name").first()
+                if first_floor:
+                    return redirect(
+                        _build_tables_url(request, floor_pk=first_floor.pk, view_mode="plan")
+                    )
+        return super().get(request, *args, **kwargs)
+
     def get_context_data(self, **kwargs):
         ctx = super().get_context_data(**kwargs)
         branch = self.get_branch()
@@ -111,6 +122,7 @@ class TableFloorView(RestaurantScopedMixin, RolePermissionMixin, TemplateView):
         ctx["branch"] = branch
         ctx["floors"] = floors
         ctx["filter_floor_id"] = filter_floor_id
+        ctx["floor_filter_show_all"] = view_mode != "plan"
         ctx["floor_filter_all_url"] = _build_tables_url(
             self.request, floor_pk=None, view_mode=view_mode
         )
@@ -142,9 +154,13 @@ class TableFloorView(RestaurantScopedMixin, RolePermissionMixin, TemplateView):
         ctx["table_form"] = table_form
         ctx["open_manage"] = self.request.GET.get("manage") == "1"
         ctx["tables_url"] = self.request.get_full_path()
-        ctx["tables_json"] = json.dumps(
-            [_table_to_plan_dict(t, i) for i, t in enumerate(all_tables)]
-        )
+        floor_index = {}
+        plan_tables = []
+        for t in all_tables:
+            idx = floor_index.get(t.floor_id, 0)
+            floor_index[t.floor_id] = idx + 1
+            plan_tables.append(_table_to_plan_dict(t, idx))
+        ctx["tables_json"] = json.dumps(plan_tables)
         ctx["floors_json"] = json.dumps([{"id": f.id, "name": f.name} for f in floors])
         floors_select = [
             {

@@ -1,0 +1,140 @@
+{% load i18n menu_i18n static %}
+<!DOCTYPE html>
+<html lang="{{ LANGUAGE_CODE }}">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% trans "Receipt" %} — {{ order.session.table }}</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: ui-monospace, "SF Mono", Menlo, monospace;
+      font-size: 11pt;
+      line-height: 1.4;
+      color: #0f172a;
+      background: #f8fafc;
+    }
+    .toolbar {
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.75rem;
+      padding: 0.75rem 1rem;
+      background: #1e2129;
+      color: #e2e8f0;
+    }
+    .toolbar a, .toolbar button {
+      font-family: system-ui, sans-serif;
+      font-size: 0.875rem;
+      padding: 0.5rem 1rem;
+      border-radius: 0.5rem;
+      text-decoration: none;
+      cursor: pointer;
+      border: none;
+    }
+    .toolbar .primary { background: #2db5a3; color: #fff; font-weight: 600; }
+    .toolbar .secondary { background: #3d4454; color: #e2e8f0; }
+    .receipt {
+      max-width: 80mm;
+      margin: 1rem auto;
+      padding: 4mm;
+      background: #fff;
+      border: 1px dashed #cbd5e1;
+    }
+    .center { text-align: center; }
+    .muted { color: #64748b; font-size: 9pt; }
+    .line { border-top: 1px dashed #cbd5e1; margin: 3mm 0; }
+    table { width: 100%; border-collapse: collapse; }
+    td { padding: 1mm 0; vertical-align: top; }
+    td.qty { width: 2em; }
+    td.price { text-align: right; white-space: nowrap; }
+    .total-row td { font-weight: 700; padding-top: 2mm; }
+    @media print {
+      body { background: #fff; }
+      .toolbar { display: none !important; }
+      .receipt { border: none; margin: 0; max-width: none; }
+    }
+    @page { margin: 4mm; size: 80mm auto; }
+  </style>
+</head>
+<body>
+  <div class="toolbar no-print">
+    <span>{% trans "Receipt" %} — {{ order.session.table }}</span>
+    <div style="display:flex;gap:0.5rem;">
+      <a href="{% url 'tables' %}" class="secondary">{% trans "Back to tables" %}</a>
+      <button type="button" class="primary" onclick="window.print()">{% trans "Print" %}</button>
+    </div>
+  </div>
+
+  <article class="receipt">
+    <p class="center" style="font-weight:700;font-size:12pt;margin:0 0 2mm;">
+      {% if company and company.trade_name_el %}{{ company.trade_name_el }}{% else %}{{ restaurant.name }}{% endif %}
+    </p>
+    {% if company and company.address_el %}
+    <p class="center muted" style="margin:0 0 3mm;">{{ company.address_el }}</p>
+    {% endif %}
+    {% if company and company.phone %}
+    <p class="center muted" style="margin:0 0 3mm;">{{ company.phone }}</p>
+    {% endif %}
+
+    <p class="muted" style="margin:0;">
+      {{ order.session.table }} · {% trans "Order" %} #{{ order.pk }}<br>
+      {{ order.updated_at|date:"d/m/Y H:i" }}
+    </p>
+
+    <div class="line"></div>
+
+    <table>
+      {% for item in order.active_items %}
+      <tr>
+        <td class="qty">{{ item.quantity }}×</td>
+        <td>{{ item.menu_item|localized_name_filter }}</td>
+        <td class="price">€{{ item.line_total }}</td>
+      </tr>
+      {% endfor %}
+    </table>
+
+    <div class="line"></div>
+
+    <table>
+      <tr>
+        <td colspan="2">{% trans "Subtotal" %}</td>
+        <td class="price">€{{ bill.subtotal }}</td>
+      </tr>
+      <tr>
+        <td colspan="2">{% trans "Tax" %}</td>
+        <td class="price">€{{ bill.tax }}</td>
+      </tr>
+      {% if bill.discount %}
+      <tr>
+        <td colspan="2">{% trans "Discount" %}</td>
+        <td class="price">−€{{ bill.discount }}</td>
+      </tr>
+      {% endif %}
+      <tr class="total-row">
+        <td colspan="2">{% trans "Total" %}</td>
+        <td class="price">€{{ bill.total }}</td>
+      </tr>
+    </table>
+
+    <div class="line"></div>
+    <p class="center muted" style="margin:0;">{% trans "Thank you!" %}</p>
+  </article>
+
+  {% if auto_print %}
+  <script>
+    window.addEventListener("load", () => {
+      window.print();
+      window.addEventListener("afterprint", () => {
+        if (window.opener) window.close();
+      });
+    });
+  </script>
+  {% endif %}
+</body>
+</html>
