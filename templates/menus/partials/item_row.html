@@ -1,0 +1,29 @@
+{% load i18n menu_i18n %}
+<div class="card flex flex-wrap items-center gap-4 px-4 py-3">
+  {% if item.image %}
+  <img src="{{ item.image.url }}" alt="" class="h-16 w-16 shrink-0 rounded-lg object-cover">
+  {% else %}
+  <div class="flex h-16 w-16 shrink-0 items-center justify-center rounded-lg bg-kitchen text-xs text-slate-500">{% trans "No photo" %}</div>
+  {% endif %}
+  <div class="min-w-0 flex-1">
+    <p class="font-semibold">{{ item|localized_name_filter }}</p>
+    <p class="text-sm text-price">€{{ item.price }}
+      {% if item.calories %}· {{ item.calories }} {% trans "kcal" %}{% endif %}
+    </p>
+    <div class="mt-1 flex flex-wrap gap-1 text-xs">
+      {% if item.is_vegan %}<span class="rounded bg-order/20 px-2 py-0.5 text-order-light">{% trans "Vegan" %}</span>{% elif item.is_vegetarian %}<span class="rounded bg-order/15 px-2 py-0.5 text-order">{% trans "Vegetarian" %}</span>{% endif %}
+      {% for a in item.allergens.all %}
+      <span class="rounded bg-new-order/20 px-2 py-0.5 text-new-order-light">{{ a.name }}</span>
+      {% endfor %}
+    </div>
+  </div>
+  <div class="flex flex-wrap gap-2">
+    <a href="{% url 'menu_item_edit' item.pk %}" class="min-h-10 rounded-lg bg-kitchen-elevated px-4 py-2 text-sm font-medium ring-1 ring-kitchen-border hover:bg-kitchen-border/40">{% trans "Edit" %}</a>
+    <form method="post" action="{% url 'menu_item_toggle' item.pk %}" hx-post="{% url 'menu_item_toggle' item.pk %}" hx-target="#item-{{ item.pk }}" hx-swap="innerHTML">
+      {% csrf_token %}
+      <button class="min-h-10 rounded-lg px-4 py-2 text-sm font-semibold {% if item.is_available %}bg-order text-kitchen{% else %}bg-kitchen-elevated ring-1 ring-kitchen-border{% endif %}">
+        {% if item.is_available %}{% trans "Available" %}{% else %}{% trans "Unavailable" %}{% endif %}
+      </button>
+    </form>
+  </div>
+</div>

@@ -1,0 +1,107 @@
+[x-cloak] {
+  display: none !important;
+}
+
+:root {
+  --baresto-kitchen: #1e2129;
+  --baresto-kitchen-elevated: #282c36;
+  --baresto-kitchen-border: #3d4454;
+  --baresto-new-order: #f9a12e;
+  --baresto-new-order-hover: #e08f1a;
+  --baresto-order: #2db5a3;
+  --baresto-order-hover: #249688;
+  --baresto-text: #f1f5f9;
+  --baresto-text-muted: #94a3b8;
+}
+
+body {
+  background-color: var(--baresto-kitchen);
+  color: var(--baresto-text);
+}
+
+/* Primary CTA — new order / open table */
+.btn-primary {
+  background-color: var(--baresto-new-order);
+  color: #1e2129;
+  font-weight: 600;
+}
+.btn-primary:hover {
+  background-color: var(--baresto-new-order-hover);
+}
+
+/* Secondary — confirm / order flow */
+.btn-secondary {
+  background-color: var(--baresto-order);
+  color: #fff;
+  font-weight: 600;
+}
+.btn-secondary:hover {
+  background-color: var(--baresto-order-hover);
+}
+
+.card {
+  background-color: var(--baresto-kitchen-elevated);
+  border: 1px solid var(--baresto-kitchen-border);
+  border-radius: 1rem;
+}
+
+.input-field,
+.menu-input,
+select.input-field {
+  width: 100%;
+  min-height: 2.75rem;
+  border-radius: 0.75rem;
+  border: 1px solid var(--baresto-kitchen-border);
+  background-color: var(--baresto-kitchen);
+  padding: 0.5rem 1rem;
+  color: var(--baresto-text);
+  color-scheme: dark;
+}
+
+.menu-input option,
+.input-field option {
+  background-color: var(--baresto-kitchen-elevated);
+  color: var(--baresto-text);
+}
+
+.status-free {
+  border-color: var(--baresto-order);
+  background-color: color-mix(in srgb, var(--baresto-order) 18%, var(--baresto-kitchen));
+}
+
+.status-occupied {
+  border-color: var(--baresto-new-order);
+  background-color: color-mix(in srgb, var(--baresto-new-order) 18%, var(--baresto-kitchen));
+}
+
+.status-reserved {
+  border-color: color-mix(in srgb, var(--baresto-order) 70%, white);
+  background-color: color-mix(in srgb, var(--baresto-order) 10%, var(--baresto-kitchen));
+}
+
+.status-cleaning {
+  border-color: var(--baresto-kitchen-border);
+  background-color: var(--baresto-kitchen-elevated);
+}
+
+.text-price {
+  color: var(--baresto-order);
+}
+
+.text-accent {
+  color: var(--baresto-new-order);
+}
+
+.nav-link {
+  border-radius: 0.5rem;
+  padding: 0.5rem 0.75rem;
+  transition: background-color 0.15s;
+}
+.nav-link:hover {
+  background-color: var(--baresto-kitchen-elevated);
+}
+
+.nav-link-active {
+  background-color: var(--baresto-order);
+  color: #fff;
+}

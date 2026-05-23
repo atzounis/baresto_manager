@@ -1,0 +1,26 @@
+{% load i18n %}
+<form method="post" action="{% url 'table_create' %}" class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+  {% csrf_token %}
+  <input type="hidden" name="next" value="{{ tables_url }}">
+  <div>
+    {% include "restaurants/partials/floor_field.html" %}
+  </div>
+  <div>
+    <label class="mb-1 block text-sm text-slate-400">{{ table_form.label.label }}</label>
+    {{ table_form.label }}
+  </div>
+  <div>
+    <label class="mb-1 block text-sm text-slate-400">{{ table_form.number.label }}</label>
+    {{ table_form.number }}
+    {% if show_number_hint %}
+    <p class="mt-1 text-xs text-slate-500">{% trans "Leave empty for auto-number." %}</p>
+    {% endif %}
+  </div>
+  <div>
+    <label class="mb-1 block text-sm text-slate-400">{{ table_form.capacity.label }}</label>
+    {{ table_form.capacity }}
+  </div>
+  <div class="sm:col-span-2 lg:col-span-4">
+    <button type="submit" class="btn-primary min-h-12 rounded-xl px-8 py-3">{% trans "Add table" %}</button>
+  </div>
+</form>

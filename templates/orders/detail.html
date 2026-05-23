@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% block title %}{% trans "Order" %} #{{ order.pk }}{% endblock %}
+{% block content %}
+<h1 class="mb-2 text-2xl font-bold">{% trans "Order" %} #{{ order.pk }} — {{ order.session.table }}</h1>
+<p class="mb-6 text-new-order">{{ order.get_status_display }}</p>
+<ul class="mb-6 space-y-2">
+  {% for item in order.items.all %}
+  <li class="card flex justify-between px-4 py-3">
+    <span>{{ item.quantity }}× {{ item.menu_item.name }}</span>
+    <span class="text-price">€{{ item.line_total }}</span>
+  </li>
+  {% endfor %}
+</ul>
+<p class="text-xl font-bold">{% trans "Total" %}: <span class="text-price">€{{ order.subtotal }}</span></p>
+{% endblock %}

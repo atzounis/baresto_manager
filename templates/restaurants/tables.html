@@ -1,0 +1,249 @@
+{% extends "base.html" %}
+{% load i18n static %}
+{% block title %}{% trans "Tables" %}{% endblock %}
+{% block extra_head %}
+<script src="{% static 'js/floor_field.js' %}"></script>
+{% endblock %}
+{% block content %}
+<div x-data="floorTables()" x-init="init()" class="space-y-4">
+  <div class="flex flex-wrap items-center justify-between gap-4">
+    <h1 class="text-2xl font-bold">{% trans "Tables" %}</h1>
+    <div class="flex flex-wrap items-center gap-2">
+      {% if can_manage_tables %}
+      <button type="button" @click="manageTables = !manageTables"
+        class="min-h-10 rounded-xl px-4 py-2 text-sm font-semibold ring-1 transition"
+        :class="manageTables ? 'bg-order text-white ring-order' : 'bg-kitchen-elevated text-slate-200 ring-kitchen-border'">
+        <span x-show="!manageTables">{% trans "Manage tables" %}</span>
+        <span x-show="manageTables" x-cloak>{% trans "Done managing" %}</span>
+      </button>
+      {% endif %}
+      <div class="inline-flex rounded-xl border border-kitchen-border bg-kitchen-elevated p-1">
+        <a href="{{ tables_list_url }}"
+          class="rounded-lg px-4 py-2 text-sm font-semibold {% if view_mode == 'list' %}bg-order text-white{% else %}text-slate-400 hover:text-white{% endif %}">
+          {% trans "List" %}
+        </a>
+        <a href="{{ tables_plan_url }}"
+          class="rounded-lg px-4 py-2 text-sm font-semibold {% if view_mode == 'plan' %}bg-order text-white{% else %}text-slate-400 hover:text-white{% endif %}">
+          {% trans "Floor plan" %}
+        </a>
+      </div>
+      {% if can_edit_plan and view_mode == 'plan' %}
+      <button type="button" @click="editMode = !editMode"
+        class="min-h-10 rounded-xl px-4 py-2 text-sm font-semibold"
+        :class="editMode ? 'bg-new-order text-kitchen' : 'bg-kitchen-elevated ring-1 ring-kitchen-border'">
+        <span x-text="editMode ? i18n.doneEditing : i18n.editLayout"></span>
+      </button>
+      <button type="button" x-show="editMode" @click="saveLayout()" :disabled="saving"
+        class="btn-secondary min-h-10 rounded-xl px-4 py-2 text-sm disabled:opacity-50">
+        <span x-text="saving ? i18n.saving : i18n.saveLayout"></span>
+      </button>
+      {% endif %}
+    </div>
+  </div>
+
+  {% include "restaurants/partials/floor_filter.html" %}
+
+  {% if view_mode == 'list' %}
+  <div x-show="manageTables" x-cloak class="card p-5">
+    <h2 class="mb-4 text-lg font-semibold text-order">{% trans "Add table" %}</h2>
+    {% if table_form %}
+    {% include "restaurants/partials/add_table_form.html" with show_number_hint=True %}
+    {% endif %}
+  </div>
+  <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+    {% for table in tables %}
+    {% include "restaurants/partials/table_card.html" %}
+    {% empty %}
+    <p class="text-slate-500">
+      {% if filter_floor_id %}{% trans "No tables on this floor." %}{% else %}{% trans "No tables configured for this branch." %}{% endif %}
+    </p>
+    {% endfor %}
+  </div>
+  {% else %}
+  <div x-show="manageTables" x-cloak class="card p-5">
+    <h2 class="mb-4 text-lg font-semibold text-order">{% trans "Add table" %}</h2>
+    {% if table_form %}
+    {% include "restaurants/partials/add_table_form.html" %}
+    {% endif %}
+  </div>
+  <p class="text-sm text-slate-400" x-show="editMode && !manageTables">{% trans "Drag tables to arrange your floor. Click Save layout when finished." %}</p>
+  <p class="text-sm text-slate-400" x-show="manageTables">{% trans "Remove tables from the list view, or tap × on a free table here." %}</p>
+  <p class="text-sm text-slate-400" x-show="!editMode && !manageTables && !canEdit">{% trans "Tap a table to open or continue an order." %}</p>
+
+  <div class="overflow-x-auto rounded-2xl border border-kitchen-border bg-kitchen-elevated/50 p-2">
+    <div id="floor-canvas"
+      class="relative mx-auto w-full max-w-5xl select-none overflow-hidden rounded-xl border-2 border-dashed border-kitchen-border bg-kitchen"
+      style="aspect-ratio: 16 / 10; min-height: 320px;"
+      @pointermove.window="onPointerMove($event)"
+      @pointerup.window="onPointerUp($event)"
+      @pointercancel.window="onPointerUp($event)">
+      <div class="pointer-events-none absolute inset-0 opacity-20"
+        :class="editMode ? '' : 'hidden'"
+        style="background-image: linear-gradient(to right, rgb(71 85 105) 1px, transparent 1px), linear-gradient(to bottom, rgb(71 85 105) 1px, transparent 1px); background-size: 10% 10%;">
+      </div>
+      <template x-for="table in visibleTables" :key="table.id">
+        <div
+          class="absolute flex flex-col items-center justify-center rounded-xl border-2 text-center shadow-lg transition-shadow"
+          :class="{
+            'cursor-grab': editMode, 'cursor-pointer': !editMode,
+            'ring-2 ring-order z-20': dragging === table.id,
+            'border-order bg-order/25 text-white': table.status === 'free',
+            'border-new-order bg-new-order/25 text-kitchen': table.status === 'occupied',
+            'border-order-light bg-order/15': table.status === 'reserved',
+            'border-kitchen-border bg-kitchen-elevated': table.status === 'cleaning',
+          }"
+          :style="`left: ${table.x}%; top: ${table.y}%; width: ${table.w}%; height: ${table.h}%;`"
+          @pointerdown="onTablePointerDown($event, table)"
+          @click="onTableClick(table)">
+          <button type="button" x-show="manageTables && table.status === 'free' && !table.session_id"
+            @click.stop="deleteTable(table)"
+            class="absolute -right-1 -top-1 z-30 flex h-6 w-6 items-center justify-center rounded-full bg-red-600 text-xs font-bold text-white shadow"
+            title="{% trans 'Delete table'|escapejs %}">×</button>
+          <span class="text-sm font-bold leading-tight" x-text="table.label"></span>
+          <span class="text-[10px] text-slate-400" x-text="table.capacity + ' ' + i18n.seats"></span>
+          <span class="mt-0.5 text-[10px] opacity-80" x-text="table.status_display"></span>
+        </div>
+      </template>
+    </div>
+  </div>
+
+  <div class="flex flex-wrap gap-4 text-xs text-slate-500">
+    <span class="flex items-center gap-1"><span class="h-3 w-3 rounded border-2 border-order"></span> {% trans "Free" %}</span>
+    <span class="flex items-center gap-1"><span class="h-3 w-3 rounded border-2 border-new-order"></span> {% trans "Occupied" %}</span>
+    <span class="flex items-center gap-1"><span class="h-3 w-3 rounded border-2 border-order-light"></span> {% trans "Reserved" %}</span>
+    <span class="flex items-center gap-1"><span class="h-3 w-3 rounded border-2 border-kitchen-border"></span> {% trans "Cleaning" %}</span>
+  </div>
+
+  <form x-ref="openForm" method="post" class="hidden">{% csrf_token %}
+    <input type="hidden" name="cover_count" value="2">
+  </form>
+  {% endif %}
+
+  <p x-show="saveMessage" x-text="saveMessage" class="text-sm text-order"></p>
+</div>
+
+<script>
+function floorTables() {
+  return {
+    tables: {{ tables_json|safe }},
+    floors: {{ floors_json|safe }},
+    selectedFloorId: {% if filter_floor_id %}{{ filter_floor_id }}{% else %}null{% endif %},
+    canEdit: {{ can_edit_plan|yesno:"true,false" }},
+    manageTables: {{ open_manage|yesno:"true,false" }},
+    tablesUrl: "{{ tables_url|escapejs }}",
+    csrfToken: "{{ csrf_token }}",
+    i18n: {
+      editLayout: "{% trans 'Edit layout'|escapejs %}",
+      doneEditing: "{% trans 'Done editing'|escapejs %}",
+      manageTables: "{% trans 'Manage tables'|escapejs %}",
+      doneManaging: "{% trans 'Done managing'|escapejs %}",
+      saveLayout: "{% trans 'Save layout'|escapejs %}",
+      saving: "{% trans 'Saving…'|escapejs %}",
+      seats: "{% trans 'seats'|escapejs %}",
+      layoutSaved: "{% trans 'Layout saved'|escapejs %}",
+      saveFailed: "{% trans 'Save failed'|escapejs %}",
+      deleteConfirm: "{% trans 'Delete this table?'|escapejs %}",
+      deleteFailed: "{% trans 'Could not delete table'|escapejs %}",
+    },
+    editMode: false,
+    dragging: null,
+    dragOffset: { x: 0, y: 0 },
+    saving: false,
+    saveMessage: "",
+    moved: false,
+    get visibleTables() {
+      if (!this.selectedFloorId) return this.tables;
+      return this.tables.filter((t) => t.floor_id === this.selectedFloorId);
+    },
+    init() {
+      window.addEventListener("floors-updated", (e) => {
+        this.floors = e.detail.floors.map((f) => ({ id: f.id, name: f.name }));
+        const sid = parseInt(e.detail.selectedId, 10);
+        if (sid && this.floors.some((f) => f.id === sid)) {
+          this.selectedFloorId = sid;
+        } else if (this.floors.length) {
+          this.selectedFloorId = this.floors[0].id;
+        }
+      });
+      this.tables.forEach((t, i) => {
+        if (!t.has_position) {
+          t.x = (i % 4) * 22 + 4;
+          t.y = Math.floor(i / 4) * 22 + 8;
+        }
+      });
+    },
+    onTablePointerDown(e, table) {
+      if (!this.editMode || this.manageTables) return;
+      e.preventDefault();
+      this.moved = false;
+      const canvas = document.getElementById("floor-canvas");
+      const rect = canvas.getBoundingClientRect();
+      this.dragging = table.id;
+      this._dragTable = table;
+      this._canvasRect = rect;
+      this.dragOffset = {
+        x: e.clientX - rect.left - (table.x / 100) * rect.width,
+        y: e.clientY - rect.top - (table.y / 100) * rect.height,
+      };
+      e.target.setPointerCapture?.(e.pointerId);
+    },
+    onPointerMove(e) {
+      if (this.dragging == null || !this._dragTable) return;
+      this.moved = true;
+      const rect = this._canvasRect;
+      const x = ((e.clientX - rect.left - this.dragOffset.x) / rect.width) * 100;
+      const y = ((e.clientY - rect.top - this.dragOffset.y) / rect.height) * 100;
+      this._dragTable.x = Math.max(0, Math.min(100 - this._dragTable.w, x));
+      this._dragTable.y = Math.max(0, Math.min(100 - this._dragTable.h, y));
+    },
+    onPointerUp() { this.dragging = null; this._dragTable = null; },
+    onTableClick(table) {
+      if (this.editMode || this.manageTables || this.moved) return;
+      if (table.open_url) { window.location.href = table.open_url; return; }
+      const form = this.$refs.openForm;
+      if (form) {
+        const cover = form.querySelector('[name=cover_count]');
+        if (cover) cover.value = table.capacity || 2;
+        form.action = table.open_post_url;
+        form.submit();
+      }
+    },
+    async deleteTable(table) {
+      if (!confirm(this.i18n.deleteConfirm)) return;
+      const body = new URLSearchParams({ csrfmiddlewaretoken: this.csrfToken, next: this.tablesUrl });
+      try {
+        const res = await fetch(`/tables/${table.id}/delete/`, {
+          method: "POST",
+          headers: { "Content-Type": "application/x-www-form-urlencoded" },
+          body,
+        });
+        if (res.redirected) { window.location.href = res.url; return; }
+        if (!res.ok) throw new Error(this.i18n.deleteFailed);
+        this.tables = this.tables.filter((t) => t.id !== table.id);
+      } catch (err) {
+        alert(err.message);
+      }
+    },
+    async saveLayout() {
+      this.saving = true;
+      this.saveMessage = "";
+      try {
+        const res = await fetch("{% url 'floor_plan_save' %}", {
+          method: "POST",
+          headers: { "Content-Type": "application/json", "X-CSRFToken": "{{ csrf_token }}" },
+          body: JSON.stringify({ tables: this.tables }),
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.detail || this.i18n.saveFailed);
+        this.saveMessage = `${this.i18n.layoutSaved} (${data.updated}).`;
+        this.editMode = false;
+      } catch (err) {
+        this.saveMessage = err.message;
+      } finally {
+        this.saving = false;
+      }
+    },
+  };
+}
+</script>
+{% endblock %}

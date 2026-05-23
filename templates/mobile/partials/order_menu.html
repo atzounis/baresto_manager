@@ -1,0 +1,32 @@
+{% load i18n menu_i18n %}
+{% for category in categories %}
+<section class="mb-8">
+  {% if category|localized_name_filter %}
+  <h2 class="mb-3 text-lg font-semibold text-order">{{ category|localized_name_filter }}</h2>
+  <div class="space-y-2">
+    {% for item in category.items.all %}
+    {% if not item.is_deleted and item.is_available %}
+    <form method="post" hx-post="{% url 'order_new' session.pk %}" hx-swap="none"
+      class="card flex items-center gap-3 p-3">
+      {% csrf_token %}
+      <input type="hidden" name="menu_item_id" value="{{ item.pk }}">
+      <div class="min-w-0 flex-1">
+        <p class="font-semibold">{{ item|localized_name_filter }}</p>
+        <p class="text-sm text-price">€{{ item.price }}</p>
+      </div>
+      <div class="flex shrink-0 items-center gap-2">
+        <span id="qty-{{ item.pk }}"
+          class="flex h-10 min-w-10 items-center justify-center rounded-xl bg-order/20 px-2 text-lg font-bold text-order-light {% if not item.order_qty %}hidden{% endif %}">
+          {{ item.order_qty }}
+        </span>
+        <button type="submit"
+          class="btn-primary flex h-12 w-12 shrink-0 items-center justify-center rounded-xl text-xl font-bold"
+          aria-label="{% trans 'Add' %} {{ item|localized_name_filter|escapejs }}">+</button>
+      </div>
+    </form>
+    {% endif %}
+    {% endfor %}
+  </div>
+  {% endif %}
+</section>
+{% endfor %}

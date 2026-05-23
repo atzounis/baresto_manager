@@ -1,0 +1,102 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% block title %}{{ form_title }}{% endblock %}
+{% block extra_head %}
+<style>
+  .menu-input { width: 100%; border-radius: 0.75rem; border: 1px solid #3d4454; background: #1e2129; padding: 0.5rem 1rem; color: white; }
+  .menu-label { display: block; margin-bottom: 0.25rem; font-size: 0.875rem; color: #94a3b8; }
+  .field-error { margin-top: 0.25rem; font-size: 0.75rem; color: #f87171; }
+</style>
+{% endblock %}
+{% block content %}
+<div class="mb-6">
+  <a href="{% url 'staff_user_list' %}" class="mb-2 inline-block text-sm text-order hover:text-order-light">← {% trans "Back to users" %}</a>
+  <h1 class="text-2xl font-bold">{{ form_title }}</h1>
+  {% if editing_user %}
+  <p class="mt-1 text-sm text-slate-400">{% trans "Username" %}: <span class="font-mono text-slate-300">{{ editing_user.username }}</span></p>
+  {% endif %}
+</div>
+
+<form method="post" class="card mx-auto max-w-xl space-y-5 p-6">
+  {% csrf_token %}
+  {% if form.non_field_errors %}
+  <div class="rounded-lg border border-red-800/50 bg-red-950/50 px-4 py-3 text-sm text-red-300">
+    {{ form.non_field_errors }}
+  </div>
+  {% endif %}
+
+  {% if not editing_user %}
+  <div>
+    <label class="menu-label" for="{{ form.username.id_for_label }}">{{ form.username.label }}</label>
+    {{ form.username }}
+    {% for e in form.username.errors %}<p class="field-error">{{ e }}</p>{% endfor %}
+  </div>
+  {% endif %}
+
+  <div class="grid gap-4 sm:grid-cols-2">
+    <div>
+      <label class="menu-label" for="{{ form.first_name.id_for_label }}">{{ form.first_name.label }}</label>
+      {{ form.first_name }}
+    </div>
+    <div>
+      <label class="menu-label" for="{{ form.last_name.id_for_label }}">{{ form.last_name.label }}</label>
+      {{ form.last_name }}
+    </div>
+  </div>
+
+  <div>
+    <label class="menu-label" for="{{ form.email.id_for_label }}">{{ form.email.label }}</label>
+    {{ form.email }}
+  </div>
+
+  {% if form.password %}
+  <div>
+    <label class="menu-label" for="{{ form.password.id_for_label }}">{{ form.password.label }}</label>
+    {{ form.password }}
+    {% for e in form.password.errors %}<p class="field-error">{{ e }}</p>{% endfor %}
+  </div>
+  {% endif %}
+
+  {% if form.new_password %}
+  <div>
+    <label class="menu-label" for="{{ form.new_password.id_for_label }}">{{ form.new_password.label }}</label>
+    {{ form.new_password }}
+    {% if form.new_password.help_text %}<p class="mt-1 text-xs text-slate-500">{{ form.new_password.help_text }}</p>{% endif %}
+  </div>
+  {% endif %}
+
+  <div class="grid gap-4 sm:grid-cols-2">
+    <div>
+      <label class="menu-label" for="{{ form.role.id_for_label }}">{{ form.role.label }}</label>
+      {{ form.role }}
+      {% for e in form.role.errors %}<p class="field-error">{{ e }}</p>{% endfor %}
+    </div>
+    <div>
+      <label class="menu-label" for="{{ form.branch.id_for_label }}">{{ form.branch.label }}</label>
+      {{ form.branch }}
+    </div>
+  </div>
+
+  <div>
+    <label class="menu-label" for="{{ form.pin.id_for_label }}">{{ form.pin.label }}</label>
+    {{ form.pin }}
+    {% for e in form.pin.errors %}<p class="field-error">{{ e }}</p>{% endfor %}
+  </div>
+
+  {% if form.is_active %}
+  <label class="flex items-center gap-2 text-sm">
+    {{ form.is_active }}
+    <span>{{ form.is_active.label }}</span>
+  </label>
+  {% if is_self %}
+  <p class="text-xs text-slate-500">{% trans "You cannot deactivate your own account." %}</p>
+  {% endif %}
+  {% for e in form.is_active.errors %}<p class="field-error">{{ e }}</p>{% endfor %}
+  {% endif %}
+
+  <div class="flex gap-3 pt-2">
+    <button type="submit" class="btn-primary min-h-12 flex-1 rounded-xl py-3 font-semibold">{{ submit_label }}</button>
+    <a href="{% url 'staff_user_list' %}" class="btn-secondary flex min-h-12 items-center justify-center rounded-xl px-5 py-3 text-sm">{% trans "Cancel" %}</a>
+  </div>
+</form>
+{% endblock %}

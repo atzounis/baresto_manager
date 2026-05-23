@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% block title %}{% trans "New category" %}{% endblock %}
+{% block extra_head %}
+<style>
+  .menu-input { width: 100%; border-radius: 0.75rem; border: 1px solid #3d4454; background: #1e2129; padding: 0.5rem 1rem; color: white; }
+  .menu-label { display: block; margin-bottom: 0.25rem; font-size: 0.875rem; color: #94a3b8; }
+</style>
+{% endblock %}
+{% block content %}
+<div class="mx-auto max-w-lg">
+  <a href="{% url 'menu_manage' %}" class="mb-4 inline-block text-sm text-order hover:text-order-light">← {% trans "Back to menu" %}</a>
+  <h1 class="mb-6 text-2xl font-bold">{% trans "New category" %}</h1>
+  <form method="post" class="card space-y-4 p-5">
+    {% csrf_token %}
+    <div>
+      <label class="menu-label" for="{{ form.menu.id_for_label }}">{% trans "Menu" %}</label>
+      {{ form.menu }}
+    </div>
+    <div class="rounded-xl border border-kitchen-border p-4 space-y-3">
+      <p class="text-sm font-semibold text-order">{% trans "Greek" %} (ΕΛ)</p>
+      <div>
+        <label class="menu-label" for="{{ form.name_el.id_for_label }}">{% trans "Name (Greek)" %}</label>
+        {{ form.name_el }}
+      </div>
+      <div>
+        <label class="menu-label" for="{{ form.description_el.id_for_label }}">{% trans "Description (Greek)" %}</label>
+        {{ form.description_el }}
+      </div>
+    </div>
+    <div class="rounded-xl border border-kitchen-border p-4 space-y-3">
+      <p class="text-sm font-semibold text-new-order">{% trans "English" %} (EN)</p>
+      <div>
+        <label class="menu-label" for="{{ form.name_en.id_for_label }}">{% trans "Name (English)" %}</label>
+        {{ form.name_en }}
+      </div>
+      <div>
+        <label class="menu-label" for="{{ form.description_en.id_for_label }}">{% trans "Description (English)" %}</label>
+        {{ form.description_en }}
+      </div>
+    </div>
+    <div>
+      <label class="menu-label" for="{{ form.sort_order.id_for_label }}">{% trans "Sort order" %}</label>
+      {{ form.sort_order }}
+    </div>
+    <label class="flex items-center gap-2">{{ form.is_active }} {% trans "Active" %}</label>
+    <button type="submit" class="btn-primary min-h-12 w-full rounded-xl py-3">{% trans "Save category" %}</button>
+  </form>
+</div>
+{% endblock %}

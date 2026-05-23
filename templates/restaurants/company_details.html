@@ -1,0 +1,171 @@
+{% extends "base.html" %}
+{% load i18n menu_i18n static %}
+{% block title %}{% trans "Company details" %}{% endblock %}
+{% block extra_head %}
+<style>
+  .menu-input { width: 100%; border-radius: 0.75rem; border: 1px solid #3d4454; background: #1e2129; padding: 0.5rem 1rem; color: white; }
+  .menu-label { display: block; margin-bottom: 0.25rem; font-size: 0.875rem; color: #94a3b8; }
+  .legal-preview { font-size: 0.75rem; line-height: 1.5; color: #94a3b8; }
+  .legal-preview strong { color: #e2e8f0; }
+</style>
+{% endblock %}
+{% block content %}
+<div class="mb-6">
+  <a href="{% url 'menu_manage' %}" class="mb-2 inline-block text-sm text-order hover:text-order-light">← {% trans "Back to menu" %}</a>
+  <h1 class="text-2xl font-bold">{% trans "Company details" %}</h1>
+  <p class="mt-2 max-w-2xl text-sm text-slate-400">
+    {% trans "Mandatory business and legal information for your digital menu catalogue (Greek law & EU allergen rules). Shown on the guest QR menu when enabled." %}
+  </p>
+</div>
+
+<section class="card mb-8 p-5">
+  <h2 class="mb-4 text-lg font-semibold text-order">{% trans "Guest menu preview" %}</h2>
+  {% include "public/includes/legal_catalogue_block.html" with profile=profile restaurant=restaurant preview=True %}
+</section>
+
+<form method="post" enctype="multipart/form-data" class="space-y-8">
+  {% csrf_token %}
+
+  <section class="card space-y-4 p-5">
+    <h2 class="text-lg font-semibold">{% trans "1. Business identity" %}</h2>
+    <div>
+      <label class="menu-label" for="id_logo">{% trans "Company logo (guest menu)" %}</label>
+      <p class="mb-2 text-sm text-slate-500">{% trans "Displayed on customer QR menus only. Does not change the Baresto Manager logo in the app." %}</p>
+      {% if profile.logo %}
+      <img src="{{ profile.logo.url }}" alt="" class="mb-3 h-20 w-auto max-w-xs rounded-lg border border-kitchen-border bg-kitchen object-contain p-2">
+      {% endif %}
+      <input type="file" name="logo" accept="image/*" id="id_logo" class="menu-input">
+      <p class="mt-1 text-xs text-slate-500">{% trans "Leave empty to keep the current logo when editing." %}</p>
+    </div>
+    <div class="grid gap-4 md:grid-cols-2">
+      <div class="rounded-xl border border-kitchen-border p-4 space-y-3">
+        <p class="text-sm font-semibold text-order">{% trans "Greek" %} (ΕΛ)</p>
+        <div>
+          <label class="menu-label" for="{{ form.trade_name_el.id_for_label }}">{% trans "Trade name (Greek)" %}</label>
+          {{ form.trade_name_el }}
+        </div>
+        <div>
+          <label class="menu-label" for="{{ form.address_el.id_for_label }}">{% trans "Full address (Greek)" %}</label>
+          {{ form.address_el }}
+        </div>
+      </div>
+      <div class="rounded-xl border border-kitchen-border p-4 space-y-3">
+        <p class="text-sm font-semibold text-new-order">{% trans "English" %} (EN)</p>
+        <div>
+          <label class="menu-label" for="{{ form.trade_name_en.id_for_label }}">{% trans "Trade name (English)" %}</label>
+          {{ form.trade_name_en }}
+        </div>
+        <div>
+          <label class="menu-label" for="{{ form.address_en.id_for_label }}">{% trans "Full address (English)" %}</label>
+          {{ form.address_en }}
+        </div>
+      </div>
+    </div>
+    <div class="grid gap-4 sm:grid-cols-2">
+      <div>
+        <label class="menu-label" for="{{ form.phone.id_for_label }}">{% trans "Phone" %}</label>
+        {{ form.phone }}
+      </div>
+      <div>
+        <label class="menu-label" for="{{ form.gemi_number.id_for_label }}">{% trans "GEMI no." %}</label>
+        {{ form.gemi_number }}
+      </div>
+    </div>
+  </section>
+
+  <section class="card space-y-4 p-5">
+    <h2 class="text-lg font-semibold">{% trans "2. Mandatory legal notices (footer)" %}</h2>
+    <div class="grid gap-4 md:grid-cols-2">
+      <div class="space-y-3">
+        <p class="text-sm font-semibold text-order">{% trans "Greek" %}</p>
+        <div>
+          <label class="menu-label" for="{{ form.consumer_payment_notice_el.id_for_label }}">{% trans "Consumer payment notice (Greek)" %}</label>
+          {{ form.consumer_payment_notice_el }}
+        </div>
+        <div>
+          <label class="menu-label" for="{{ form.complaint_sheets_notice_el.id_for_label }}">{% trans "Complaint sheets notice (Greek)" %}</label>
+          {{ form.complaint_sheets_notice_el }}
+        </div>
+      </div>
+      <div class="space-y-3">
+        <p class="text-sm font-semibold text-new-order">{% trans "English" %}</p>
+        <div>
+          <label class="menu-label" for="{{ form.consumer_payment_notice_en.id_for_label }}">{% trans "Consumer payment notice (English)" %}</label>
+          {{ form.consumer_payment_notice_en }}
+        </div>
+        <div>
+          <label class="menu-label" for="{{ form.complaint_sheets_notice_en.id_for_label }}">{% trans "Complaint sheets notice (English)" %}</label>
+          {{ form.complaint_sheets_notice_en }}
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="card space-y-4 p-5">
+    <h2 class="text-lg font-semibold">{% trans "3. Tax & pricing clarifications" %}</h2>
+    <div class="grid gap-4 md:grid-cols-2">
+      <div>
+        <label class="menu-label" for="{{ form.prices_include_taxes_el.id_for_label }}">{% trans "Tax inclusion notice (Greek)" %}</label>
+        {{ form.prices_include_taxes_el }}
+      </div>
+      <div>
+        <label class="menu-label" for="{{ form.prices_include_taxes_en.id_for_label }}">{% trans "Tax inclusion notice (English)" %}</label>
+        {{ form.prices_include_taxes_en }}
+      </div>
+    </div>
+    <label class="flex items-center gap-2">{{ form.service_charge_enabled }} {% trans "Cover / service charge applies" %}</label>
+    <div class="grid gap-4 sm:grid-cols-2">
+      <div>
+        <label class="menu-label" for="{{ form.service_charge_amount.id_for_label }}">{% trans "Service charge (€)" %}</label>
+        {{ form.service_charge_amount }}
+      </div>
+    </div>
+    <div class="grid gap-4 md:grid-cols-2">
+      <div>
+        <label class="menu-label" for="{{ form.service_charge_note_el.id_for_label }}">{% trans "Service charge note (Greek)" %}</label>
+        {{ form.service_charge_note_el }}
+      </div>
+      <div>
+        <label class="menu-label" for="{{ form.service_charge_note_en.id_for_label }}">{% trans "Service charge note (English)" %}</label>
+        {{ form.service_charge_note_en }}
+      </div>
+    </div>
+  </section>
+
+  <section class="card space-y-4 p-5">
+    <h2 class="text-lg font-semibold">{% trans "4. Product labelling legend" %}</h2>
+    <p class="text-sm text-slate-400">{% trans "Set frozen, oil type and origin on each product in Menu → Edit product." %}</p>
+    <div class="grid gap-4 md:grid-cols-2">
+      <div>
+        <label class="menu-label" for="{{ form.product_legend_el.id_for_label }}">{% trans "Product symbols legend (Greek)" %}</label>
+        {{ form.product_legend_el }}
+      </div>
+      <div>
+        <label class="menu-label" for="{{ form.product_legend_en.id_for_label }}">{% trans "Product symbols legend (English)" %}</label>
+        {{ form.product_legend_en }}
+      </div>
+    </div>
+  </section>
+
+  <section class="card space-y-4 p-5">
+    <h2 class="text-lg font-semibold">{% trans "5. Allergens (EU 1169/2011)" %}</h2>
+    <p class="text-sm text-slate-400">{% trans "Assign allergens per dish in the product form; icons appear on the guest menu." %}</p>
+    <div class="grid gap-4 md:grid-cols-2">
+      <div>
+        <label class="menu-label" for="{{ form.allergen_notice_el.id_for_label }}">{% trans "Allergen policy (Greek)" %}</label>
+        {{ form.allergen_notice_el }}
+      </div>
+      <div>
+        <label class="menu-label" for="{{ form.allergen_notice_en.id_for_label }}">{% trans "Allergen policy (English)" %}</label>
+        {{ form.allergen_notice_en }}
+      </div>
+    </div>
+  </section>
+
+  <section class="card p-5">
+    <label class="flex items-center gap-2">{{ form.show_on_guest_menu }} {% trans "Show legal block on guest QR menu" %}</label>
+  </section>
+
+  <button type="submit" class="btn-primary min-h-12 rounded-xl px-8 py-3">{% trans "Save company details" %}</button>
+</form>
+{% endblock %}

@@ -1,0 +1,101 @@
+{% load i18n static menu_i18n %}
+<!DOCTYPE html>
+<html lang="{{ LANGUAGE_CODE }}">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#1E2129">
+  <title>{% if table %}{{ restaurant.name }} — {% trans "Table" %} {{ table.label|default:table.number }}{% else %}{{ restaurant.name }} — {% trans "Menu" %}{% endif %}</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            kitchen: { DEFAULT: '#1E2129', elevated: '#282C36', border: '#3D4454' },
+            order: { DEFAULT: '#2DB5A3', light: '#3DCCC0' },
+            'new-order': { DEFAULT: '#F9A12E', light: '#FBB85A' },
+          },
+        },
+      },
+    };
+  </script>
+  <link rel="stylesheet" href="{% static 'css/baresto.css' %}">
+</head>
+<body class="bg-kitchen text-slate-100">
+  <header class="sticky top-0 z-10 border-b border-kitchen-border bg-kitchen-elevated/95 px-4 py-5 backdrop-blur">
+    <div class="mx-auto flex max-w-lg items-start justify-between gap-2">
+      <div class="min-w-0 flex-1">
+        <img
+          src="{% static 'brand/baresto-horizontal.png' %}"
+          alt="{% trans 'Baresto Manager' %}"
+          class="mb-2 h-9 w-auto max-w-[200px] object-contain object-left"
+          width="200"
+          height="36"
+        >
+        {% if table %}
+        <p class="text-sm text-slate-400">{% trans "Table" %} {{ table.label|default:table.number }}</p>
+        {% else %}
+        <p class="text-sm text-slate-400">{% trans "Digital menu" %}</p>
+        {% endif %}
+      </div>
+      {% include "includes/language_switcher.html" %}
+    </div>
+  </header>
+  <main class="mx-auto max-w-lg px-4 py-6 pb-32">
+    {% if legal_profile %}
+    <section class="card mb-6 p-4">
+      {% include "public/includes/legal_catalogue_block.html" with profile=legal_profile restaurant=restaurant compact=True %}
+    </section>
+    {% endif %}
+    {% for category in categories %}
+    <section class="mb-8">
+      {% if category|localized_name_filter %}
+      <h2 class="mb-3 text-lg font-semibold text-order">{{ category|localized_name_filter }}</h2>
+      <div class="space-y-3">
+        {% for item in category.items.all %}
+        {% if item.is_available and not item.is_deleted %}
+        <article class="card overflow-hidden">
+          {% if item.image %}
+          <img src="{{ item.image.url }}" alt="{{ item.name }}" class="h-40 w-full object-cover">
+          {% endif %}
+          <div class="p-4">
+            <div class="flex justify-between gap-3">
+              <div class="min-w-0 flex-1">
+                <h3 class="font-semibold">{{ item|localized_name_filter }}</h3>
+                {% if item|localized_name_filter:"description" %}<p class="mt-1 text-sm text-slate-400">{{ item|localized_name_filter:"description" }}</p>{% endif %}
+              </div>
+              <p class="shrink-0 text-lg font-bold text-price">€{{ item.price }}</p>
+            </div>
+            {% include "menus/partials/item_compliance_badges.html" %}
+            <div class="mt-2 flex flex-wrap gap-1 text-xs">
+              {% if item.is_vegan %}<span class="rounded bg-order/20 px-2 py-0.5 text-order-light">{% trans "Vegan" %}</span>
+              {% elif item.is_vegetarian %}<span class="rounded bg-order/15 px-2 py-0.5 text-order">{% trans "Vegetarian" %}</span>{% endif %}
+              {% for a in item.allergens.all %}
+              <span class="rounded bg-new-order/20 px-2 py-0.5 text-new-order-light" title="{% trans 'Allergen' %}">{{ a|localized_name_filter }}</span>
+              {% endfor %}
+            </div>
+          </div>
+        </article>
+        {% endif %}
+        {% endfor %}
+      </div>
+      {% endif %}
+    </section>
+    {% empty %}
+    <p class="text-center text-slate-500">{% trans "Menu not available." %}</p>
+    {% endfor %}
+    {% if legal_profile %}
+    <section class="mt-10 border-t border-kitchen-border pt-6">
+      {% include "public/includes/legal_catalogue_block.html" with profile=legal_profile restaurant=restaurant %}
+    </section>
+    {% endif %}
+  </main>
+  <footer class="fixed bottom-0 left-0 right-0 z-20 border-t border-kitchen-border bg-kitchen-elevated p-4">
+    <button type="button" class="btn-primary min-h-12 w-full rounded-2xl"
+      onclick="alert('{% trans "A waiter has been notified."|escapejs %}')">
+      {% trans "Call waiter" %}
+    </button>
+  </footer>
+</body>
+</html>

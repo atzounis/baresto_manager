@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% block title %}{% trans "Reports" %}{% endblock %}
+{% block content %}
+<h1 class="mb-6 text-2xl font-bold">{% trans "Analytics" %}</h1>
+<p class="mb-4 text-slate-400">{% trans "Sessions (7 days)" %}: {{ sessions_week }}</p>
+<h2 class="mb-3 text-lg font-semibold text-order">{% trans "Top items" %}</h2>
+<ul class="space-y-2">
+  {% for row in top_items %}
+  <li class="card flex justify-between px-4 py-3">
+    <span>{{ row.menu_item__name }}</span>
+    <span class="text-new-order">{{ row.qty }} {% trans "sold" %}</span>
+  </li>
+  {% empty %}
+  <li class="text-slate-500">{% trans "No data yet" %}</li>
+  {% endfor %}
+</ul>
+{% endblock %}

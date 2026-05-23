@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% load i18n menu_i18n %}
+{% block title %}{% trans "Order" %} — {{ session.table }}{% endblock %}
+{% block content %}
+<div class="pb-56">
+  <div class="mb-4 flex items-center justify-between gap-3">
+    <div>
+      <a href="{% url 'tables' %}" class="text-sm text-slate-500 hover:text-order-light">← {% trans "Tables" %}</a>
+      <h1 class="text-2xl font-bold">{{ session.table }}</h1>
+    </div>
+    <span class="rounded-full bg-kitchen-elevated px-3 py-1 text-sm ring-1 ring-kitchen-border">
+      {% blocktrans with n=session.cover_count %}{{ n }} guests{% endblocktrans %}
+    </span>
+  </div>
+
+  <div id="order-menu">
+    {% include "mobile/partials/order_menu.html" %}
+  </div>
+</div>
+
+<div id="order-summary"
+  class="fixed bottom-0 left-0 right-0 z-30 border-t border-kitchen-border bg-kitchen-elevated/98 p-4 shadow-[0_-8px_30px_rgba(0,0,0,0.35)] backdrop-blur">
+  {% include "mobile/partials/order_summary.html" %}
+</div>
+{% endblock %}

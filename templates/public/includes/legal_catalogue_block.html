@@ -1,0 +1,46 @@
+{% load i18n menu_i18n %}
+{% if profile and profile.show_on_guest_menu %}
+<div class="legal-catalogue {% if preview %}rounded-xl border border-kitchen-border bg-kitchen p-4{% endif %} text-xs leading-relaxed text-slate-400">
+  <div class="mb-3 flex flex-wrap items-start gap-3 {% if not compact %}border-b border-kitchen-border pb-3{% endif %}">
+    {% if profile.logo %}
+    <img src="{{ profile.logo.url }}" alt="" class="h-10 w-auto max-w-[8rem] object-contain">
+    {% endif %}
+    <div class="min-w-0 flex-1">
+      {% if profile|localized_name_filter:"trade_name" %}
+      <p class="font-semibold text-slate-200">{{ profile|localized_name_filter:"trade_name" }}</p>
+      {% endif %}
+      {% if profile|localized_name_filter:"address" %}
+      <p>{{ profile|localized_name_filter:"address" }}</p>
+      {% endif %}
+      {% if profile.phone %}<p>{% trans "Tel." %} {{ profile.phone }}</p>{% endif %}
+      {% if profile.gemi_number %}<p>{% trans "GEMI" %} {{ profile.gemi_number }}</p>{% endif %}
+    </div>
+  </div>
+
+  {% if not compact %}
+  <p class="mb-2 font-medium uppercase tracking-wide text-slate-500">{% trans "Prices" %}</p>
+  <p class="mb-3">{{ profile|localized_name_filter:"prices_include_taxes" }}</p>
+  {% if profile.service_charge_enabled and profile.service_charge_amount %}
+  <p class="mb-3">{% blocktrans with amount=profile.service_charge_amount %}Cover / service charge: €{{ amount }}{% endblocktrans %}</p>
+  {% endif %}
+  {% if profile|localized_name_filter:"service_charge_note" %}
+  <p class="mb-3">{{ profile|localized_name_filter:"service_charge_note" }}</p>
+  {% endif %}
+
+  {% if profile|localized_name_filter:"product_legend" %}
+  <p class="mb-3"><span class="text-new-order-light">*</span> {{ profile|localized_name_filter:"product_legend" }}</p>
+  {% endif %}
+
+  {% if profile|localized_name_filter:"allergen_notice" %}
+  <p class="mb-3">{{ profile|localized_name_filter:"allergen_notice" }}</p>
+  {% endif %}
+
+  <div class="mt-4 space-y-2 border-t border-kitchen-border pt-3 text-[0.65rem] uppercase text-slate-500">
+    <p>{{ profile.consumer_payment_notice_el }}</p>
+    <p class="normal-case text-slate-400">{{ profile.consumer_payment_notice_en }}</p>
+    <p class="mt-2">{{ profile.complaint_sheets_notice_el }}</p>
+    <p class="normal-case text-slate-400">{{ profile.complaint_sheets_notice_en }}</p>
+  </div>
+  {% endif %}
+</div>
+{% endif %}

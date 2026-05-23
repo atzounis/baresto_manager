@@ -1,0 +1,960 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-05-23 14:08+0300\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: el\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+msgid "Invalid PIN"
+msgstr "Μη έγκυρο PIN"
+
+msgid "Category"
+msgstr "Κατηγορία"
+
+#
+msgid "Contains allergens"
+msgstr "Περιέχει αλλεργιογόνα"
+
+msgid "Name (Greek)"
+msgstr "Όνομα (Ελληνικά)"
+
+msgid "Name (English)"
+msgstr "Όνομα (Αγγλικά)"
+
+msgid "Description (Greek)"
+msgstr "Περιγραφή (Ελληνικά)"
+
+msgid "Description (English)"
+msgstr "Περιγραφή (Αγγλικά)"
+
+msgid "Photo"
+msgstr "Φωτογραφία"
+
+msgid "Price (€)"
+msgstr "Τιμή (€)"
+
+msgid "Happy hour price (optional)"
+msgstr "Τιμή happy hour (προαιρετικό)"
+
+msgid "Prep time (min)"
+msgstr "Χρόνος προετοιμασίας (λεπτά)"
+
+#
+msgid "Sort order"
+msgstr "Σειρά εμφάνισης"
+
+msgid "Available"
+msgstr "Διαθέσιμο"
+
+msgid "Featured"
+msgstr "Προτεινόμενο"
+
+msgid "Vegetarian"
+msgstr "Χορτοφαγικό"
+
+msgid "Vegan"
+msgstr "Βίγκαν"
+
+msgid "Frozen product (*)"
+msgstr "Κατεψυγμένο προϊόν (*)"
+
+msgid "Oil used (salads/frying)"
+msgstr "Λάδι (σαλάτες / τηγάνισμα)"
+
+msgid "Origin / PDO note (Greek)"
+msgstr "Προέλευση / Π.Ο.Π. (Ελληνικά)"
+
+msgid "Origin / PDO note (English)"
+msgstr "Προέλευση / Π.Ο.Π. (Αγγλικά)"
+
+msgid "Calories (kcal)"
+msgstr "Θερμίδες (kcal)"
+
+#
+msgid "Protein (g)"
+msgstr "Πρωτεΐνη"
+
+msgid "Carbohydrates (g)"
+msgstr "Υδατάνθρακες (g)"
+
+msgid "Fat (g)"
+msgstr "Λιπαρά (g)"
+
+msgid "Fiber (g)"
+msgstr "Φυτικές ίνες (g)"
+
+msgid "Salt (g)"
+msgstr "Αλάτι (g)"
+
+msgid "Short description in Greek"
+msgstr "Σύντομη περιγραφή (Ελληνικά)"
+
+msgid "Short description in English"
+msgstr "Σύντομη περιγραφή (Αγγλικά)"
+
+msgid "Menu"
+msgstr "Μενού"
+
+msgid "Active"
+msgstr "Ενεργό"
+
+msgid "—"
+msgstr "—"
+
+msgid "Olive oil"
+msgstr "Ελαιόλαδο"
+
+msgid "Seed oil (e.g. sunflower)"
+msgstr "Σπορέλαιο (π.χ. ηλιέλαιο)"
+
+msgid "Extra virgin olive oil"
+msgstr "Έξτρα παρθένο ελαιόλαδο"
+
+#, python-format
+msgid "Cannot delete category “%(name)s” because it still has products."
+msgstr ""
+"Δεν είναι δυνατή η διαγραφή της κατηγορίας «%(name)s» επειδή περιέχει ακόμα "
+"προϊόντα."
+
+#, python-format
+msgid "Category “%(name)s” removed."
+msgstr "Η κατηγορία «%(name)s» διαγράφηκε."
+
+msgid "Open"
+msgstr "Ανοιχτή"
+
+msgid "Confirmed"
+msgstr "Επιβεβαιωμένη"
+
+msgid "Preparing"
+msgstr "Σε προετοιμασία"
+
+msgid "Partially Ready"
+msgstr "Μερικώς έτοιμη"
+
+msgid "Ready"
+msgstr "Έτοιμη"
+
+msgid "Served"
+msgstr "Σερβιρισμένη"
+
+msgid "Bill Requested"
+msgstr "Ζητήθηκε λογαριασμός"
+
+msgid "Paid"
+msgstr "Πληρωμένη"
+
+msgid "Cancelled"
+msgstr "Ακυρωμένη"
+
+msgid "Pending"
+msgstr "Εκκρεμεί"
+
+msgid "Kitchen"
+msgstr "Κουζίνα"
+
+msgid "Bar"
+msgstr "Μπαρ"
+
+msgid "Grill"
+msgstr "Ψησταριά"
+
+msgid "Trade name (Greek)"
+msgstr "Επωνυμία (Ελληνικά)"
+
+msgid "Trade name (English)"
+msgstr "Επωνυμία (Αγγλικά)"
+
+msgid "Full address (Greek)"
+msgstr "Πλήρης διεύθυνση (Ελληνικά)"
+
+msgid "Full address (English)"
+msgstr "Πλήρης διεύθυνση (Αγγλικά)"
+
+msgid "Phone"
+msgstr "Τηλέφωνο"
+
+msgid "GEMI no."
+msgstr "Αρ. Γ.Ε.ΜΗ."
+
+msgid "Consumer payment notice (Greek)"
+msgstr "Νομική φράση πληρωμής (Ελληνικά)"
+
+msgid "Consumer payment notice (English)"
+msgstr "Νομική φράση πληρωμής (Αγγλικά)"
+
+msgid "Complaint sheets notice (Greek)"
+msgstr "Φράση δελτίων παραπόνων (Ελληνικά)"
+
+msgid "Complaint sheets notice (English)"
+msgstr "Φράση δελτίων παραπόνων (Αγγλικά)"
+
+msgid "Tax inclusion notice (Greek)"
+msgstr "Δήλωση συμπερίληψης φόρων (Ελληνικά)"
+
+msgid "Tax inclusion notice (English)"
+msgstr "Δήλωση συμπερίληψης φόρων (Αγγλικά)"
+
+msgid "Cover / service charge applies"
+msgstr "Ισχύει χρέωση κουβέρ / service charge"
+
+msgid "Service charge (€)"
+msgstr "Χρέωση κουβέρ (€)"
+
+msgid "Service charge note (Greek)"
+msgstr "Σημείωση κουβέρ (Ελληνικά)"
+
+msgid "Service charge note (English)"
+msgstr "Σημείωση κουβέρ (Αγγλικά)"
+
+msgid "Allergen policy (Greek)"
+msgstr "Πολιτική αλλεργιογόνων (Ελληνικά)"
+
+msgid "Allergen policy (English)"
+msgstr "Πολιτική αλλεργιογόνων (Αγγλικά)"
+
+msgid "Product symbols legend (Greek)"
+msgstr "Υπόμνημα συμβόλων προϊόντων (Ελληνικά)"
+
+msgid "Product symbols legend (English)"
+msgstr "Υπόμνημα συμβόλων προϊόντων (Αγγλικά)"
+
+msgid "Show legal block on guest QR menu"
+msgstr "Εμφάνιση νομικών στοιχείων στο QR μενού επισκεπτών"
+
+msgid "Free"
+msgstr "Ελεύθερο"
+
+msgid "Occupied"
+msgstr "Κατειλημμένο"
+
+msgid "Reserved"
+msgstr "Κρατημένο"
+
+msgid "Cleaning"
+msgstr "Καθαρισμός"
+
+msgid "Company details saved."
+msgstr "Αποθηκεύτηκαν τα στοιχεία επιχείρησης."
+
+msgid "Staff Login"
+msgstr "Σύνδεση προσωπικού"
+
+msgid "Invalid username or password."
+msgstr "Λανθασμένο όνομα χρήστη ή κωδικός."
+
+msgid "Try"
+msgstr "Δοκιμάστε"
+
+msgid "Username"
+msgstr "Όνομα χρήστη"
+
+msgid "Password"
+msgstr "Κωδικός"
+
+msgid "Sign in"
+msgstr "Είσοδος"
+
+msgid "PIN quick login"
+msgstr "Γρήγορη σύνδεση PIN"
+
+msgid "PIN Login"
+msgstr "Σύνδεση PIN"
+
+msgid "Enter PIN"
+msgstr "Εισαγωγή PIN"
+
+msgid "Start shift"
+msgstr "Έναρξη βάρδιας"
+
+msgid "Password login"
+msgstr "Σύνδεση με κωδικό"
+
+msgid "Baresto Manager"
+msgstr "Baresto Manager"
+
+msgid "Offline — changes will sync when reconnected"
+msgstr "Χωρίς σύνδεση — συγχρονισμός όταν επανέλθει η σύνδεση"
+
+msgid "Tables"
+msgstr "Τραπέζια"
+
+msgid "Company"
+msgstr "Εταιρεία"
+
+msgid "Reports"
+msgstr "Αναφορές"
+
+msgid "Logout"
+msgstr "Έξοδος"
+
+msgid "Dashboard"
+msgstr "Πίνακας ελέγχου"
+
+msgid "Manager Dashboard"
+msgstr "Πίνακας διαχείρισης"
+
+msgid "Revenue today"
+msgstr "Έσοδα σήμερα"
+
+msgid "Active orders"
+msgstr "Ενεργές παραγγελίες"
+
+msgid "Live orders"
+msgstr "Ζωντανές παραγγελίες"
+
+msgid "View"
+msgstr "Προβολή"
+
+msgid "No active orders"
+msgstr "Δεν υπάρχουν ενεργές παραγγελίες"
+
+#
+msgid "Kitchen Display"
+msgstr "Κουζίνα"
+
+msgid "Advance"
+msgstr "Επόμενο"
+
+msgid "Waiting for tickets…"
+msgstr "Αναμονή για παραγγελίες…"
+
+msgid "New category"
+msgstr "Νέα κατηγορία"
+
+msgid "Back to menu"
+msgstr "Πίσω στο μενού"
+
+msgid "Greek"
+msgstr "Ελληνικά"
+
+msgid "English"
+msgstr "Αγγλικά"
+
+msgid "Save category"
+msgstr "Αποθήκευση κατηγορίας"
+
+#
+msgid "Edit product"
+msgstr "Επεξεργασία προϊόντος"
+
+msgid "New product"
+msgstr "Νέο προϊόν"
+
+msgid "Basics"
+msgstr "Βασικά"
+
+msgid "Leave empty to keep current image when editing."
+msgstr "Αφήστε κενό για να κρατήσετε την τρέχουσα εικόνα."
+
+msgid "Legal product labelling"
+msgstr "Νόμιμη σήμανση προϊόντος"
+
+msgid ""
+"Required disclosures for frozen goods, oils, and meat/seafood origin or PDO "
+"names."
+msgstr ""
+"Υποχρεωτικές ενδείξεις για κατεψυγμένα, λάδια, προέλευση κρέατος/θαλασσινών "
+"ή Π.Ο.Π."
+
+msgid "Dietary"
+msgstr "Διατροφή"
+
+msgid "Nutrition"
+msgstr "Διατροφική αξία"
+
+msgid "(per serving, optional)"
+msgstr "(ανά μερίδα, προαιρετικό)"
+
+msgid "Save product"
+msgstr "Αποθήκευση προϊόντος"
+
+msgid "Cancel"
+msgstr "Ακύρωση"
+
+msgid "Remove this product from the menu?"
+msgstr "Αφαίρεση προϊόντος από το μενού;"
+
+msgid "Delete product"
+msgstr "Διαγραφή προϊόντος"
+
+msgid "Menu Management"
+msgstr "Διαχείριση μενού"
+
+msgid "Done editing"
+msgstr "Τέλος επεξεργασίας"
+
+msgid "Edit"
+msgstr "Επεξεργασία"
+
+msgid "Add product"
+msgstr "Προσθήκη προϊόντος"
+
+msgid ""
+"Edit mode: empty categories can be deleted. Categories with products are "
+"protected."
+msgstr ""
+"Λειτουργία επεξεργασίας: μπορείτε να διαγράψετε κενές κατηγορίες. Οι "
+"κατηγορίες με προϊόντα προστατεύονται."
+
+msgid "draft"
+msgstr "πρόχειρο"
+
+msgid "Remove all products before deleting this category."
+msgstr "Αφαιρέστε όλα τα προϊόντα πριν διαγράψετε αυτή την κατηγορία."
+
+#, python-format
+msgid "%(counter)s product — cannot delete"
+msgid_plural "%(counter)s products — cannot delete"
+msgstr[0] "%(counter)s προϊόν — δεν μπορεί να διαγραφεί"
+msgstr[1] "%(counter)s προϊόντα — δεν μπορεί να διαγραφεί"
+
+#, python-format
+msgid "Delete category “%(name)s”? This cannot be undone."
+msgstr "Διαγραφή κατηγορίας «%(name)s»; Η ενέργεια δεν αναιρείται."
+
+msgid "Delete"
+msgstr "Διαγραφή"
+
+msgid "No products in this category."
+msgstr "Δεν υπάρχουν προϊόντα σε αυτή την κατηγορία."
+
+msgid "Add to"
+msgstr "Προσθήκη σε"
+
+msgid "No categories yet."
+msgstr "Δεν υπάρχουν κατηγορίες ακόμα."
+
+msgid "No menus found. Run python manage.py seed_demo."
+msgstr "Δεν βρέθηκε μενού. Εκτελέστε python manage.py seed_demo."
+
+msgid "Frozen product"
+msgstr "Κατεψυγμένο προϊόν"
+
+msgid "Frozen"
+msgstr "Κατεψυγμένο"
+
+msgid "Seed oil"
+msgstr "Σπορέλαιο"
+
+msgid "No photo"
+msgstr "Χωρίς φωτογραφία"
+
+msgid "kcal"
+msgstr "kcal"
+
+msgid "Unavailable"
+msgstr "Μη διαθέσιμο"
+
+msgid "Order"
+msgstr "Παραγγελία"
+
+#, python-format
+msgid "%(n)s guests"
+msgstr "%(n)s άτομα"
+
+#, python-format
+msgid "%(count)s items"
+msgstr "%(count)s προϊόντα"
+
+msgid "Send to kitchen"
+msgstr "Αποστολή στην κουζίνα"
+
+msgid "Total"
+msgstr "Σύνολο"
+
+msgid "Table"
+msgstr "Τραπέζι"
+
+msgid "Allergen"
+msgstr "Αλλεργιογόνο"
+
+msgid "Menu not available."
+msgstr "Το μενού δεν είναι διαθέσιμο."
+
+msgid "A waiter has been notified."
+msgstr "Ειδοποιήθηκε ο σερβιτόρος."
+
+msgid "Call waiter"
+msgstr "Καλέστε σερβιτόρο"
+
+msgid "Tel."
+msgstr "Τηλ."
+
+msgid "GEMI"
+msgstr "Γ.Ε.ΜΗ."
+
+msgid "Prices"
+msgstr "Τιμές"
+
+#, python-format
+msgid "Cover / service charge: €%(amount)s"
+msgstr "Χρέωση κουβέρ / service charge: €%(amount)s"
+
+msgid "Analytics"
+msgstr "Αναλυτικά"
+
+msgid "Sessions (7 days)"
+msgstr "Σερβίς (7 ημέρες)"
+
+msgid "Top items"
+msgstr "Δημοφιλή πιάτα"
+
+msgid "sold"
+msgstr "πωλήθηκαν"
+
+msgid "No data yet"
+msgstr "Δεν υπάρχουν δεδομένα ακόμα"
+
+msgid "Company details"
+msgstr "Στοιχεία επιχείρησης"
+
+msgid ""
+"Mandatory business and legal information for your digital menu catalogue "
+"(Greek law & EU allergen rules). Shown on the guest QR menu when enabled."
+msgstr ""
+"Υποχρεωτικές επιχειρηματικές και νομικές πληροφορίες για τον ψηφιακό "
+"κατάλογο (ελληνική νομοθεσία & ΕΕ για αλλεργιογόνα). Εμφανίζονται στο QR "
+"μενού επισκεπτών όταν είναι ενεργοποιημένες."
+
+msgid "Guest menu preview"
+msgstr "Προεπισκόπηση μενού πελάτη"
+
+msgid "1. Business identity"
+msgstr "1. Στοιχεία επιχείρησης"
+
+msgid "Company logo (guest menu)"
+msgstr "Λογότυπο επιχείρησης (μενού πελατών)"
+
+msgid "Displayed on customer QR menus only. Does not change the Baresto Manager logo in the app."
+msgstr "Εμφανίζεται μόνο στα QR μενού πελατών. Δεν αλλάζει το λογότυπο Baresto Manager στην εφαρμογή."
+
+msgid "Leave empty to keep the current logo when editing."
+msgstr "Αφήστε κενό για να κρατήσετε το τρέχον λογότυπο."
+
+msgid "Logo is taken from your restaurant settings."
+msgstr "Το λογότυπο λαμβάνεται από τις ρυθμίσεις του εστιατορίου."
+
+msgid "2. Mandatory legal notices (footer)"
+msgstr "2. Υποχρεωτικές νομικές φράσεις (υποσέλιδο)"
+
+msgid "3. Tax & pricing clarifications"
+msgstr "3. Φορολογικές & τιμολογικές διευκρινίσεις"
+
+msgid "4. Product labelling legend"
+msgstr "4. Υπόμνημα σήμανσης προϊόντων"
+
+msgid "Set frozen, oil type and origin on each product in Menu → Edit product."
+msgstr "Ορίστε κατεψυγμένο, λάδι και προέλευση σε κάθε προϊόν από Μενού → Επεξεργασία προϊόντος."
+
+msgid "5. Allergens (EU 1169/2011)"
+msgstr "5. Αλλεργιογόνα (ΕΕ 1169/2011)"
+
+msgid ""
+"Assign allergens per dish in the product form; icons appear on the guest "
+"menu."
+msgstr ""
+"Ορίστε αλλεργιογόνα ανά πιάτο στη φόρμα προϊόντος· εμφανίζονται ως "
+"εικονίδια στο μενού επισκεπτών."
+
+msgid "Save company details"
+msgstr "Αποθήκευση στοιχείων επιχείρησης"
+
+#, python-format
+msgid "%(n)s seats"
+msgstr "%(n)s θέσεις"
+
+msgid "Open & order"
+msgstr "Άνοιγμα & παραγγελία"
+
+msgid "Continue order"
+msgstr "Συνέχεια παραγγελίας"
+
+msgid "List"
+msgstr "Λίστα"
+
+msgid "Floor plan"
+msgstr "Κάτοψη"
+
+msgid "No tables configured for this branch."
+msgstr "Δεν υπάρχουν τραπέζια για αυτό το κατάστημα."
+
+msgid "Drag tables to arrange your floor. Click Save layout when finished."
+msgstr "Σύρετε τα τραπέζια για την κάτοψη. Πατήστε Αποθήκευση όταν τελειώσετε."
+
+msgid "Tap a table to open or continue an order."
+msgstr "Πατήστε τραπέζι για παραγγελία."
+
+msgid "Edit layout"
+msgstr "Επεξεργασία κάτοψης"
+
+msgid "Save layout"
+msgstr "Αποθήκευση κάτοψης"
+
+msgid "Saving…"
+msgstr "Αποθήκευση…"
+
+msgid "seats"
+msgstr "θέσεις"
+
+msgid "Manage tables"
+msgstr "Διαχείριση τραπεζιών"
+
+msgid "Done managing"
+msgstr "Τέλος διαχείρισης"
+
+msgid "Add table"
+msgstr "Προσθήκη τραπεζιού"
+
+msgid "Table name (optional)"
+msgstr "Όνομα τραπεζιού (προαιρετικό)"
+
+msgid "Table number"
+msgstr "Αριθμός τραπεζιού"
+
+msgid "Seats"
+msgstr "Θέσεις"
+
+msgid "Leave empty for auto-number."
+msgstr "Αφήστε κενό για αυτόματη αρίθμηση."
+
+msgid "Table name"
+msgstr "Όνομα τραπεζιού"
+
+msgid "Save table"
+msgstr "Αποθήκευση τραπεζιού"
+
+msgid "Delete table"
+msgstr "Διαγραφή τραπεζιού"
+
+msgid "Close the session before deleting this table."
+msgstr "Κλείστε τη συνεδρία πριν διαγράψετε το τραπέζι."
+
+msgid "Remove tables from the list view, or tap × on a free table here."
+msgstr "Διαγραφή από τη λίστα, ή πατήστε × σε ελεύθερο τραπέζι εδώ."
+
+msgid "Delete this table?"
+msgstr "Διαγραφή αυτού του τραπεζιού;"
+
+msgid "Could not delete table"
+msgstr "Αδυναμία διαγραφής τραπεζιού"
+
+msgid "Table updated."
+msgstr "Το τραπέζι ενημερώθηκε."
+
+msgid "Could not add table. Check the form and try again."
+msgstr "Αδυναμία προσθήκης τραπεζιού. Ελέγξτε τη φόρμα και δοκιμάστε ξανά."
+
+msgid "Table number %(number)s already exists on this floor."
+msgstr "Ο αριθμός τραπεζιού %(number)s υπάρχει ήδη σε αυτό το επίπεδο."
+
+msgid "Seats must be a number between 1 and 99."
+msgstr "Οι θέσεις πρέπει να είναι αριθμός από 1 έως 99."
+
+msgid "Table “%(label)s” added with %(seats)s seats."
+msgstr "Προστέθηκε το τραπέζι «%(label)s» με %(seats)s θέσεις."
+
+msgid "Table “%(label)s” removed."
+msgstr "Αφαιρέθηκε το τραπέζι «%(label)s»."
+
+msgid "Guest menu"
+msgstr "Μενού πελατών"
+
+msgid "Guest menu & QR"
+msgstr "Μενού πελατών & QR"
+
+msgid "Preview the customer menu and print QR codes for your tables."
+msgstr "Προεπισκόπηση του μενού πελατών και εκτύπωση QR για τα τραπέζια σας."
+
+msgid "Customer preview"
+msgstr "Προεπισκόπηση πελάτη"
+
+msgid "Preview type"
+msgstr "Τύπος προεπισκόπησης"
+
+msgid "With table"
+msgstr "Με τραπέζι"
+
+msgid "Shared menu (no table)"
+msgstr "Κοινό μενού (χωρίς τραπέζι)"
+
+msgid "Table for preview"
+msgstr "Τραπέζι για προεπισκόπηση"
+
+msgid "Open in new tab"
+msgstr "Άνοιγμα σε νέα καρτέλα"
+
+msgid "Live preview"
+msgstr "Ζωντανή προεπισκόπηση"
+
+msgid "Choose whether guests scan one menu for the whole venue or a code tied to a specific table."
+msgstr "Επιλέξτε αν οι πελάτες σκανάρουν ένα μενού για όλο το κατάστημα ή κωδικό συγκεκριμένου τραπεζιού."
+
+msgid "One QR for all tables"
+msgstr "Ένα QR για όλα τα τραπέζια"
+
+msgid "Same code everywhere. Guests see the menu without a table number. Best for shared menus on walls or counters."
+msgstr "Ίδιος κωδικός παντού. Οι πελάτες βλέπουν το μενού χωρίς αριθμό τραπεζιού. Ιδανικό για κοινόχρηστα μενού σε τοίχους ή πάγκους."
+
+msgid "QR per table (with table info)"
+msgstr "QR ανά τραπέζι (με στοιχεία τραπεζιού)"
+
+msgid "Each table gets its own code. Guests see the table name on the menu. The printout shows table name, floor, and seats."
+msgstr "Κάθε τραπέζι έχει δικό του κωδικό. Οι πελάτες βλέπουν το όνομα τραπεζιού στο μενού. Η εκτύπωση δείχνει όνομα, όροφο και θέσεις."
+
+msgid "Print all tables"
+msgstr "Εκτύπωση όλων των τραπεζιών"
+
+msgid "Preview print layout"
+msgstr "Προεπισκόπηση εκτύπωσης"
+
+msgid "No tables in this branch. Add tables first."
+msgstr "Δεν υπάρχουν τραπέζια σε αυτό το υποκατάστημα. Προσθέστε τραπέζια πρώτα."
+
+msgid "Digital menu"
+msgstr "Ψηφιακό μενού"
+
+msgid "Scan for digital menu"
+msgstr "Σκανάρετε για ψηφιακό μενού"
+
+msgid "Print QR codes"
+msgstr "Εκτύπωση QR"
+
+msgid "Shared menu QR"
+msgstr "Κοινό QR μενού"
+
+msgid "Per-table QR"
+msgstr "QR ανά τραπέζι"
+
+msgid "No QR codes to print."
+msgstr "Δεν υπάρχουν QR για εκτύπωση."
+
+msgid "Print"
+msgstr "Εκτύπωση"
+
+msgid "Users"
+msgstr "Χρήστες"
+
+msgid "Staff users"
+msgstr "Προσωπικό"
+
+msgid "Manage logins, roles, and PINs for your restaurant."
+msgstr "Διαχείριση συνδέσεων, ρόλων και PIN για το κατάστημά σας."
+
+msgid "Add user"
+msgstr "Προσθήκη χρήστη"
+
+msgid "Add staff member"
+msgstr "Προσθήκη μέλους προσωπικού"
+
+msgid "Edit staff member"
+msgstr "Επεξεργασία μέλους προσωπικού"
+
+msgid "Create user"
+msgstr "Δημιουργία χρήστη"
+
+msgid "Save changes"
+msgstr "Αποθήκευση αλλαγών"
+
+msgid "Back to users"
+msgstr "Πίσω στους χρήστες"
+
+msgid "No staff users yet."
+msgstr "Δεν υπάρχουν χρήστες προσωπικού."
+
+msgid "PIN (quick login)"
+msgstr "PIN (γρήγορη σύνδεση)"
+
+msgid "Account active"
+msgstr "Ενεργός λογαριασμός"
+
+msgid "New password"
+msgstr "Νέος κωδικός"
+
+msgid "Leave blank to keep the current password."
+msgstr "Αφήστε κενό για να κρατήσετε τον τρέχοντα κωδικό."
+
+msgid "This username is already taken."
+msgstr "Το όνομα χρήστη υπάρχει ήδη."
+
+msgid "PIN must be 4–6 digits."
+msgstr "Το PIN πρέπει να είναι 4–6 ψηφία."
+
+msgid "This PIN is already used by another staff member."
+msgstr "Αυτό το PIN χρησιμοποιείται ήδη από άλλο μέλος του προσωπικού."
+
+msgid "You cannot deactivate your own account."
+msgstr "Δεν μπορείτε να απενεργοποιήσετε τον δικό σας λογαριασμό."
+
+msgid "User “%(name)s” created."
+msgstr "Δημιουργήθηκε ο χρήστης «%(name)s»."
+
+msgid "User “%(name)s” updated."
+msgstr "Ενημερώθηκε ο χρήστης «%(name)s»."
+
+msgid "Inactive"
+msgstr "Ανενεργός"
+
+msgid "Current order"
+msgstr "Τρέχουσα παραγγελία"
+
+msgid "Tap + to add items"
+msgstr "Πατήστε + για προσθήκη"
+
+msgid "Close table"
+msgstr "Κλείσιμο τραπεζιού"
+
+msgid "Close this table and request the bill?"
+msgstr "Κλείσιμο τραπεζιού και έκδοση λογαριασμού;"
+
+msgid "Table closed. Order sent to kitchen and bill requested."
+msgstr "Το τραπέζι έκλεισε. Η παραγγελία στάλθηκε στην κουζίνα και ζητήθηκε λογαριασμός."
+
+msgid "Table closed."
+msgstr "Το τραπέζι έκλεισε."
+
+msgid "Add items before sending to the kitchen."
+msgstr "Προσθέστε προϊόντα πριν την αποστολή στην κουζίνα."
+
+msgid "Order was already sent to the kitchen."
+msgstr "Η παραγγελία είχε ήδη σταλεί στην κουζίνα."
+
+msgid "Filter by floor"
+msgstr "Φιλτράρισμα κατά όροφο"
+
+msgid "All"
+msgstr "Όλα"
+
+msgid "No tables on this floor."
+msgstr "Δεν υπάρχουν τραπέζια σε αυτόν τον όροφο."
+
+msgid "New floor"
+msgstr "Νέος όροφος"
+
+msgid "Floor name"
+msgstr "Όνομα ορόφου"
+
+msgid "Manage floors"
+msgstr "Διαχείριση ορόφων"
+
+msgid "No floors yet. Add one above."
+msgstr "Δεν υπάρχουν όροφοι. Προσθέστε έναν παραπάνω."
+
+msgid "Delete this floor?"
+msgstr "Διαγραφή αυτού του ορόφου;"
+
+msgid "A floor with this name already exists."
+msgstr "Υπάρχει ήδη όροφος με αυτό το όνομα."
+
+msgid "Cannot delete “%(name)s” — it has %(count)s table(s). Move or delete them first."
+msgstr "Αδυναμία διαγραφής «%(name)s» — έχει %(count)s τραπέζι(α). Μετακινήστε ή διαγράψτε τα πρώτα."
+
+msgid "No branch configured."
+msgstr "Δεν έχει οριστεί υποκατάστημα."
+
+msgid "Invalid JSON."
+msgstr "Μη έγκυρο JSON."
+
+msgid "Add floor"
+msgstr "Προσθήκη ορόφου"
+
+msgid "Save floor"
+msgstr "Αποθήκευση ορόφου"
+
+msgid "e.g. Terrace, 1st floor"
+msgstr "π.χ. Βεράντα, 1ος όροφος"
+
+msgid "Enter a floor name."
+msgstr "Εισάγετε όνομα ορόφου."
+
+msgid "No branch configured for your account."
+msgstr "Δεν έχει οριστεί υποκατάστημα στον λογαριασμό σας."
+
+msgid "Floor “%(name)s” already exists."
+msgstr "Ο όροφος «%(name)s» υπάρχει ήδη."
+
+msgid "Floor “%(name)s” added."
+msgstr "Προστέθηκε ο όροφος «%(name)s»."
+
+msgid "Layout saved"
+msgstr "Η κάτοψη αποθηκεύτηκε"
+
+msgid "Save failed"
+msgstr "Η αποθήκευση απέτυχε"
+
+#~ msgid "Name"
+#~ msgstr "Όνομα"
+
+#~ msgid "Description"
+#~ msgstr "Περιγραφή"
+
+#, python-format
+#~ msgid "Contains %(allergen)s"
+#~ msgstr "Περιέχει %(allergen)s"
+
+# Demo menu categories & allergens (trans_label filter)
+#~ msgid "Main Menu"
+#~ msgstr "Κύριο μενού"
+
+#~ msgid "Starters"
+#~ msgstr "Ορεκτικά"
+
+#~ msgid "Mains"
+#~ msgstr "Κυρίως πιάτα"
+
+#~ msgid "Drinks"
+#~ msgstr "Ποτά"
+
+#~ msgid "Gluten"
+#~ msgstr "Γλουτένη"
+
+#~ msgid "Dairy"
+#~ msgstr "Γαλακτοκομικά"
+
+#~ msgid "Eggs"
+#~ msgstr "Αυγά"
+
+#~ msgid "Fish"
+#~ msgstr "Ψάρι"
+
+#~ msgid "Nuts"
+#~ msgstr "Ξηροί καρποί"
+
+#~ msgid "Peanuts"
+#~ msgstr "Φιστίκια"
+
+#~ msgid "Soy"
+#~ msgstr "Σόγια"
+
+#~ msgid "Shellfish"
+#~ msgstr "Οστρακοειδή"
+
+#~ msgid "Celery"
+#~ msgstr "Σέλινο"
+
+#~ msgid "Mustard"
+#~ msgstr "Μουστάρδα"
+
+#~ msgid "Sesame"
+#~ msgstr "Σουσάμι"
+
+#~ msgid "Sulphites"
+#~ msgstr "Θειώδη"
+
+#~ msgid "Lupin"
+#~ msgstr "Λούπινο"
+
+#~ msgid "Molluscs"
+#~ msgstr "Μαλάκια"

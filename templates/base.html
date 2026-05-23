@@ -1,0 +1,80 @@
+{% load i18n static %}
+<!DOCTYPE html>
+<html lang="{{ LANGUAGE_CODE }}" class="h-full">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#1E2129">
+  <title>{% block title %}{% trans "Baresto Manager" %}{% endblock %}</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            kitchen: {
+              DEFAULT: '#1E2129',
+              elevated: '#282C36',
+              border: '#3D4454',
+            },
+            order: {
+              DEFAULT: '#2DB5A3',
+              dark: '#249688',
+              light: '#3DCCC0',
+            },
+            'new-order': {
+              DEFAULT: '#F9A12E',
+              dark: '#E08F1A',
+              light: '#FBB85A',
+            },
+          },
+        },
+      },
+    };
+  </script>
+  <link rel="stylesheet" href="{% static 'css/baresto.css' %}">
+  <script src="https://unpkg.com/htmx.org@2.0.4"></script>
+  {% block extra_head %}{% endblock %}
+  <script defer src="https://unpkg.com/alpinejs@3.14.3/dist/cdn.min.js"></script>
+</head>
+<body class="min-h-full bg-kitchen text-slate-100" x-data="{ offline: !navigator.onLine }" @online.window="offline=false" @offline.window="offline=true">
+  <div x-show="offline" class="bg-new-order text-center py-2 text-sm font-semibold text-kitchen">{% trans "Offline — changes will sync when reconnected" %}</div>
+  {% if user.is_authenticated and staff_profile %}
+  <nav class="sticky top-0 z-40 border-b border-kitchen-border bg-kitchen-elevated/95 backdrop-blur">
+    <div class="mx-auto flex max-w-6xl items-center justify-between gap-4 px-4 py-3">
+      {% include "includes/brand_logo_horizontal.html" %}
+      <div class="flex flex-wrap items-center gap-2 text-sm">
+        <a href="{% url 'tables' %}" class="nav-link">{% trans "Tables" %}</a>
+        <a href="{% url 'kitchen' %}" class="nav-link">{% trans "Kitchen" %}</a>
+        <a href="{% url 'menu_manage' %}" class="nav-link">{% trans "Menu" %}</a>
+        {% if staff_profile.role == "manager" or staff_profile.role == "admin" %}
+        <a href="{% url 'guest_menu_hub' %}" class="nav-link">{% trans "Guest menu" %}</a>
+        <a href="{% url 'company_details' %}" class="nav-link">{% trans "Company" %}</a>
+        {% endif %}
+        {% if staff_profile.role == "admin" %}
+        <a href="{% url 'staff_user_list' %}" class="nav-link">{% trans "Users" %}</a>
+        {% endif %}
+        <a href="{% url 'reports' %}" class="nav-link">{% trans "Reports" %}</a>
+        {% include "includes/language_switcher.html" %}
+        <form method="post" action="{% url 'logout' %}">{% csrf_token %}
+          <button class="rounded-lg border border-kitchen-border bg-kitchen px-3 py-2 hover:bg-kitchen-border/40">{% trans "Logout" %}</button>
+        </form>
+      </div>
+    </div>
+  </nav>
+  {% else %}
+  <div class="absolute right-4 top-4 z-50">
+    {% include "includes/language_switcher.html" %}
+  </div>
+  {% endif %}
+  <main class="mx-auto max-w-6xl px-4 py-6">
+    {% if messages %}
+      {% for message in messages %}
+        <p class="mb-4 rounded-lg border border-order/30 bg-order/15 px-4 py-3 text-order-light">{{ message }}</p>
+      {% endfor %}
+    {% endif %}
+    {% block content %}{% endblock %}
+  </main>
+  {% block extra_js %}{% endblock %}
+</body>
+</html>

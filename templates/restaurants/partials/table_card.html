@@ -1,0 +1,57 @@
+{% load i18n %}
+<div class="rounded-2xl border p-4
+  {% if table.status == 'free' %}status-free
+  {% elif table.status == 'occupied' %}status-occupied
+  {% elif table.status == 'reserved' %}status-reserved
+  {% else %}status-cleaning{% endif %}">
+  <div class="flex items-start justify-between gap-2">
+    <div>
+      <h2 class="text-xl font-bold">{{ table.label|default:table.number }}</h2>
+      <p class="text-sm text-slate-400">{{ table.floor.name }} · {{ table.get_status_display }}</p>
+    </div>
+    <span class="text-sm text-slate-500" x-show="!manageTables">{% blocktrans with n=table.capacity %}{{ n }} seats{% endblocktrans %}</span>
+  </div>
+
+  <div x-show="manageTables" x-cloak class="mt-4 space-y-3 border-t border-kitchen-border/50 pt-4">
+    <form method="post" action="{% url 'table_update' table.pk %}" class="space-y-3">
+      {% csrf_token %}
+      <input type="hidden" name="next" value="{{ tables_url }}">
+      <div>
+        <label class="mb-1 block text-xs text-slate-500">{% trans "Table name" %}</label>
+        <input type="text" name="label" value="{{ table.label }}" class="w-full rounded-lg border border-kitchen-border bg-kitchen px-3 py-2 text-sm text-white">
+      </div>
+      <div>
+        <label class="mb-1 block text-xs text-slate-500">{% trans "Seats" %}</label>
+        <input type="number" name="capacity" value="{{ table.capacity }}" min="1" max="99" required
+          class="w-full rounded-lg border border-kitchen-border bg-kitchen px-3 py-2 text-sm text-white">
+      </div>
+      <button type="submit" class="btn-secondary min-h-10 w-full rounded-xl py-2 text-sm">{% trans "Save table" %}</button>
+    </form>
+    {% with session=table.sessions.first %}
+    {% if table.status == 'free' and not session %}
+    <form method="post" action="{% url 'table_delete' table.pk %}"
+      onsubmit="return confirm('{% blocktrans with label=table.label|default:table.number %}Delete table “{{ label }}”?{% endblocktrans %}');">
+      {% csrf_token %}
+      <input type="hidden" name="next" value="{{ tables_url }}">
+      <button type="submit" class="min-h-10 w-full rounded-xl border border-red-800 py-2 text-sm text-red-400 hover:bg-red-950">{% trans "Delete table" %}</button>
+    </form>
+    {% else %}
+    <p class="text-xs text-slate-500">{% trans "Close the session before deleting this table." %}</p>
+    {% endif %}
+    {% endwith %}
+  </div>
+
+  <div x-show="!manageTables">
+  {% with session=table.sessions.first %}
+    {% if table.status == 'free' %}
+    <form method="post" action="{% url 'table_open' table.pk %}" class="mt-4">
+      {% csrf_token %}
+      <input type="hidden" name="cover_count" value="{{ table.capacity }}">
+      <button class="btn-primary min-h-12 w-full rounded-xl py-2">{% trans "Open & order" %}</button>
+    </form>
+    {% elif session %}
+    <a href="{% url 'order_new' session.pk %}" class="btn-secondary mt-4 block min-h-12 rounded-xl py-3 text-center">{% trans "Continue order" %}</a>
+    {% endif %}
+  {% endwith %}
+  </div>
+</div>

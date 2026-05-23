@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% block title %}{% trans "PIN Login" %}{% endblock %}
+{% block content %}
+<div class="mx-auto max-w-sm py-10">
+  <div class="mb-8 flex justify-center">
+    {% include "includes/brand_logo_vertical.html" %}
+  </div>
+  <h1 class="mb-6 text-center text-xl font-semibold text-slate-300">{% trans "Enter PIN" %}</h1>
+  {% if error %}<p class="mb-4 text-center text-new-order">{{ error }}</p>{% endif %}
+  <form method="post" id="pin-form" class="space-y-4">
+    {% csrf_token %}
+    <input type="hidden" name="pin" id="pin-input" value="">
+    <div id="pin-display" class="card mb-4 py-6 text-center text-4xl tracking-[0.5em]">—</div>
+    <div class="grid grid-cols-3 gap-3">
+      {% for n in "123456789" %}
+      <button type="button" data-digit="{{ n }}"
+        class="pin-key min-h-[56px] rounded-2xl bg-kitchen-elevated text-2xl font-semibold ring-1 ring-kitchen-border active:bg-kitchen-border">{{ n }}</button>
+      {% endfor %}
+      <span></span>
+      <button type="button" data-digit="0"
+        class="pin-key min-h-[56px] rounded-2xl bg-kitchen-elevated text-2xl font-semibold ring-1 ring-kitchen-border">0</button>
+      <button type="button" id="pin-backspace"
+        class="min-h-[56px] rounded-2xl bg-kitchen-elevated text-2xl font-semibold ring-1 ring-kitchen-border">⌫</button>
+    </div>
+    <button type="submit" id="pin-submit" disabled
+      class="btn-secondary min-h-12 w-full rounded-2xl py-3 disabled:opacity-40">
+      {% trans "Start shift" %}
+    </button>
+  </form>
+  <p class="mt-4 text-center"><a href="{% url 'login' %}" class="text-order">{% trans "Password login" %}</a></p>
+</div>
+<script>
+(function () {
+  let pin = "";
+  const input = document.getElementById("pin-input");
+  const display = document.getElementById("pin-display");
+  const submit = document.getElementById("pin-submit");
+  function render() {
+    input.value = pin;
+    display.textContent = pin.length ? "•".repeat(pin.length) : "—";
+    submit.disabled = pin.length < 4;
+  }
+  document.querySelectorAll(".pin-key").forEach((btn) => {
+    btn.addEventListener("click", () => { if (pin.length < 6) pin += btn.dataset.digit; render(); });
+  });
+  document.getElementById("pin-backspace").addEventListener("click", () => { pin = pin.slice(0, -1); render(); });
+  document.getElementById("pin-form").addEventListener("submit", (e) => { if (pin.length < 4) e.preventDefault(); });
+})();
+</script>
+{% endblock %}

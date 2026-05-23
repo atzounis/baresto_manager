@@ -1,0 +1,110 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% block title %}{% trans "Guest menu & QR" %}{% endblock %}
+{% block extra_head %}
+<style>
+  .guest-preview-frame {
+    min-height: min(70vh, 720px);
+    width: 100%;
+    max-width: 420px;
+    border-radius: 1rem;
+    border: 1px solid #3D4454;
+    background: #1E2129;
+  }
+</style>
+{% endblock %}
+{% block content %}
+<div class="space-y-8">
+  <div class="flex flex-wrap items-start justify-between gap-4">
+    <div>
+      <h1 class="text-2xl font-bold">{% trans "Guest menu & QR" %}</h1>
+      <p class="mt-1 text-slate-400">{% trans "Preview the customer menu and print QR codes for your tables." %}</p>
+    </div>
+    <a href="{% url 'menu_manage' %}" class="nav-link">← {% trans "Back to menu" %}</a>
+  </div>
+
+  <div class="grid gap-8 lg:grid-cols-2">
+    <section class="card space-y-6 p-6">
+      <h2 class="text-lg font-semibold text-order">{% trans "Customer preview" %}</h2>
+
+      <div class="space-y-3">
+        <p class="text-sm font-medium text-slate-300">{% trans "Preview type" %}</p>
+        <div class="flex flex-wrap gap-2">
+          <a href="?preview=table{% if preview_table %}&table={{ preview_table.pk }}{% endif %}"
+            class="rounded-lg px-4 py-2 text-sm font-semibold {% if preview_mode == 'table' %}bg-order text-white{% else %}bg-kitchen-elevated text-slate-400{% endif %}">
+            {% trans "With table" %}
+          </a>
+          <a href="?preview=shared"
+            class="rounded-lg px-4 py-2 text-sm font-semibold {% if preview_mode == 'shared' %}bg-order text-white{% else %}bg-kitchen-elevated text-slate-400{% endif %}">
+            {% trans "Shared menu (no table)" %}
+          </a>
+        </div>
+      </div>
+
+      {% if preview_mode == 'table' and tables %}
+      <div>
+        <label for="preview-table" class="mb-1 block text-sm text-slate-400">{% trans "Table for preview" %}</label>
+        <select id="preview-table" class="menu-input w-full"
+          onchange="if (this.value) window.location='?preview=table&table=' + this.value;">
+          {% for t in tables %}
+          <option value="{{ t.pk }}" {% if preview_table and t.pk == preview_table.pk %}selected{% endif %}>
+            {{ t.label|default:t.number }} — {{ t.floor.name }}
+          </option>
+          {% endfor %}
+        </select>
+      </div>
+      {% endif %}
+
+      <div class="rounded-xl bg-kitchen p-3 text-xs text-slate-500 break-all">
+        <span class="text-slate-400">{% trans "URL" %}:</span>
+        <a href="{{ preview_url }}" target="_blank" rel="noopener" class="text-order-light hover:underline">{{ preview_url }}</a>
+      </div>
+
+      <a href="{{ preview_url }}" target="_blank" rel="noopener" class="btn-secondary inline-flex min-h-11 items-center rounded-xl px-5 py-2 text-sm">
+        {% trans "Open in new tab" %}
+      </a>
+    </section>
+
+    <section class="flex flex-col items-center">
+      <p class="mb-3 w-full max-w-[420px] text-sm text-slate-400">{% trans "Live preview" %}</p>
+      <iframe src="{{ preview_url }}" class="guest-preview-frame" title="{% trans 'Guest menu preview' %}"></iframe>
+    </section>
+  </div>
+
+  <section class="card space-y-6 p-6">
+    <h2 class="text-lg font-semibold text-order">{% trans "Print QR codes" %}</h2>
+    <p class="text-sm text-slate-400">{% trans "Choose whether guests scan one menu for the whole venue or a code tied to a specific table." %}</p>
+
+    <div class="grid gap-4 md:grid-cols-2">
+      <div class="rounded-xl border border-kitchen-border bg-kitchen p-5">
+        <h3 class="font-semibold text-white">{% trans "One QR for all tables" %}</h3>
+        <p class="mt-2 text-sm text-slate-400">{% trans "Same code everywhere. Guests see the menu without a table number. Best for shared menus on walls or counters." %}</p>
+        <p class="mt-3 text-xs text-slate-500 break-all">{{ shared_menu_url }}</p>
+        <div class="mt-4 flex flex-wrap gap-2">
+          <a href="{{ print_url_shared }}&print=1" target="_blank" rel="noopener"
+            class="btn-primary min-h-11 rounded-xl px-5 py-2 text-sm">{% trans "Print" %}</a>
+          <a href="{{ print_url_shared }}" target="_blank" rel="noopener"
+            class="btn-secondary min-h-11 rounded-xl px-5 py-2 text-sm">{% trans "Preview print layout" %}</a>
+        </div>
+      </div>
+
+      <div class="rounded-xl border border-kitchen-border bg-kitchen p-5">
+        <h3 class="font-semibold text-white">{% trans "QR per table (with table info)" %}</h3>
+        <p class="mt-2 text-sm text-slate-400">{% trans "Each table gets its own code. Guests see the table name on the menu. The printout shows table name, floor, and seats." %}</p>
+        {% if tables %}
+        <p class="mt-3 text-xs text-slate-500">{% blocktrans count counter=tables|length %}{{ counter }} table{% plural %}{{ counter }} tables{% endblocktrans %} — {{ branch.name }}</p>
+        <div class="mt-4 flex flex-wrap gap-2">
+          <a href="{{ print_url_tables }}&print=1" target="_blank" rel="noopener"
+            class="btn-primary min-h-11 rounded-xl px-5 py-2 text-sm">{% trans "Print all tables" %}</a>
+          <a href="{{ print_url_tables }}" target="_blank" rel="noopener"
+            class="btn-secondary min-h-11 rounded-xl px-5 py-2 text-sm">{% trans "Preview print layout" %}</a>
+        </div>
+        {% else %}
+        <p class="mt-3 text-sm text-new-order-light">{% trans "No tables in this branch. Add tables first." %}</p>
+        <a href="{% url 'tables' %}" class="btn-secondary mt-4 inline-flex min-h-11 rounded-xl px-5 py-2 text-sm">{% trans "Manage tables" %}</a>
+        {% endif %}
+      </div>
+    </div>
+  </section>
+</div>
+{% endblock %}

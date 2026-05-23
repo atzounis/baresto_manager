@@ -1,0 +1,3 @@
+-r base.txt
+gunicorn>=22.0
+django-storages[s3]>=1.14

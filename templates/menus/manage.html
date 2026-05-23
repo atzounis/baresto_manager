@@ -1,0 +1,87 @@
+{% extends "base.html" %}
+{% load i18n menu_i18n %}
+{% block title %}{% trans "Menu Management" %}{% endblock %}
+{% block extra_head %}
+<style>
+  .menu-input { @apply w-full rounded-xl border border-kitchen-border bg-kitchen px-4 py-2 text-white; }
+  [x-cloak] { display: none !important; }
+</style>
+{% endblock %}
+{% block content %}
+<div x-data="{ editMode: false }">
+  <div class="mb-6 flex flex-wrap items-center justify-between gap-4">
+    <h1 class="text-2xl font-bold">{% trans "Menu" %}</h1>
+    <div class="flex flex-wrap items-center gap-3">
+      <button type="button"
+        @click="editMode = !editMode"
+        class="min-h-12 rounded-xl px-5 py-3 font-semibold ring-1 transition"
+        :class="editMode ? 'bg-order text-white ring-order' : 'bg-kitchen-elevated text-slate-200 ring-kitchen-border hover:bg-kitchen-border/40'"
+        x-text="editMode ? '{% trans "Done editing"|escapejs %}' : '{% trans "Edit"|escapejs %}'">
+        {% trans "Edit" %}
+      </button>
+      <a href="{% url 'guest_menu_hub' %}" class="min-h-12 rounded-xl bg-kitchen-elevated px-4 py-3 text-sm font-semibold ring-1 ring-kitchen-border hover:bg-kitchen-border/40">{% trans "Guest menu" %}</a>
+      <a href="{% url 'company_details' %}" class="min-h-12 rounded-xl bg-kitchen-elevated px-4 py-3 text-sm font-semibold ring-1 ring-kitchen-border hover:bg-kitchen-border/40">{% trans "Company" %}</a>
+      <a href="{% url 'menu_item_create' %}" class="btn-primary min-h-12 rounded-xl px-5 py-3">
+        + {% trans "Add product" %}
+      </a>
+    </div>
+  </div>
+
+  <p x-show="editMode" x-cloak class="mb-6 rounded-xl border border-new-order/30 bg-new-order/10 px-4 py-3 text-sm text-new-order-light">
+    {% trans "Edit mode: empty categories can be deleted. Categories with products are protected." %}
+  </p>
+
+  {% for menu in menus %}
+  <section class="card mb-10 p-5">
+    <div class="mb-4 flex flex-wrap items-center justify-between gap-2">
+      <h2 class="text-lg font-semibold">{{ menu|localized_name_filter }}
+        {% if menu.is_draft %}<span class="text-new-order text-sm">({% trans "draft" %})</span>{% endif %}
+      </h2>
+      <a x-show="editMode" x-cloak href="{% url 'menu_category_create' %}?menu={{ menu.pk }}" class="text-sm text-order hover:text-order-light">+ {% trans "Category" %}</a>
+    </div>
+
+    {% for category in menu.categories.all %}
+    {% if category|localized_name_filter %}
+    <div class="mb-6">
+      <div class="mb-3 flex flex-wrap items-center justify-between gap-2">
+        <h3 class="font-medium text-slate-300">{{ category|localized_name_filter }}</h3>
+        <div x-show="editMode" x-cloak class="flex items-center gap-2">
+          {% if category.product_count > 0 %}
+          <span class="text-xs text-slate-500" title="{% trans 'Remove all products before deleting this category.' %}">
+            {% blocktrans count counter=category.product_count %}{{ counter }} product — cannot delete{% plural %}{{ counter }} products — cannot delete{% endblocktrans %}
+          </span>
+          {% else %}
+          <form method="post" action="{% url 'menu_category_delete' category.pk %}"
+            onsubmit="return confirm('{% filter escapejs %}{% blocktrans with name=category|localized_name_filter %}Delete category “{{ name }}”? This cannot be undone.{% endblocktrans %}{% endfilter %}');">
+            {% csrf_token %}
+            <button type="submit" class="min-h-9 rounded-lg border border-red-800 px-4 py-1.5 text-sm font-medium text-red-400 hover:bg-red-950">
+              {% trans "Delete" %}
+            </button>
+          </form>
+          {% endif %}
+        </div>
+      </div>
+      <div class="space-y-2">
+        {% for item in category.items.all %}
+        {% if not item.is_deleted %}
+        <div id="item-{{ item.pk }}">
+          {% include "menus/partials/item_row.html" %}
+        </div>
+        {% endif %}
+        {% empty %}
+        <p class="text-sm text-slate-500">{% trans "No products in this category." %}</p>
+        {% endfor %}
+      </div>
+      <a href="{% url 'menu_item_create' %}?category={{ category.pk }}"
+        class="mt-2 inline-block text-sm text-order hover:underline">+ {% trans "Add to" %} {{ category|localized_name_filter }}</a>
+    </div>
+    {% endif %}
+    {% empty %}
+    <p class="text-slate-500">{% trans "No categories yet." %}</p>
+    {% endfor %}
+  </section>
+  {% empty %}
+  <p class="text-slate-400">{% trans "No menus found. Run python manage.py seed_demo." %}</p>
+  {% endfor %}
+</div>
+{% endblock %}

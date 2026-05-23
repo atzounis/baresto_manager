@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% block title %}{% trans "Staff users" %}{% endblock %}
+{% block content %}
+<div class="mb-6 flex flex-wrap items-start justify-between gap-4">
+  <div>
+    <h1 class="text-2xl font-bold">{% trans "Staff users" %}</h1>
+    <p class="mt-1 text-sm text-slate-400">{% trans "Manage logins, roles, and PINs for your restaurant." %}</p>
+  </div>
+  <a href="{% url 'staff_user_create' %}" class="btn-primary min-h-12 rounded-xl px-5 py-3 text-sm font-semibold">
+    + {% trans "Add user" %}
+  </a>
+</div>
+
+<div class="card overflow-hidden">
+  <div class="overflow-x-auto">
+    <table class="w-full min-w-[640px] text-left text-sm">
+      <thead class="border-b border-kitchen-border bg-kitchen text-slate-400">
+        <tr>
+          <th class="px-4 py-3 font-medium">{% trans "User" %}</th>
+          <th class="px-4 py-3 font-medium">{% trans "Role" %}</th>
+          <th class="px-4 py-3 font-medium">{% trans "Branch" %}</th>
+          <th class="px-4 py-3 font-medium">{% trans "PIN" %}</th>
+          <th class="px-4 py-3 font-medium">{% trans "Status" %}</th>
+          <th class="px-4 py-3 font-medium"></th>
+        </tr>
+      </thead>
+      <tbody class="divide-y divide-kitchen-border">
+        {% for member in staff_members %}
+        <tr class="hover:bg-kitchen-elevated/50">
+          <td class="px-4 py-3">
+            <p class="font-semibold">{{ member.user.get_full_name|default:member.user.username }}</p>
+            <p class="text-xs text-slate-500">{{ member.user.username }}{% if member.user.email %} · {{ member.user.email }}{% endif %}</p>
+          </td>
+          <td class="px-4 py-3 capitalize">{{ member.get_role_display }}</td>
+          <td class="px-4 py-3 text-slate-400">{{ member.branch.name|default:"—" }}</td>
+          <td class="px-4 py-3 font-mono text-slate-400">{% if member.pin %}{{ member.pin }}{% else %}—{% endif %}</td>
+          <td class="px-4 py-3">
+            {% if member.user.is_active %}
+            <span class="rounded-full bg-order/20 px-2 py-0.5 text-xs font-medium text-order-light">{% trans "Active" %}</span>
+            {% else %}
+            <span class="rounded-full bg-red-900/40 px-2 py-0.5 text-xs font-medium text-red-300">{% trans "Inactive" %}</span>
+            {% endif %}
+          </td>
+          <td class="px-4 py-3 text-right">
+            <a href="{% url 'staff_user_edit' member.pk %}" class="text-order hover:text-order-light">{% trans "Edit" %}</a>
+          </td>
+        </tr>
+        {% empty %}
+        <tr>
+          <td colspan="6" class="px-4 py-8 text-center text-slate-500">{% trans "No staff users yet." %}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

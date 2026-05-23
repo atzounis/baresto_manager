@@ -1,0 +1,113 @@
+{% load i18n static %}
+<!DOCTYPE html>
+<html lang="{{ LANGUAGE_CODE }}">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% trans "Print QR codes" %} — {{ restaurant.name }}</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, sans-serif;
+      background: #f1f5f9;
+      color: #0f172a;
+    }
+    .toolbar {
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      padding: 1rem 1.5rem;
+      background: #1e2129;
+      color: #e2e8f0;
+    }
+    .toolbar a, .toolbar button {
+      font-size: 0.875rem;
+      padding: 0.5rem 1rem;
+      border-radius: 0.5rem;
+      text-decoration: none;
+      cursor: pointer;
+      border: none;
+    }
+    .toolbar .primary { background: #2db5a3; color: #fff; font-weight: 600; }
+    .toolbar .secondary { background: #3d4454; color: #e2e8f0; }
+    .sheet {
+      max-width: 210mm;
+      margin: 1.5rem auto;
+      padding: 0 1rem 2rem;
+    }
+    .grid {
+      display: grid;
+      gap: 12mm;
+    }
+    .grid.shared { grid-template-columns: 1fr; max-width: 120mm; margin: 0 auto; }
+    .grid.per-table { grid-template-columns: repeat(2, 1fr); }
+    .qr-card {
+      background: #fff;
+      border: 1px solid #cbd5e1;
+      border-radius: 8px;
+      padding: 8mm;
+      text-align: center;
+      break-inside: avoid;
+      page-break-inside: avoid;
+    }
+    .qr-card.shared-card { padding: 12mm; }
+    .qr-card img { width: 100%; max-width: 42mm; height: auto; margin: 0 auto 4mm; display: block; }
+    .qr-card.shared-card img { max-width: 70mm; }
+    .qr-card h2 { margin: 0 0 2mm; font-size: 14pt; font-weight: 700; }
+    .qr-card .subtitle { margin: 0 0 2mm; font-size: 11pt; color: #334155; }
+    .qr-card .detail { margin: 0 0 4mm; font-size: 9pt; color: #64748b; }
+    .qr-card .url { font-size: 7pt; color: #94a3b8; word-break: break-all; line-height: 1.3; }
+    .empty { text-align: center; padding: 3rem; color: #64748b; }
+    @media print {
+      body { background: #fff; }
+      .toolbar { display: none !important; }
+      .sheet { margin: 0; padding: 0; max-width: none; }
+      .grid { gap: 8mm; }
+      .qr-card { border: 1px solid #e2e8f0; }
+    }
+    @page { margin: 12mm; }
+  </style>
+</head>
+<body>
+  <div class="toolbar no-print">
+    <div>
+      <strong>{{ restaurant.name }}</strong>
+      <span style="opacity:0.7;margin-left:0.5rem;">
+        {% if mode == 'shared' %}{% trans "Shared menu QR" %}{% else %}{% trans "Per-table QR" %}{% endif %}
+      </span>
+    </div>
+    <div style="display:flex;gap:0.5rem;">
+      <a href="{% url 'guest_menu_hub' %}" class="secondary">{% trans "Back" %}</a>
+      <button type="button" class="primary" onclick="window.print()">{% trans "Print" %}</button>
+    </div>
+  </div>
+
+  <div class="sheet">
+    {% if qr_cards %}
+    <div class="grid {% if mode == 'shared' %}shared{% else %}per-table{% endif %}">
+      {% for card in qr_cards %}
+      <article class="qr-card {% if mode == 'shared' %}shared-card{% endif %}">
+        <img src="{{ card.qr_data_uri }}" alt="QR">
+        <h2>{{ card.title }}</h2>
+        <p class="subtitle">{{ card.subtitle }}</p>
+        {% if card.detail %}<p class="detail">{{ card.detail }}</p>{% endif %}
+        <p class="url">{{ card.url }}</p>
+      </article>
+      {% endfor %}
+    </div>
+    {% else %}
+    <p class="empty">{% trans "No QR codes to print." %}</p>
+    {% endif %}
+  </div>
+
+  {% if auto_print %}
+  <script>window.addEventListener("load", () => window.print());</script>
+  {% endif %}
+</body>
+</html>

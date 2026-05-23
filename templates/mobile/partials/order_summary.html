@@ -1,0 +1,56 @@
+{% load i18n menu_i18n %}
+<div class="mx-auto max-w-6xl" x-data="{ drawerOpen: true }">
+  <button type="button" @click="drawerOpen = !drawerOpen"
+    class="mb-2 flex w-full items-center justify-between text-left text-sm text-slate-400">
+    <span>{% trans "Current order" %}</span>
+    <span x-text="drawerOpen ? '▼' : '▲'"></span>
+  </button>
+
+  <div x-show="drawerOpen" class="mb-3 max-h-48 overflow-y-auto rounded-xl border border-kitchen-border bg-kitchen">
+    {% if order.total_quantity %}
+    <ul class="divide-y divide-kitchen-border">
+      {% for line in order.active_items %}
+      <li class="flex items-center justify-between gap-2 px-3 py-2 text-sm">
+        <span class="min-w-0 flex-1">
+          <span class="font-semibold text-order-light">{{ line.quantity }}×</span>
+          {{ line.menu_item|localized_name_filter }}
+        </span>
+        <span class="shrink-0 font-medium text-price">€{{ line.line_total }}</span>
+      </li>
+      {% endfor %}
+    </ul>
+    {% else %}
+    <p class="px-3 py-4 text-center text-sm text-slate-500">{% trans "Tap + to add items" %}</p>
+    {% endif %}
+  </div>
+
+  <div class="flex flex-wrap items-center justify-between gap-3">
+    <div>
+      <p class="font-semibold">
+        {% blocktrans count counter=order.total_quantity %}{{ counter }} item{% plural %}{{ counter }} items{% endblocktrans %}
+        · <span class="text-price">€{{ order.subtotal }}</span>
+      </p>
+      {% if order.status != 'open' %}
+      <p class="text-xs text-new-order-light">{{ order.get_status_display }}</p>
+      {% endif %}
+    </div>
+    <div class="flex flex-wrap gap-2">
+      {% if order.status == 'open' and order.total_quantity %}
+      <form method="post" action="{% url 'order_confirm' order.pk %}" hx-post="{% url 'order_confirm' order.pk %}"
+        hx-target="#order-summary" hx-swap="innerHTML">
+        {% csrf_token %}
+        <button type="submit" class="btn-secondary min-h-12 rounded-xl px-4 py-2 text-sm font-semibold">
+          {% trans "Send to kitchen" %}
+        </button>
+      </form>
+      {% endif %}
+      <form method="post" action="{% url 'close_table' session.pk %}"
+        onsubmit="return confirm('{% trans "Close this table and request the bill?"|escapejs %}');">
+        {% csrf_token %}
+        <button type="submit" class="btn-primary min-h-12 rounded-xl px-4 py-2 text-sm font-semibold">
+          {% trans "Close table" %}
+        </button>
+      </form>
+    </div>
+  </div>
+</div>

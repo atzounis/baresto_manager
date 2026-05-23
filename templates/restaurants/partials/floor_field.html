@@ -1,0 +1,46 @@
+{% load i18n %}
+{% if floor_field_config %}{{ floor_field_config|json_script:"floor-field-config" }}{% endif %}
+<label class="mb-1 block text-sm text-slate-400">{{ table_form.floor.label }}</label>
+<div x-data="floorField" class="relative" @keydown.escape.window="if (open) closeModal()">
+  <div class="flex items-center gap-2">
+    <div class="min-w-0 flex-1">{{ table_form.floor }}</div>
+    <button type="button" @click.stop="openModal()"
+      class="shrink-0 whitespace-nowrap rounded-xl border border-kitchen-border bg-kitchen-elevated px-3 py-2 text-sm font-medium text-order hover:border-order/50 hover:bg-order/10">
+      + <span x-text="i18n.addFloor"></span>
+    </button>
+  </div>
+
+  <template x-teleport="body">
+    <div x-show="open" x-cloak
+      class="fixed inset-0 z-[100] flex items-end justify-center p-4 sm:items-center"
+      role="dialog" aria-modal="true"
+      @click.self="closeModal()">
+      <div class="absolute inset-0 bg-black/60" @click="closeModal()"></div>
+      <div class="relative z-10 w-full max-w-md overflow-hidden rounded-2xl border border-kitchen-border bg-kitchen-elevated shadow-xl"
+        @click.stop>
+        <div class="flex items-center justify-between border-b border-kitchen-border px-5 py-4">
+          <h3 class="text-lg font-semibold text-white" x-text="i18n.newFloorTitle"></h3>
+          <button type="button" @click="closeModal()"
+            class="rounded-lg p-2 text-slate-400 hover:bg-kitchen-border/40 hover:text-white"
+            aria-label="{% trans 'Close' %}">✕</button>
+        </div>
+        <div class="space-y-4 px-5 py-5">
+          <p x-show="error" x-text="error" class="rounded-lg border border-red-800/50 bg-red-950/50 px-3 py-2 text-sm text-red-300"></p>
+          <div>
+            <label class="mb-1 block text-sm text-slate-400">{% trans "Floor name" %}</label>
+            <input type="text" x-ref="nameInput" x-model="newName" maxlength="100" autocomplete="off" :disabled="loading"
+              class="menu-input min-h-11 w-full" :placeholder="i18n.newFloorPlaceholder"
+              @keydown.enter.prevent="addFloor()">
+          </div>
+          <div class="flex gap-2">
+            <button type="button" @click="closeModal()" :disabled="loading"
+              class="btn-secondary min-h-11 flex-1 rounded-xl py-2 text-sm" x-text="i18n.cancel"></button>
+            <button type="button" @click="addFloor()" :disabled="loading || !newName.trim()"
+              class="btn-primary min-h-11 flex-1 rounded-xl py-2 text-sm disabled:opacity-50"
+              x-text="i18n.save"></button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </template>
+</div>

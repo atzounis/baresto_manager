@@ -1,0 +1,10 @@
+{% load static i18n %}
+<a href="{% url 'home' %}" class="flex shrink-0 items-center gap-3">
+  <img
+    src="{% static 'brand/baresto-horizontal.png' %}"
+    alt="{% trans 'Baresto Manager' %}"
+    class="h-9 w-auto max-w-[200px] object-contain object-left"
+    width="200"
+    height="36"
+  >
+</a>

@@ -1,0 +1,168 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% block title %}{% if object %}{% trans "Edit product" %}{% else %}{% trans "New product" %}{% endif %}{% endblock %}
+{% block extra_head %}
+<style>
+  .menu-input { width: 100%; border-radius: 0.75rem; border: 1px solid #3d4454; background: #1e2129; padding: 0.5rem 1rem; color: white; }
+  .menu-label { display: block; margin-bottom: 0.25rem; font-size: 0.875rem; color: #94a3b8; }
+  .menu-check { display: flex; align-items: center; gap: 0.5rem; }
+  .menu-check input { width: 1.25rem; height: 1.25rem; }
+  #id_allergens ul { list-style: none; padding: 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0.5rem; }
+  @media (min-width: 640px) { #id_allergens ul { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+  #id_allergens li label { display: flex; align-items: center; gap: 0.5rem; font-size: 0.875rem; }
+</style>
+{% endblock %}
+{% block content %}
+<div class="mx-auto max-w-2xl">
+  <a href="{% url 'menu_manage' %}" class="mb-4 inline-block text-sm text-order hover:text-order-light">← {% trans "Back to menu" %}</a>
+  <h1 class="mb-6 text-2xl font-bold">{% if object %}{% trans "Edit product" %}{% else %}{% trans "New product" %}{% endif %}</h1>
+
+  <form method="post" enctype="multipart/form-data" class="space-y-8">
+    {% csrf_token %}
+    {% if form.non_field_errors %}
+    <div class="rounded-xl border border-new-order/40 bg-new-order/10 px-4 py-3 text-new-order-light">{{ form.non_field_errors }}</div>
+    {% endif %}
+
+    <section class="card space-y-4 p-5">
+      <h2 class="text-lg font-semibold">{% trans "Basics" %}</h2>
+      <div>
+        <label class="menu-label" for="{{ form.category.id_for_label }}">{% trans "Category" %}</label>
+        {{ form.category }}
+      </div>
+      <div class="rounded-xl border border-kitchen-border p-4">
+        <p class="mb-3 text-sm font-semibold text-order">{% trans "Greek" %} (ΕΛ)</p>
+        <div class="space-y-3">
+          <div>
+            <label class="menu-label" for="{{ form.name_el.id_for_label }}">{% trans "Name (Greek)" %}</label>
+            {{ form.name_el }}
+          </div>
+          <div>
+            <label class="menu-label" for="{{ form.description_el.id_for_label }}">{% trans "Description (Greek)" %}</label>
+            {{ form.description_el }}
+            {% if form.description_el.errors %}<p class="mt-1 text-sm text-red-400">{{ form.description_el.errors }}</p>{% endif %}
+          </div>
+        </div>
+      </div>
+      <div class="rounded-xl border border-kitchen-border p-4">
+        <p class="mb-3 text-sm font-semibold text-new-order">{% trans "English" %} (EN)</p>
+        <div class="space-y-3">
+          <div>
+            <label class="menu-label" for="{{ form.name_en.id_for_label }}">{% trans "Name (English)" %}</label>
+            {{ form.name_en }}
+          </div>
+          <div>
+            <label class="menu-label" for="{{ form.description_en.id_for_label }}">{% trans "Description (English)" %}</label>
+            {{ form.description_en }}
+            {% if form.description_en.errors %}<p class="mt-1 text-sm text-red-400">{{ form.description_en.errors }}</p>{% endif %}
+          </div>
+        </div>
+      </div>
+      <div>
+        <label class="menu-label" for="{{ form.image.id_for_label }}">{{ form.image.label }}</label>
+        {% if object and object.image %}
+        <img src="{{ object.image.url }}" alt="" class="mb-2 h-32 w-32 rounded-xl object-cover">
+        {% endif %}
+        <input type="file" name="image" accept="image/*" id="{{ form.image.id_for_label }}" class="menu-input">
+        <p class="mt-1 text-xs text-slate-500">{% trans "Leave empty to keep current image when editing." %}</p>
+      </div>
+      <div class="grid gap-4 sm:grid-cols-2">
+        <div>
+          <label class="menu-label" for="{{ form.price.id_for_label }}">{{ form.price.label }}</label>
+          {{ form.price }}
+        </div>
+        <div>
+          <label class="menu-label" for="{{ form.happy_hour_price.id_for_label }}">{{ form.happy_hour_price.label }}</label>
+          {{ form.happy_hour_price }}
+        </div>
+        <div>
+          <label class="menu-label" for="{{ form.preparation_time.id_for_label }}">{{ form.preparation_time.label }}</label>
+          {{ form.preparation_time }}
+        </div>
+        <div>
+          <label class="menu-label" for="{{ form.sort_order.id_for_label }}">{{ form.sort_order.label }}</label>
+          {{ form.sort_order }}
+        </div>
+      </div>
+      <div class="flex flex-wrap gap-6">
+        <label class="menu-check">{{ form.is_available }} {{ form.is_available.label }}</label>
+        <label class="menu-check">{{ form.is_featured }} {{ form.is_featured.label }}</label>
+      </div>
+    </section>
+
+    <section class="card space-y-4 p-5">
+      <h2 class="text-lg font-semibold">{% trans "Legal product labelling" %}</h2>
+      <p class="text-sm text-slate-500">{% trans "Required disclosures for frozen goods, oils, and meat/seafood origin or PDO names." %}</p>
+      <label class="menu-check">{{ form.is_frozen }} {% trans "Frozen product (*)" %}</label>
+      <div>
+        <label class="menu-label" for="{{ form.oil_type.id_for_label }}">{% trans "Oil used (salads/frying)" %}</label>
+        {{ form.oil_type }}
+      </div>
+      <div class="grid gap-4 md:grid-cols-2">
+        <div>
+          <label class="menu-label" for="{{ form.origin_note_el.id_for_label }}">{% trans "Origin / PDO note (Greek)" %}</label>
+          {{ form.origin_note_el }}
+        </div>
+        <div>
+          <label class="menu-label" for="{{ form.origin_note_en.id_for_label }}">{% trans "Origin / PDO note (English)" %}</label>
+          {{ form.origin_note_en }}
+        </div>
+      </div>
+    </section>
+
+    <section class="card space-y-4 p-5">
+      <h2 class="text-lg font-semibold">{% trans "Dietary" %}</h2>
+      <div class="flex flex-wrap gap-6">
+        <label class="menu-check">{{ form.is_vegetarian }} {{ form.is_vegetarian.label }}</label>
+        <label class="menu-check">{{ form.is_vegan }} {{ form.is_vegan.label }}</label>
+      </div>
+      <div>
+        <p class="menu-label mb-2">{{ form.allergens.label }}</p>
+        {{ form.allergens }}
+      </div>
+    </section>
+
+    <section class="card space-y-4 p-5">
+      <h2 class="text-lg font-semibold">{% trans "Nutrition" %} <span class="text-sm font-normal text-slate-500">{% trans "(per serving, optional)" %}</span></h2>
+      <div class="grid gap-4 sm:grid-cols-2">
+        <div>
+          <label class="menu-label" for="{{ form.calories.id_for_label }}">{{ form.calories.label }}</label>
+          {{ form.calories }}
+        </div>
+        <div>
+          <label class="menu-label" for="{{ form.protein_g.id_for_label }}">{{ form.protein_g.label }}</label>
+          {{ form.protein_g }}
+        </div>
+        <div>
+          <label class="menu-label" for="{{ form.carbohydrates_g.id_for_label }}">{{ form.carbohydrates_g.label }}</label>
+          {{ form.carbohydrates_g }}
+        </div>
+        <div>
+          <label class="menu-label" for="{{ form.fat_g.id_for_label }}">{{ form.fat_g.label }}</label>
+          {{ form.fat_g }}
+        </div>
+        <div>
+          <label class="menu-label" for="{{ form.fiber_g.id_for_label }}">{{ form.fiber_g.label }}</label>
+          {{ form.fiber_g }}
+        </div>
+        <div>
+          <label class="menu-label" for="{{ form.salt_g.id_for_label }}">{{ form.salt_g.label }}</label>
+          {{ form.salt_g }}
+        </div>
+      </div>
+    </section>
+
+    <div class="flex flex-wrap gap-3">
+      <button type="submit" class="btn-primary min-h-12 rounded-xl px-8 py-3">{% trans "Save product" %}</button>
+      <a href="{% url 'menu_manage' %}" class="min-h-12 rounded-xl bg-kitchen-elevated px-8 py-3 font-semibold ring-1 ring-kitchen-border">{% trans "Cancel" %}</a>
+    </div>
+  </form>
+
+  {% if object %}
+  <form method="post" action="{% url 'menu_item_delete' object.pk %}" class="mt-4"
+    onsubmit="return confirm('{% trans "Remove this product from the menu?"|escapejs %}');">
+    {% csrf_token %}
+    <button type="submit" class="min-h-12 rounded-xl border border-red-800 px-6 py-3 text-red-400 hover:bg-red-950">{% trans "Delete product" %}</button>
+  </form>
+  {% endif %}
+</div>
+{% endblock %}

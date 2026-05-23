@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% block title %}{% trans "Dashboard" %} — {{ restaurant.name }}{% endblock %}
+{% block content %}
+<h1 class="mb-2 text-2xl font-bold">{% trans "Manager Dashboard" %}</h1>
+<p class="mb-6 text-slate-400">{{ branch.name }}</p>
+<div class="mb-8 grid gap-4 sm:grid-cols-3">
+  <div class="card p-5">
+    <p class="text-sm text-slate-400">{% trans "Revenue today" %}</p>
+    <p class="text-3xl font-bold text-order">€{{ revenue_today }}</p>
+  </div>
+  <div class="card p-5">
+    <p class="text-sm text-slate-400">{% trans "Active orders" %}</p>
+    <p class="text-3xl font-bold text-new-order">{{ active_orders|length }}</p>
+  </div>
+  <div class="card p-5">
+    <p class="text-sm text-slate-400">{% trans "Tables" %}</p>
+    <p class="text-3xl font-bold">{{ tables.count }}</p>
+  </div>
+</div>
+<section>
+  <h2 class="mb-4 text-lg font-semibold">{% trans "Live orders" %}</h2>
+  <div class="space-y-3" id="dashboard-orders">
+    {% for order in active_orders %}
+    <div class="card flex items-center justify-between px-4 py-3">
+      <div>
+        <span class="font-semibold">{{ order.session.table }}</span>
+        <span class="ml-2 text-sm text-new-order">{{ order.get_status_display }}</span>
+      </div>
+      <a href="{% url 'order_detail' order.pk %}" class="text-sm text-order hover:text-order-light">{% trans "View" %}</a>
+    </div>
+    {% empty %}
+    <p class="text-slate-500">{% trans "No active orders" %}</p>
+    {% endfor %}
+  </div>
+</section>
+{% endblock %}

@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% block title %}{% trans "Staff Login" %}{% endblock %}
+{% block content %}
+<div class="mx-auto max-w-md py-12">
+  <div class="mb-8 flex justify-center">
+    {% include "includes/brand_logo_vertical.html" %}
+  </div>
+  <h1 class="mb-6 text-center text-xl font-semibold text-slate-300">{% trans "Staff Login" %}</h1>
+  {% if form.errors %}
+  <p class="mb-4 rounded-xl border border-new-order/40 bg-new-order/10 px-4 py-3 text-center text-new-order-light">
+    {% trans "Invalid username or password." %}
+    {% trans "Try" %} <strong>waiter</strong> / <strong>waiter1234</strong>
+  </p>
+  {% endif %}
+  <form method="post" action="{% url 'login' %}" class="card space-y-4 p-6">
+    {% csrf_token %}
+    <label class="block text-sm text-slate-400" for="id_username">{% trans "Username" %}</label>
+    <input id="id_username" name="username" autocomplete="username" class="input-field" required>
+    <label class="block text-sm text-slate-400" for="id_password">{% trans "Password" %}</label>
+    <input id="id_password" type="password" name="password" autocomplete="current-password" class="input-field" required>
+    <button type="submit" class="btn-primary min-h-12 w-full rounded-xl py-3">
+      {% trans "Sign in" %}
+    </button>
+  </form>
+  <p class="mt-6 text-center text-slate-400">
+    <a href="{% url 'pin_login' %}" class="text-order hover:text-order-light">{% trans "PIN quick login" %}</a>
+  </p>
+</div>
+{% endblock %}
