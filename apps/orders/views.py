@@ -1,10 +1,14 @@
 from decimal import Decimal
+from datetime import datetime, timedelta, time
+from zoneinfo import ZoneInfo
 
+from django.conf import settings
 from django.contrib import messages
 from django.core.exceptions import PermissionDenied
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
+from django.utils import timezone
 from django.utils.translation import gettext as _
 from django.views import View
 from django.views.generic import DetailView, ListView
@@ -24,6 +28,7 @@ from apps.orders.services import (
     order_with_items,
     update_item_status,
 )
+from apps.orders.utils import TableCloseBlocked, can_close_table_session, close_table_blocked_message
 from apps.restaurants.models import TableSession
 
 
@@ -89,6 +94,8 @@ def _order_session_context(session, restaurant, open_order=None):
         "sent_subtotal": sent_subtotal,
         "session_item_count": sum(i.quantity for i in all_items),
         "new_item_count": sum(i.quantity for i in new_items),
+        "can_close_table": can_close_table_session(session) and bool(all_items),
+        "close_table_blocked_message": close_table_blocked_message(session),
         **_order_menu_context(restaurant, open_order),
     }
 
@@ -158,7 +165,14 @@ class CloseTableView(RestaurantScopedMixin, RolePermissionMixin, View):
             table__floor__branch__restaurant=self.get_restaurant(),
             is_active=True,
         )
-        order = close_table_session(session, request.user, request)
+        if not can_close_table_session(session):
+            messages.error(request, close_table_blocked_message(session))
+            return redirect("order_new", session_id=session_id)
+        try:
+            order = close_table_session(session, request.user, request)
+        except TableCloseBlocked as exc:
+            messages.error(request, exc.message)
+            return redirect("order_new", session_id=session_id)
         if order and Bill.objects.filter(order_id=order.pk).exists():
             return redirect(f"{reverse('tables')}?print_receipt={order.pk}")
         messages.success(request, _("Table closed."))
@@ -209,10 +223,43 @@ def _orders_with_receipts_queryset(branch):
             status__in=["paid", "bill_requested"],
             bill__isnull=False,
         )
-        .select_related("session__table", "waiter__user", "bill")
+        .select_related("session", "session__table", "waiter__user", "bill")
         .prefetch_related("items__menu_item")
-        .order_by("-updated_at")
+        .order_by("-session__closed_at", "-updated_at")
     )
+
+
+def _branch_timezone(branch):
+    tz_name = branch.timezone if branch else settings.TIME_ZONE
+    try:
+        return ZoneInfo(tz_name)
+    except Exception:
+        return ZoneInfo(settings.TIME_ZONE)
+
+
+def _today_in_branch(branch):
+    return timezone.now().astimezone(_branch_timezone(branch)).date()
+
+
+def _parse_order_history_date(request, branch):
+    """Return (selected_date, today, error_message). Defaults to today in branch TZ."""
+    today = _today_in_branch(branch)
+    raw = request.GET.get("date")
+    if not raw:
+        return today, today, None
+    try:
+        selected = datetime.strptime(raw, "%Y-%m-%d").date()
+    except ValueError:
+        return today, today, _("Invalid date.")
+    if selected > today:
+        return today, today, _("Cannot view future dates.")
+    return selected, today, None
+
+
+def _filter_orders_by_closed_date(queryset, day, tz):
+    start = datetime.combine(day, time.min, tzinfo=tz)
+    end = datetime.combine(day + timedelta(days=1), time.min, tzinfo=tz)
+    return queryset.filter(session__closed_at__gte=start, session__closed_at__lt=end)
 
 
 class OrderHistoryListView(RestaurantScopedMixin, RolePermissionMixin, ListView):
@@ -227,7 +274,33 @@ class OrderHistoryListView(RestaurantScopedMixin, RolePermissionMixin, ListView)
         branch = self.get_branch()
         if not branch:
             return Order.objects.none()
-        return _orders_with_receipts_queryset(branch)
+        selected, today, _error = _parse_order_history_date(self.request, branch)
+        self._selected_date = selected
+        self._today = today
+        qs = _orders_with_receipts_queryset(branch)
+        return _filter_orders_by_closed_date(qs, selected, _branch_timezone(branch))
+
+    def get_context_data(self, **kwargs):
+        ctx = super().get_context_data(**kwargs)
+        branch = self.get_branch()
+        if branch and not hasattr(self, "_selected_date"):
+            selected, today, error = _parse_order_history_date(self.request, branch)
+            self._selected_date = selected
+            self._today = today
+            self._date_filter_error = error
+        elif branch:
+            _, _, self._date_filter_error = _parse_order_history_date(self.request, branch)
+        else:
+            self._selected_date = timezone.localdate()
+            self._today = self._selected_date
+            self._date_filter_error = None
+
+        ctx["selected_date"] = self._selected_date
+        ctx["selected_date_iso"] = self._selected_date.isoformat()
+        ctx["today_date_iso"] = self._today.isoformat()
+        ctx["is_today"] = self._selected_date == self._today
+        ctx["date_filter_error"] = getattr(self, "_date_filter_error", None)
+        return ctx
 
 
 class OrderReceiptView(RestaurantScopedMixin, RolePermissionMixin, View):

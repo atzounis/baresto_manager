@@ -1,18 +1,201 @@
 {% extends "base.html" %}
 {% load i18n %}
 {% block title %}{% trans "Reports" %}{% endblock %}
+{% block extra_head %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+{% endblock %}
 {% block content %}
-<h1 class="mb-6 text-2xl font-bold">{% trans "Analytics" %}</h1>
-<p class="mb-4 text-slate-400">{% trans "Sessions (7 days)" %}: {{ sessions_week }}</p>
-<h2 class="mb-3 text-lg font-semibold text-order">{% trans "Top items" %}</h2>
-<ul class="space-y-2">
-  {% for row in top_items %}
-  <li class="card flex justify-between px-4 py-3">
-    <span>{{ row.menu_item__name }}</span>
-    <span class="text-new-order">{{ row.qty }} {% trans "sold" %}</span>
-  </li>
-  {% empty %}
-  <li class="text-slate-500">{% trans "No data yet" %}</li>
-  {% endfor %}
-</ul>
+<div class="space-y-6">
+  <div class="flex flex-wrap items-start justify-between gap-4">
+    <div>
+      <h1 class="mb-1 text-2xl font-bold">{% trans "Analytics" %}</h1>
+      <p class="text-sm text-slate-400">{% trans "Sales and activity for the selected period" %}</p>
+    </div>
+    <form method="get" class="flex flex-wrap items-end gap-2">
+      <div>
+        <label for="report-from" class="mb-1 block text-xs font-medium text-slate-400">{% trans "From" %}</label>
+        <input id="report-from" type="date" name="from" value="{{ date_from_iso }}" max="{{ today_iso }}"
+          class="min-h-11 rounded-xl border border-kitchen-border bg-kitchen px-3 py-2 text-sm text-white">
+      </div>
+      <div>
+        <label for="report-to" class="mb-1 block text-xs font-medium text-slate-400">{% trans "To" %}</label>
+        <input id="report-to" type="date" name="to" value="{{ date_to_iso }}" max="{{ today_iso }}"
+          class="min-h-11 rounded-xl border border-kitchen-border bg-kitchen px-3 py-2 text-sm text-white">
+      </div>
+      <button type="submit" class="btn-secondary min-h-11 rounded-xl px-4 py-2 text-sm font-semibold">
+        {% trans "Apply" %}
+      </button>
+      <a href="{% url 'reports_export' %}?from={{ date_from_iso }}&amp;to={{ date_to_iso }}"
+        class="btn-primary min-h-11 rounded-xl px-4 py-2 text-sm font-semibold">
+        {% trans "Download CSV" %}
+      </a>
+    </form>
+  </div>
+
+  {% if date_filter_error %}
+  <p class="rounded-lg border border-new-order/40 bg-new-order/10 px-4 py-2 text-sm text-new-order-light">{{ date_filter_error }}</p>
+  {% endif %}
+
+  <p class="text-sm text-slate-500">
+    {% blocktrans with start=date_from_iso end=date_to_iso %}Period: {{ start }} — {{ end }}{% endblocktrans %}
+  </p>
+
+  <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+    <div class="card p-5">
+      <p class="text-sm text-slate-400">{% trans "Revenue" %}</p>
+      <p class="text-3xl font-bold text-order">€{{ summary.revenue_total }}</p>
+    </div>
+    <div class="card p-5">
+      <p class="text-sm text-slate-400">{% trans "Paid orders" %}</p>
+      <p class="text-3xl font-bold text-new-order">{{ summary.orders_count }}</p>
+    </div>
+    <div class="card p-5">
+      <p class="text-sm text-slate-400">{% trans "Table sessions" %}</p>
+      <p class="text-3xl font-bold">{{ summary.sessions_count }}</p>
+    </div>
+    <div class="card p-5">
+      <p class="text-sm text-slate-400">{% trans "Average ticket" %}</p>
+      <p class="text-3xl font-bold text-price">€{{ summary.avg_ticket }}</p>
+    </div>
+  </div>
+
+  <div class="grid gap-6 lg:grid-cols-2">
+    <section class="card p-5">
+      <h2 class="mb-4 text-lg font-semibold text-order">{% trans "Daily revenue" %}</h2>
+      <div class="relative h-72">
+        <canvas id="chart-revenue" aria-label="{% trans 'Daily revenue chart' %}"></canvas>
+      </div>
+    </section>
+    <section class="card p-5">
+      <h2 class="mb-4 text-lg font-semibold text-order">{% trans "Orders & sessions" %}</h2>
+      <div class="relative h-72">
+        <canvas id="chart-activity" aria-label="{% trans 'Orders and sessions chart' %}"></canvas>
+      </div>
+    </section>
+  </div>
+
+  <section class="card p-5">
+    <h2 class="mb-4 text-lg font-semibold text-order">{% trans "Top items" %}</h2>
+    <div class="grid gap-6 lg:grid-cols-2">
+      <div class="relative h-72">
+        <canvas id="chart-top-items" aria-label="{% trans 'Top items chart' %}"></canvas>
+      </div>
+      <ul class="space-y-2">
+        {% for row in top_items %}
+        <li class="flex justify-between rounded-xl border border-kitchen-border bg-kitchen-elevated px-4 py-3">
+          <span>{{ row.menu_item__name }}</span>
+          <span class="font-semibold text-new-order">{{ row.qty }} {% trans "sold" %}</span>
+        </li>
+        {% empty %}
+        <li class="text-slate-500">{% trans "No data for this period." %}</li>
+        {% endfor %}
+      </ul>
+    </div>
+  </section>
+</div>
+
+<script>
+(function () {
+  const daily = {{ chart_daily_json|safe }};
+  const topItems = {{ chart_top_items_json|safe }};
+  const i18n = {{ chart_i18n_json|safe }};
+  const gridColor = "rgba(148, 163, 184, 0.15)";
+  const tickColor = "#94a3b8";
+
+  Chart.defaults.color = tickColor;
+  Chart.defaults.borderColor = gridColor;
+  Chart.defaults.font.family = "system-ui, sans-serif";
+
+  const labels = daily.labels || [];
+  const shortLabels = labels.map((d) => {
+    const parts = d.split("-");
+    return parts.length === 3 ? parts[2] + "/" + parts[1] : d;
+  });
+
+  const revenueCtx = document.getElementById("chart-revenue");
+  if (revenueCtx) {
+    new Chart(revenueCtx, {
+      type: "bar",
+      data: {
+        labels: shortLabels,
+        datasets: [{
+          label: i18n.revenue,
+          data: daily.revenue || [],
+          backgroundColor: "rgba(45, 181, 163, 0.75)",
+          borderColor: "#2DB5A3",
+          borderWidth: 1,
+          borderRadius: 6,
+        }],
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: { legend: { display: false } },
+        scales: {
+          x: { grid: { display: false } },
+          y: { beginAtZero: true, ticks: { callback: (v) => "€" + v } },
+        },
+      },
+    });
+  }
+
+  const activityCtx = document.getElementById("chart-activity");
+  if (activityCtx) {
+    new Chart(activityCtx, {
+      type: "line",
+      data: {
+        labels: shortLabels,
+        datasets: [
+          {
+            label: i18n.orders,
+            data: daily.orders || [],
+            borderColor: "#F9A12E",
+            backgroundColor: "rgba(249, 161, 46, 0.15)",
+            tension: 0.3,
+            fill: true,
+          },
+          {
+            label: i18n.sessions,
+            data: daily.sessions || [],
+            borderColor: "#3DCCC0",
+            backgroundColor: "rgba(61, 204, 192, 0.08)",
+            tension: 0.3,
+            fill: false,
+          },
+        ],
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        scales: { y: { beginAtZero: true, ticks: { precision: 0 } } },
+      },
+    });
+  }
+
+  const topCtx = document.getElementById("chart-top-items");
+  if (topCtx && topItems.labels && topItems.labels.length) {
+    new Chart(topCtx, {
+      type: "bar",
+      data: {
+        labels: topItems.labels,
+        datasets: [{
+          label: i18n.quantity,
+          data: topItems.quantities || [],
+          backgroundColor: "rgba(249, 161, 46, 0.8)",
+          borderColor: "#F9A12E",
+          borderWidth: 1,
+          borderRadius: 6,
+        }],
+      },
+      options: {
+        indexAxis: "y",
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: { legend: { display: false } },
+        scales: { x: { beginAtZero: true, ticks: { precision: 0 } } },
+      },
+    });
+  }
+})();
+</script>
 {% endblock %}

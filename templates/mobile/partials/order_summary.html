@@ -123,9 +123,11 @@
         {% blocktrans count counter=session_item_count %}{{ counter }} item{% plural %}{{ counter }} items{% endblocktrans %}
         · <span class="text-price">€{{ session_subtotal }}</span>
       </p>
-      {% if order and order.status != 'open' %}
+      {% if not can_close_table and close_table_blocked_message %}
+      <p class="text-xs text-new-order-light">{{ close_table_blocked_message }}</p>
+      {% elif order and order.status != 'open' %}
       <p class="text-xs text-new-order-light">{{ order.get_status_display }}</p>
-      {% elif sent_items and not new_items %}
+      {% elif sent_items and not new_items and can_close_table %}
       <p class="text-xs text-slate-500">{% trans "Add more items or close the table." %}</p>
       {% endif %}
     </div>
@@ -139,7 +141,7 @@
         </button>
       </form>
       {% endif %}
-      {% if session_item_count %}
+      {% if can_close_table %}
       <form method="post" action="{% url 'close_table' session.pk %}"
         onsubmit="return confirm('{% trans "Close this table and request the bill?"|escapejs %}');">
         {% csrf_token %}

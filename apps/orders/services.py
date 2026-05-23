@@ -6,6 +6,7 @@ from django.utils import timezone
 
 from apps.analytics.utils import log_audit
 from apps.orders.models import Bill, Order, OrderItem
+from apps.orders.utils import TableCloseBlocked, close_table_blockers
 from apps.realtime import broadcast_order_event, broadcast_table_update, broadcast_waiter_kitchen_ready
 
 
@@ -141,12 +142,18 @@ def create_bill(order, tax_rate=Decimal("0.10"), discount=Decimal("0")):
 @transaction.atomic
 def close_table_session(session, user, request=None):
     """
-    Send the active order to the kitchen (if needed), issue the bill, and free the table.
+    Issue the bill and free the table once all items are sent, prepared, and delivered.
     """
+    blockers = close_table_blockers(session)
+    if blockers:
+        raise TableCloseBlocked(str(blockers[0][1]))
+
     table = session.table
     order = (
         session.orders.filter(is_deleted=False)
         .exclude(status__in=["paid", "cancelled"])
+        .filter(items__is_deleted=False)
+        .distinct()
         .order_by("-created_at")
         .first()
     )

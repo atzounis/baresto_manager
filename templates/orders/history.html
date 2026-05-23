@@ -3,10 +3,39 @@
 {% block title %}{% trans "Orders" %}{% endblock %}
 {% block content %}
 <div class="space-y-4">
-  <div>
-    <h1 class="text-2xl font-bold">{% trans "Orders" %}</h1>
-    <p class="text-sm text-slate-400">{% trans "Closed tables — view and print receipts" %}</p>
+  <div class="flex flex-wrap items-start justify-between gap-4">
+    <div>
+      <h1 class="text-2xl font-bold">{% trans "Orders" %}</h1>
+      <p class="text-sm text-slate-400">{% trans "Closed tables — view and print receipts" %}</p>
+    </div>
+    <form method="get" class="flex flex-wrap items-end gap-2">
+      <div>
+        <label for="order-history-date" class="mb-1 block text-xs font-medium text-slate-400">{% trans "Date" %}</label>
+        <input id="order-history-date" type="date" name="date" value="{{ selected_date_iso }}" max="{{ today_date_iso }}"
+          class="min-h-11 rounded-xl border border-kitchen-border bg-kitchen px-3 py-2 text-sm text-white">
+      </div>
+      <button type="submit" class="btn-secondary min-h-11 rounded-xl px-4 py-2 text-sm font-semibold">
+        {% trans "Show" %}
+      </button>
+      {% if not is_today %}
+      <a href="{% url 'order_history' %}" class="btn-secondary min-h-11 rounded-xl px-4 py-2 text-sm font-semibold">
+        {% trans "Today" %}
+      </a>
+      {% endif %}
+    </form>
   </div>
+
+  {% if date_filter_error %}
+  <p class="rounded-lg border border-new-order/40 bg-new-order/10 px-4 py-2 text-sm text-new-order-light">{{ date_filter_error }}</p>
+  {% endif %}
+
+  {% if is_today %}
+  <p class="text-sm text-slate-500">{% trans "Showing today's orders." %}</p>
+  {% else %}
+  <p class="text-sm text-slate-500">
+    {% blocktrans with day=selected_date|date:"d/m/Y" %}Showing orders for {{ day }}.{% endblocktrans %}
+  </p>
+  {% endif %}
 
   <div class="space-y-3">
     {% for order in orders %}
@@ -15,7 +44,7 @@
         <p class="text-lg font-bold">{{ order.session.table }}</p>
         <p class="text-sm text-slate-400">
           {% trans "Order" %} #{{ order.pk }}
-          · {{ order.updated_at|date:"d/m/Y H:i" }}
+          · {% if order.session.closed_at %}{{ order.session.closed_at|date:"d/m/Y H:i" }}{% else %}{{ order.updated_at|date:"d/m/Y H:i" }}{% endif %}
         </p>
         {% if order.waiter %}
         <p class="text-xs text-slate-500">{{ order.waiter.user.get_full_name|default:order.waiter.user.username }}</p>
@@ -42,7 +71,11 @@
     </article>
     {% empty %}
     <p class="rounded-2xl border border-kitchen-border bg-kitchen-elevated px-4 py-12 text-center text-slate-500">
-      {% trans "No closed orders yet." %}
+      {% if is_today %}
+      {% trans "No closed orders today." %}
+      {% else %}
+      {% blocktrans with day=selected_date|date:"d/m/Y" %}No orders on {{ day }}.{% endblocktrans %}
+      {% endif %}
     </p>
     {% endfor %}
   </div>
@@ -50,7 +83,7 @@
   {% if page_obj.has_other_pages %}
   <nav class="flex flex-wrap items-center justify-center gap-2 pt-2" aria-label="{% trans 'Pagination' %}">
     {% if page_obj.has_previous %}
-    <a href="?page={{ page_obj.previous_page_number }}"
+    <a href="?date={{ selected_date_iso }}&amp;page={{ page_obj.previous_page_number }}"
       class="min-h-11 rounded-xl bg-kitchen-elevated px-4 py-2 text-sm font-semibold ring-1 ring-kitchen-border">
       ← {% trans "Previous" %}
     </a>
@@ -59,7 +92,7 @@
       {% blocktrans with num=page_obj.number total=page_obj.paginator.num_pages %}Page {{ num }} of {{ total }}{% endblocktrans %}
     </span>
     {% if page_obj.has_next %}
-    <a href="?page={{ page_obj.next_page_number }}"
+    <a href="?date={{ selected_date_iso }}&amp;page={{ page_obj.next_page_number }}"
       class="min-h-11 rounded-xl bg-kitchen-elevated px-4 py-2 text-sm font-semibold ring-1 ring-kitchen-border">
       {% trans "Next" %} →
     </a>
