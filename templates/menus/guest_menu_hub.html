@@ -56,7 +56,7 @@
       {% endif %}
 
       <div class="rounded-xl bg-kitchen p-3 text-xs text-slate-500 break-all">
-        <span class="text-slate-400">{% trans "URL" %}:</span>
+        <span class="text-slate-400">{% trans "Preview URL" %}:</span>
         <a href="{{ preview_url }}" target="_blank" rel="noopener" class="text-order-light hover:underline">{{ preview_url }}</a>
       </div>
 
@@ -67,7 +67,7 @@
 
     <section class="flex flex-col items-center">
       <p class="mb-3 w-full max-w-[420px] text-sm text-slate-400">{% trans "Live preview" %}</p>
-      <iframe src="{{ preview_url }}" class="guest-preview-frame" title="{% trans 'Guest menu preview' %}"></iframe>
+      <iframe src="{{ preview_path }}" class="guest-preview-frame" title="{% trans 'Guest menu preview' %}"></iframe>
     </section>
   </div>
 

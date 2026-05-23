@@ -1,5 +1,10 @@
+import logging
+
 from asgiref.sync import async_to_sync
 from channels.layers import get_channel_layer
+from django.core.cache import cache
+
+logger = logging.getLogger(__name__)
 
 
 def _group_send(group_name, message_type, payload):
@@ -40,12 +45,30 @@ def _waiter_staff_ids(order):
     return ids
 
 
-def broadcast_waiter_kitchen_ready(order, *, item_name=None, order_fully_ready=False):
-    """Sound/notification alert for waiter when kitchen advances items to ready."""
-    staff_ids = _waiter_staff_ids(order)
-    if not staff_ids:
-        return
+def _cache_waiter_alert(branch_id, payload):
+    """Store for HTTP poll fallback (mobile browsers often drop WebSockets)."""
+    key = f"waiter_alerts:branch:{branch_id}"
+    try:
+        alerts = cache.get(key) or []
+        alerts.append(payload)
+        cache.set(key, alerts[-30:], timeout=600)
+    except Exception:
+        logger.exception("Failed to cache waiter alert for branch %s", branch_id)
 
+
+def _send_waiter_alert(order, payload):
+    branch_id = order.branch.id
+    restaurant_id = order.branch.restaurant_id
+    # WebSocket first — must not be blocked by cache/Redis failures.
+    _group_send(f"waiters.branch.{branch_id}", "waiter.message", payload)
+    _group_send(f"waiters.restaurant.{restaurant_id}", "waiter.message", payload)
+    for staff_id in _waiter_staff_ids(order):
+        _group_send(f"waiter.{staff_id}", "waiter.message", payload)
+    _cache_waiter_alert(branch_id, payload)
+
+
+def broadcast_waiter_kitchen_ready(order, *, item_name=None, order_fully_ready=False):
+    """Sound/notification alert for waiters when kitchen advances items to ready."""
     table_label = str(order.session.table)
     base = {
         "order_id": order.pk,
@@ -61,18 +84,27 @@ def broadcast_waiter_kitchen_ready(order, *, item_name=None, order_fully_ready=F
             "item_name": item_name,
             "message": f"{table_label}: {item_name}",
         }
-        for staff_id in staff_ids:
-            _group_send(f"waiter.{staff_id}", "waiter.message", payload)
+        _send_waiter_alert(order, payload)
 
     if order_fully_ready:
         payload = {
             **base,
             "event": "order.ready",
-            "message": f"{table_label}",
+            "message": table_label,
             "alert": "order_ready",
         }
-        for staff_id in staff_ids:
-            _group_send(f"waiter.{staff_id}", "waiter.message", payload)
+        _send_waiter_alert(order, payload)
+
+
+def pop_branch_waiter_alerts(branch_id):
+    key = f"waiter_alerts:branch:{branch_id}"
+    try:
+        alerts = cache.get(key) or []
+        cache.delete(key)
+        return alerts
+    except Exception:
+        logger.exception("Failed to read waiter alerts for branch %s", branch_id)
+        return []
 
 
 def broadcast_table_update(table):

@@ -5,6 +5,7 @@
 <script src="{% static 'js/floor_field.js' %}"></script>
 {% endblock %}
 {% block content %}
+{% include "orders/partials/print_receipt_modal.html" %}
 <div x-data="floorTables()" x-init="init()" class="space-y-4">
   <div class="flex flex-wrap items-center justify-between gap-4">
     <h1 class="text-2xl font-bold">{% trans "Tables" %}</h1>
@@ -76,20 +77,26 @@
       </div>
       <template x-for="table in visibleTables" :key="table.id">
         <div
-          class="absolute flex flex-col items-center justify-center rounded-xl border-2 text-center shadow-lg transition-shadow"
+          class="absolute rounded-xl border-2 text-center shadow-lg transition-shadow"
           :class="{
             'cursor-grab': editMode, 'cursor-pointer': !editMode,
             'ring-2 ring-order z-20': dragging === table.id,
             'border-order bg-order/25 text-white': table.status === 'free',
-            'border-new-order bg-new-order/25 text-kitchen': table.status === 'occupied',
+            'border-new-order bg-new-order/25 text-kitchen': table.status === 'occupied' && !(table.ready_count > 0),
+            'border-order bg-order/30 text-white ring-2 ring-order': table.ready_count > 0 && !editMode,
             'border-order-light bg-order/15': table.status === 'reserved',
             'border-kitchen-border bg-kitchen-elevated': table.status === 'cleaning',
           }"
           :style="`left: ${table.x}%; top: ${table.y}%; width: ${table.w}%; height: ${table.h}%;`"
           @pointerdown="onTablePointerDown($event, table)"
           @click="onTableClick(table)">
-          <span class="text-sm font-bold leading-tight" x-text="table.label"></span>
-          <span class="text-[10px] text-slate-400" x-show="editMode" x-text="table.capacity + ' ' + i18n.seats"></span>
+          <div class="relative flex h-full w-full flex-col items-center justify-center">
+            <span x-show="table.ready_count > 0 && !editMode"
+              class="absolute -right-1 -top-1 z-10 inline-flex h-7 w-7 items-center justify-center rounded-full bg-red-600 text-sm font-extrabold leading-none text-white shadow-[0_2px_10px_rgba(220,38,38,0.85)] ring-2 ring-white"
+              x-text="table.ready_count"></span>
+            <span class="text-sm font-bold leading-tight" x-text="table.label"></span>
+            <span class="text-[10px] text-slate-400" x-show="editMode" x-text="table.capacity + ' ' + i18n.seats"></span>
+          </div>
         </div>
       </template>
     </div>
@@ -121,6 +128,7 @@ function floorTables() {
       saveLayout: "{% trans 'Save layout'|escapejs %}",
       saving: "{% trans 'Saving…'|escapejs %}",
       seats: "{% trans 'seats'|escapejs %}",
+      readyShort: "{% trans 'ready'|escapejs %}",
       layoutSaved: "{% trans 'Layout saved'|escapejs %}",
       saveFailed: "{% trans 'Save failed'|escapejs %}",
       deleteConfirm: "{% trans 'Delete this table?'|escapejs %}",
@@ -136,7 +144,30 @@ function floorTables() {
       if (!this.selectedFloorId) return this.tables;
       return this.tables.filter((t) => t.floor_id === this.selectedFloorId);
     },
+    applyReadyCounts(counts) {
+      if (!counts) return;
+      this.tables.forEach((t) => {
+        const n = counts[String(t.id)];
+        t.ready_count = n ? parseInt(n, 10) : 0;
+      });
+    },
+    async refreshReadyCounts() {
+      const url = window.BARESTO_TABLE_READY_URL;
+      if (!url) return;
+      try {
+        const res = await fetch(url, { credentials: "same-origin", cache: "no-store" });
+        if (!res.ok) return;
+        const data = await res.json();
+        this.applyReadyCounts(data.counts);
+      } catch (e) {
+        /* ignore */
+      }
+    },
     init() {
+      window.addEventListener("baresto-kitchen-ready", () => this.refreshReadyCounts());
+      window.addEventListener("baresto-table-ready-counts", (e) => {
+        this.applyReadyCounts(e.detail);
+      });
       window.addEventListener("floors-updated", (e) => {
         this.floors = e.detail.floors.map((f) => ({ id: f.id, name: f.name }));
         const sid = parseInt(e.detail.selectedId, 10);

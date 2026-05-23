@@ -1,12 +1,22 @@
 /**
- * Waiter alerts: WebSocket from kitchen + sound + browser notification + on-screen toast.
+ * Kitchen-ready alerts: WebSocket + HTTP poll fallback (mobile), sound, toast, notification.
  */
 (function () {
   const staffId = window.BARESTO_WAITER_ID;
+  const pollUrl = window.BARESTO_ALERTS_POLL_URL;
   if (!staffId) return;
 
   const i18n = window.BARESTO_ALERT_I18N || {};
   let audioCtx = null;
+  let audioUnlocked = false;
+  let ws = null;
+  let wsConnected = false;
+  let pollTimer = null;
+  const seenAlerts = new Set();
+
+  function alertKey(data) {
+    return [data.event, data.order_id, data.item_name || "", data.table || ""].join("|");
+  }
 
   function getAudioContext() {
     if (!audioCtx) {
@@ -32,29 +42,30 @@
     osc.stop(start + duration);
   }
 
-  function playItemReadySound() {
+  function playBeepSequence(freqs) {
     try {
       const ctx = getAudioContext();
-      const t = ctx.currentTime;
-      playTone(880, t, 0.12, 0.12);
-      playTone(1046.5, t + 0.1, 0.15, 0.1);
+      let t = ctx.currentTime;
+      freqs.forEach((freq, i) => {
+        playTone(freq, t, 0.14, 0.2);
+        t += 0.13;
+      });
     } catch (e) {
       /* ignore */
     }
   }
 
+  function playItemReadySound() {
+    playBeepSequence([880, 1046.5]);
+    if (navigator.vibrate) {
+      navigator.vibrate(120);
+    }
+  }
+
   function playOrderReadySound() {
-    try {
-      const ctx = getAudioContext();
-      const t = ctx.currentTime;
-      playTone(880, t, 0.1, 0.14);
-      playTone(1174.66, t + 0.12, 0.1, 0.14);
-      playTone(1318.51, t + 0.24, 0.2, 0.12);
-      if (navigator.vibrate) {
-        navigator.vibrate([120, 60, 120, 60, 200]);
-      }
-    } catch (e) {
-      /* ignore */
+    playBeepSequence([880, 1174.66, 1318.51]);
+    if (navigator.vibrate) {
+      navigator.vibrate([150, 80, 150, 80, 250]);
     }
   }
 
@@ -72,18 +83,32 @@
     return data.message || table;
   }
 
+  function normalizeKitchenAlert(data) {
+    if (!data || !data.event) return null;
+    if (data.event === "order.ready" || data.event === "order.item_ready") {
+      return data;
+    }
+    if (data.event === "order_item.updated" && data.status === "ready") {
+      return {
+        event: "order.item_ready",
+        order_id: data.order_id,
+        table: data.table,
+        item_name: data.item_name || "",
+      };
+    }
+    return null;
+  }
+
   function showToast(message, isOrderReady) {
     let el = document.getElementById("waiter-kitchen-toast");
     if (!el) {
       el = document.createElement("div");
       el.id = "waiter-kitchen-toast";
       el.setAttribute("role", "alert");
-      el.className =
-        "fixed bottom-4 left-4 right-4 z-[100] mx-auto max-w-md rounded-xl border px-4 py-4 text-center text-sm font-semibold shadow-lg transition";
       document.body.appendChild(el);
     }
     el.className =
-      "fixed bottom-4 left-4 right-4 z-[100] mx-auto max-w-md rounded-xl border px-4 py-4 text-center text-sm font-semibold shadow-lg " +
+      "fixed bottom-20 left-3 right-3 z-[100] mx-auto max-w-md rounded-xl border-2 px-4 py-4 text-center text-base font-bold shadow-xl md:bottom-4 " +
       (isOrderReady
         ? "border-order bg-order text-kitchen"
         : "border-new-order bg-new-order text-kitchen");
@@ -92,7 +117,7 @@
     clearTimeout(el._hideTimer);
     el._hideTimer = setTimeout(() => {
       el.style.display = "none";
-    }, isOrderReady ? 8000 : 5000);
+    }, isOrderReady ? 10000 : 6000);
   }
 
   function showBrowserNotification(title, body) {
@@ -100,11 +125,7 @@
       return;
     }
     try {
-      const n = new Notification(title, {
-        body,
-        tag: "baresto-kitchen-" + (body || "").slice(0, 40),
-        requireInteraction: false,
-      });
+      const n = new Notification(title, { body, tag: "baresto-" + Date.now() });
       n.onclick = () => {
         window.focus();
         n.close();
@@ -114,17 +135,16 @@
     }
   }
 
-  function requestNotificationPermission() {
-    if (!("Notification" in window) || Notification.permission !== "default") {
-      return;
-    }
-    Notification.requestPermission();
-  }
+  function handleKitchenAlert(raw) {
+    const data = normalizeKitchenAlert(raw);
+    if (!data) return;
 
-  function handleKitchenAlert(data) {
-    if (!data || !data.event) return;
-    if (data.event !== "order.ready" && data.event !== "order.item_ready") {
-      return;
+    const key = alertKey(data);
+    if (seenAlerts.has(key)) return;
+    seenAlerts.add(key);
+    if (seenAlerts.size > 100) {
+      seenAlerts.clear();
+      seenAlerts.add(key);
     }
 
     const message = formatMessage(data);
@@ -141,11 +161,58 @@
       : i18n.notificationItemTitle || "Dish ready";
     showBrowserNotification(title, message);
     showToast(message, isOrderReady);
+    window.dispatchEvent(new CustomEvent("baresto-kitchen-ready", { detail: data }));
   }
 
-  function connect() {
+  function enableAlerts(fromBanner) {
+    if (audioUnlocked) return;
+    audioUnlocked = true;
+    try {
+      getAudioContext();
+      if (fromBanner) {
+        playItemReadySound();
+      }
+    } catch (e) {
+      /* ignore */
+    }
+    if ("Notification" in window && Notification.permission === "default") {
+      Notification.requestPermission();
+    }
+    const btn = document.getElementById("waiter-enable-alerts");
+    if (btn) btn.style.display = "none";
+    try {
+      localStorage.setItem("baresto_alerts_enabled", "1");
+    } catch (e) {
+      /* ignore */
+    }
+  }
+
+  function showEnableBanner() {
+    if (localStorage.getItem("baresto_alerts_enabled") === "1") {
+      return;
+    }
+    if (document.getElementById("waiter-enable-alerts")) return;
+
+    const bar = document.createElement("button");
+    bar.type = "button";
+    bar.id = "waiter-enable-alerts";
+    bar.className =
+      "fixed top-14 left-3 right-3 z-[90] mx-auto max-w-md rounded-xl border-2 border-order bg-order px-4 py-3 text-center text-sm font-bold text-kitchen shadow-lg";
+    bar.textContent = i18n.enableAlerts || "Tap to enable sound & alerts";
+    bar.addEventListener("click", () => enableAlerts(true));
+    document.body.appendChild(bar);
+  }
+
+  function connectWebSocket() {
+    if (ws && (ws.readyState === WebSocket.OPEN || ws.readyState === WebSocket.CONNECTING)) {
+      return;
+    }
     const proto = location.protocol === "https:" ? "wss" : "ws";
-    const ws = new WebSocket(proto + "://" + location.host + "/ws/waiter/" + staffId + "/");
+    ws = new WebSocket(proto + "://" + location.host + "/ws/waiter/" + staffId + "/");
+
+    ws.onopen = () => {
+      wsConnected = true;
+    };
 
     ws.onmessage = (ev) => {
       try {
@@ -156,18 +223,44 @@
     };
 
     ws.onclose = () => {
-      setTimeout(connect, 3000);
+      wsConnected = false;
+      setTimeout(connectWebSocket, 2500);
+    };
+
+    ws.onerror = () => {
+      wsConnected = false;
     };
   }
 
-  document.addEventListener(
-    "click",
-    () => {
-      getAudioContext();
-      requestNotificationPermission();
-    },
-    { once: true, passive: true }
-  );
+  async function pollAlerts() {
+    if (!pollUrl) return;
+    try {
+      const res = await fetch(pollUrl, { credentials: "same-origin", cache: "no-store" });
+      if (!res.ok) return;
+      const body = await res.json();
+      (body.alerts || []).forEach(handleKitchenAlert);
+    } catch (e) {
+      /* ignore */
+    }
+  }
 
-  connect();
+  function startPolling() {
+    if (pollTimer) return;
+    pollAlerts();
+    pollTimer = setInterval(pollAlerts, 2000);
+  }
+
+  document.addEventListener("click", () => enableAlerts(false), { once: true, passive: true });
+  document.addEventListener("touchstart", () => enableAlerts(false), { once: true, passive: true });
+
+  document.addEventListener("visibilitychange", () => {
+    if (!document.hidden) {
+      connectWebSocket();
+      pollAlerts();
+    }
+  });
+
+  showEnableBanner();
+  connectWebSocket();
+  startPolling();
 })();

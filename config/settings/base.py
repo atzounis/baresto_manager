@@ -136,7 +136,11 @@ if redis_url:
     CACHES["default"] = {
         "BACKEND": "django_redis.cache.RedisCache",
         "LOCATION": redis_url,
-        "OPTIONS": {"CLIENT_CLASS": "django_redis.client.DefaultClient"},
+        "OPTIONS": {
+            "CLIENT_CLASS": "django_redis.client.DefaultClient",
+            # Do not break requests (e.g. kitchen Advance) when Redis is briefly down.
+            "IGNORE_EXCEPTIONS": True,
+        },
     }
 
 if env.bool("USE_INMEMORY_CHANNELS", default=True):

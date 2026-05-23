@@ -4,7 +4,11 @@
 {% block content %}
 <div class="mx-auto max-w-lg space-y-6">
   <div>
-    <a href="{% url 'tables' %}" class="text-sm text-slate-500 hover:text-order-light">← {% trans "Tables" %}</a>
+    <a href="{{ return_url }}"
+      class="mb-3 inline-flex min-h-12 items-center gap-2 rounded-xl bg-kitchen-elevated px-5 py-3 text-lg font-semibold text-order-light ring-1 ring-kitchen-border active:bg-kitchen">
+      <span class="text-2xl leading-none" aria-hidden="true">←</span>
+      {{ back_label }}
+    </a>
     <h1 class="text-2xl font-bold">{% trans "Receipt" %}</h1>
     <p class="text-slate-400">{{ order.session.table }} · {% trans "Order" %} #{{ order.pk }}</p>
   </div>
@@ -50,12 +54,12 @@
   {% if receipt_finalized %}
   <p class="text-center text-sm text-order">{% trans "Receipt already printed." %}</p>
   <div class="flex flex-wrap justify-center gap-3">
-    <a href="{% url 'order_receipt_print' order.pk %}" target="_blank" rel="noopener"
+    <a href="{% url 'order_receipt_print' order.pk %}?from=history" target="_blank" rel="noopener"
       class="btn-secondary min-h-12 rounded-xl px-6 py-3 text-sm font-semibold">
       {% trans "Print again" %}
     </a>
-    <a href="{% url 'tables' %}" class="btn-primary min-h-12 rounded-xl px-6 py-3 text-sm font-semibold">
-      {% trans "Back to tables" %}
+    <a href="{{ return_url }}" class="btn-primary min-h-12 rounded-xl px-6 py-3 text-sm font-semibold">
+      {% if from_history %}{% trans "Back to orders" %}{% else %}{% trans "Back to tables" %}{% endif %}
     </a>
   </div>
   {% else %}

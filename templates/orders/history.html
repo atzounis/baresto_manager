@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% block title %}{% trans "Orders" %}{% endblock %}
+{% block content %}
+<div class="space-y-4">
+  <div>
+    <h1 class="text-2xl font-bold">{% trans "Orders" %}</h1>
+    <p class="text-sm text-slate-400">{% trans "Closed tables — view and print receipts" %}</p>
+  </div>
+
+  <div class="space-y-3">
+    {% for order in orders %}
+    <article class="card flex flex-wrap items-center justify-between gap-3 p-4">
+      <div class="min-w-0 flex-1">
+        <p class="text-lg font-bold">{{ order.session.table }}</p>
+        <p class="text-sm text-slate-400">
+          {% trans "Order" %} #{{ order.pk }}
+          · {{ order.updated_at|date:"d/m/Y H:i" }}
+        </p>
+        {% if order.waiter %}
+        <p class="text-xs text-slate-500">{{ order.waiter.user.get_full_name|default:order.waiter.user.username }}</p>
+        {% endif %}
+      </div>
+      <div class="flex shrink-0 flex-col items-end gap-2">
+        <p class="text-lg font-bold text-price">€{{ order.bill.total }}</p>
+        <span class="rounded-full px-2 py-0.5 text-xs font-semibold
+          {% if order.status == 'paid' %}bg-order/20 text-order-light{% else %}bg-new-order/20 text-new-order-light{% endif %}">
+          {{ order.get_status_display }}
+        </span>
+        {% if order.status == 'paid' %}
+        <a href="{% url 'order_receipt_print' order.pk %}?from=history" target="_blank" rel="noopener"
+          class="btn-secondary min-h-11 rounded-xl px-4 py-2 text-sm font-semibold">
+          {% trans "Print receipt" %}
+        </a>
+        {% else %}
+        <a href="{% url 'order_receipt' order.pk %}?from=history"
+          class="btn-primary min-h-11 rounded-xl px-4 py-2 text-sm font-semibold">
+          {% trans "Print receipt" %}
+        </a>
+        {% endif %}
+      </div>
+    </article>
+    {% empty %}
+    <p class="rounded-2xl border border-kitchen-border bg-kitchen-elevated px-4 py-12 text-center text-slate-500">
+      {% trans "No closed orders yet." %}
+    </p>
+    {% endfor %}
+  </div>
+
+  {% if page_obj.has_other_pages %}
+  <nav class="flex flex-wrap items-center justify-center gap-2 pt-2" aria-label="{% trans 'Pagination' %}">
+    {% if page_obj.has_previous %}
+    <a href="?page={{ page_obj.previous_page_number }}"
+      class="min-h-11 rounded-xl bg-kitchen-elevated px-4 py-2 text-sm font-semibold ring-1 ring-kitchen-border">
+      ← {% trans "Previous" %}
+    </a>
+    {% endif %}
+    <span class="px-2 text-sm text-slate-400">
+      {% blocktrans with num=page_obj.number total=page_obj.paginator.num_pages %}Page {{ num }} of {{ total }}{% endblocktrans %}
+    </span>
+    {% if page_obj.has_next %}
+    <a href="?page={{ page_obj.next_page_number }}"
+      class="min-h-11 rounded-xl bg-kitchen-elevated px-4 py-2 text-sm font-semibold ring-1 ring-kitchen-border">
+      {% trans "Next" %} →
+    </a>
+    {% endif %}
+  </nav>
+  {% endif %}
+</div>
+{% endblock %}

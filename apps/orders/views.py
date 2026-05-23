@@ -1,16 +1,19 @@
 from decimal import Decimal
 
 from django.contrib import messages
-from django.http import HttpResponse
+from django.core.exceptions import PermissionDenied
+from django.http import HttpResponse, JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
+from django.urls import reverse
 from django.utils.translation import gettext as _
 from django.views import View
-from django.views.generic import DetailView
+from django.views.generic import DetailView, ListView
 
 from apps.common.mixins import RestaurantScopedMixin
 from apps.common.permissions import RolePermissionMixin
 from apps.menus.models import Menu, MenuCategory, MenuItem
 from apps.orders.models import Bill, Order, OrderItem
+from apps.realtime import pop_branch_waiter_alerts
 from apps.orders.services import (
     add_item_to_order,
     close_table_session,
@@ -19,6 +22,7 @@ from apps.orders.services import (
     finalize_receipt,
     order_item_quantities,
     order_with_items,
+    update_item_status,
 )
 from apps.restaurants.models import TableSession
 
@@ -61,6 +65,9 @@ def _order_session_context(session, restaurant, open_order=None):
         .select_related("menu_item", "order")
         .order_by("order__created_at", "created_at")
     )
+    ready_sent_items = [line for line in sent_items if line.status == "ready"]
+    served_sent_items = [line for line in sent_items if line.status == "served"]
+    kitchen_sent_items = [line for line in sent_items if line.status not in ("ready", "served")]
     new_items = list(open_order.active_items) if open_order else []
     all_items = sent_items + new_items
 
@@ -72,6 +79,10 @@ def _order_session_context(session, restaurant, open_order=None):
         "session": session,
         "order": open_order,
         "sent_items": sent_items,
+        "ready_sent_items": ready_sent_items,
+        "served_sent_items": served_sent_items,
+        "kitchen_sent_items": kitchen_sent_items,
+        "ready_item_count": len(ready_sent_items),
         "new_items": new_items,
         "session_subtotal": session_subtotal,
         "new_subtotal": new_subtotal,
@@ -148,9 +159,8 @@ class CloseTableView(RestaurantScopedMixin, RolePermissionMixin, View):
             is_active=True,
         )
         order = close_table_session(session, request.user, request)
-        if order and Bill.objects.filter(order=order).exists():
-            messages.success(request, _("Table closed. Print the receipt when ready."))
-            return redirect("order_receipt", pk=order.pk)
+        if order and Bill.objects.filter(order_id=order.pk).exists():
+            return redirect(f"{reverse('tables')}?print_receipt={order.pk}")
         messages.success(request, _("Table closed."))
         return redirect("tables")
 
@@ -163,17 +173,74 @@ def _receipt_order_queryset(restaurant):
     )
 
 
-class OrderReceiptView(RestaurantScopedMixin, RolePermissionMixin, View):
-    """Receipt screen after closing a table (bill requested)."""
+def _receipt_logo_url(request, restaurant, company):
+    """Absolute logo URL for print (restaurant logo, else company guest-menu logo)."""
+    logo_field = None
+    if restaurant.logo:
+        logo_field = restaurant.logo
+    elif company and company.logo:
+        logo_field = company.logo
+    if logo_field and logo_field.name:
+        return request.build_absolute_uri(logo_field.url)
+    return None
 
-    required_permission = "modify_order"
+
+def _receipt_context(request, order, restaurant, company, *, receipt_finalized=False):
+    from_history = request.GET.get("from") == "history"
+    return_url = reverse("order_history") if from_history else reverse("tables")
+    return {
+        "order": order,
+        "bill": order.bill,
+        "restaurant": restaurant,
+        "company": company,
+        "receipt_finalized": receipt_finalized,
+        "receipt_logo_url": _receipt_logo_url(request, restaurant, company),
+        "return_url": return_url,
+        "from_history": from_history,
+        "back_label": _("Orders") if from_history else _("Tables"),
+    }
+
+
+def _orders_with_receipts_queryset(branch):
+    return (
+        Order.objects.filter(
+            session__table__floor__branch=branch,
+            is_deleted=False,
+            status__in=["paid", "bill_requested"],
+            bill__isnull=False,
+        )
+        .select_related("session__table", "waiter__user", "bill")
+        .prefetch_related("items__menu_item")
+        .order_by("-updated_at")
+    )
+
+
+class OrderHistoryListView(RestaurantScopedMixin, RolePermissionMixin, ListView):
+    """Past orders with receipt reprint (waiter, cashier, manager, admin)."""
+
+    required_permission = "print_receipt"
+    template_name = "orders/history.html"
+    context_object_name = "orders"
+    paginate_by = 30
+
+    def get_queryset(self):
+        branch = self.get_branch()
+        if not branch:
+            return Order.objects.none()
+        return _orders_with_receipts_queryset(branch)
+
+
+class OrderReceiptView(RestaurantScopedMixin, RolePermissionMixin, View):
+    """Receipt screen after closing a table or from order history."""
+
+    required_permission = "print_receipt"
     template_name = "orders/receipt.html"
 
     def get_order(self, pk):
         order = get_object_or_404(_receipt_order_queryset(self.get_restaurant()), pk=pk)
         if order.status not in ("bill_requested", "paid"):
-            from django.core.exceptions import PermissionDenied
-
+            raise PermissionDenied(_("No receipt available for this order."))
+        if not hasattr(order, "bill") or order.bill is None:
             raise PermissionDenied(_("No receipt available for this order."))
         return order
 
@@ -184,13 +251,13 @@ class OrderReceiptView(RestaurantScopedMixin, RolePermissionMixin, View):
         return render(
             request,
             self.template_name,
-            {
-                "order": order,
-                "bill": order.bill,
-                "restaurant": restaurant,
-                "company": company,
-                "receipt_finalized": order.status == "paid",
-            },
+            _receipt_context(
+                request,
+                order,
+                restaurant,
+                company,
+                receipt_finalized=order.status == "paid",
+            ),
         )
 
     def post(self, request, pk):
@@ -202,10 +269,30 @@ class OrderReceiptView(RestaurantScopedMixin, RolePermissionMixin, View):
         return redirect("order_receipt_print", pk=order.pk)
 
 
+class OrderReceiptQuickPrintView(RestaurantScopedMixin, RolePermissionMixin, View):
+    """Finalize bill if needed, then open the print-friendly receipt."""
+
+    required_permission = "print_receipt"
+
+    def _get_order(self, pk):
+        order = get_object_or_404(_receipt_order_queryset(self.get_restaurant()), pk=pk)
+        if order.status not in ("bill_requested", "paid"):
+            raise PermissionDenied(_("No receipt available for this order."))
+        if not hasattr(order, "bill") or order.bill is None:
+            raise PermissionDenied(_("No receipt available for this order."))
+        return order
+
+    def post(self, request, pk):
+        order = self._get_order(pk)
+        if order.status == "bill_requested":
+            finalize_receipt(order, request.user, request)
+        return redirect("order_receipt_print", pk=order.pk)
+
+
 class OrderReceiptPrintView(RestaurantScopedMixin, RolePermissionMixin, View):
     """Print-friendly receipt (opens browser print dialog)."""
 
-    required_permission = "modify_order"
+    required_permission = "print_receipt"
     template_name = "orders/receipt_print.html"
 
     def get(self, request, pk):
@@ -214,9 +301,12 @@ class OrderReceiptPrintView(RestaurantScopedMixin, RolePermissionMixin, View):
             pk=pk,
             status="paid",
         )
+        if not hasattr(order, "bill") or order.bill is None:
+            raise PermissionDenied(_("No receipt available for this order."))
         restaurant = self.get_restaurant()
         company = getattr(restaurant, "legal_profile", None)
         auto_print = request.GET.get("print") != "0"
+        from_history = request.GET.get("from") == "history"
         return render(
             request,
             self.template_name,
@@ -225,7 +315,10 @@ class OrderReceiptPrintView(RestaurantScopedMixin, RolePermissionMixin, View):
                 "bill": order.bill,
                 "restaurant": restaurant,
                 "company": company,
+                "receipt_logo_url": _receipt_logo_url(request, restaurant, company),
                 "auto_print": auto_print,
+                "from_history": from_history,
+                "return_url": reverse("order_history") if from_history else reverse("tables"),
             },
         )
 
@@ -267,6 +360,43 @@ class OrderConfirmView(RestaurantScopedMixin, RolePermissionMixin, View):
                 _order_session_context(session, self.get_restaurant()),
             )
         return redirect("order_new", session_id=order.session_id)
+
+
+class WaiterItemServedView(RestaurantScopedMixin, RolePermissionMixin, View):
+    """Waiter marks a kitchen-ready line item as delivered to the table."""
+
+    required_permission = "take_order"
+
+    def post(self, request, pk):
+        item = get_object_or_404(
+            OrderItem,
+            pk=pk,
+            order__session__table__floor__branch__restaurant=self.get_restaurant(),
+            is_deleted=False,
+            status="ready",
+        )
+        update_item_status(item, "served", request.user, request)
+        session = item.order.session
+        if request.headers.get("HX-Request"):
+            return render(
+                request,
+                "mobile/partials/order_summary.html",
+                _order_session_context(session, self.get_restaurant()),
+            )
+        return redirect("order_new", session_id=session.pk)
+
+
+class WaiterAlertsPollView(RestaurantScopedMixin, RolePermissionMixin, View):
+    """HTTP fallback when mobile browsers drop the waiter WebSocket."""
+
+    required_permission = "take_order"
+
+    def get(self, request):
+        branch = self.get_branch()
+        if not branch:
+            return JsonResponse({"alerts": []})
+        alerts = pop_branch_waiter_alerts(branch.id)
+        return JsonResponse({"alerts": alerts})
 
 
 class OrderStatusUpdateView(RestaurantScopedMixin, View):

@@ -1,0 +1,52 @@
+{% load i18n %}
+{% if link_class == "mobile" %}
+  {% if staff_nav.tables %}
+  <a href="{% url 'tables' %}" class="nav-link-mobile" @click="navOpen = false">{% trans "Tables" %}</a>
+  {% endif %}
+  {% if staff_nav.orders %}
+  <a href="{% url 'order_history' %}" class="nav-link-mobile" @click="navOpen = false">{% trans "Orders" %}</a>
+  {% endif %}
+  {% if staff_nav.kitchen %}
+  <a href="{% url 'kitchen' %}" class="nav-link-mobile" @click="navOpen = false">{% trans "Kitchen" %}</a>
+  {% endif %}
+  {% if staff_nav.menu %}
+  <a href="{% url 'menu_manage' %}" class="nav-link-mobile" @click="navOpen = false">{% trans "Menu" %}</a>
+  {% endif %}
+  {% if staff_nav.guest_menu %}
+  <a href="{% url 'guest_menu_hub' %}" class="nav-link-mobile" @click="navOpen = false">{% trans "Guest menu" %}</a>
+  {% endif %}
+  {% if staff_nav.company %}
+  <a href="{% url 'company_details' %}" class="nav-link-mobile" @click="navOpen = false">{% trans "Company" %}</a>
+  {% endif %}
+  {% if staff_nav.users %}
+  <a href="{% url 'staff_user_list' %}" class="nav-link-mobile" @click="navOpen = false">{% trans "Users" %}</a>
+  {% endif %}
+  {% if staff_nav.reports %}
+  <a href="{% url 'reports' %}" class="nav-link-mobile" @click="navOpen = false">{% trans "Reports" %}</a>
+  {% endif %}
+{% else %}
+  {% if staff_nav.tables %}
+  <a href="{% url 'tables' %}" class="nav-link">{% trans "Tables" %}</a>
+  {% endif %}
+  {% if staff_nav.orders %}
+  <a href="{% url 'order_history' %}" class="nav-link">{% trans "Orders" %}</a>
+  {% endif %}
+  {% if staff_nav.kitchen %}
+  <a href="{% url 'kitchen' %}" class="nav-link">{% trans "Kitchen" %}</a>
+  {% endif %}
+  {% if staff_nav.menu %}
+  <a href="{% url 'menu_manage' %}" class="nav-link">{% trans "Menu" %}</a>
+  {% endif %}
+  {% if staff_nav.guest_menu %}
+  <a href="{% url 'guest_menu_hub' %}" class="nav-link">{% trans "Guest menu" %}</a>
+  {% endif %}
+  {% if staff_nav.company %}
+  <a href="{% url 'company_details' %}" class="nav-link">{% trans "Company" %}</a>
+  {% endif %}
+  {% if staff_nav.users %}
+  <a href="{% url 'staff_user_list' %}" class="nav-link">{% trans "Users" %}</a>
+  {% endif %}
+  {% if staff_nav.reports %}
+  <a href="{% url 'reports' %}" class="nav-link">{% trans "Reports" %}</a>
+  {% endif %}
+{% endif %}

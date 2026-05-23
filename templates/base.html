@@ -32,7 +32,7 @@
       },
     };
   </script>
-  <link rel="stylesheet" href="{% static 'css/baresto.css' %}">
+  <link rel="stylesheet" href="{% static 'css/baresto.css' %}?v=2">
   <script src="https://unpkg.com/htmx.org@2.0.4"></script>
   {% block extra_head %}{% endblock %}
   <script defer src="https://unpkg.com/alpinejs@3.14.3/dist/cdn.min.js"></script>
@@ -40,34 +40,81 @@
 <body class="min-h-full bg-kitchen text-slate-100" x-data="{ offline: !navigator.onLine }" @online.window="offline=false" @offline.window="offline=true">
   <div x-show="offline" class="bg-new-order text-center py-2 text-sm font-semibold text-kitchen">{% trans "Offline — changes will sync when reconnected" %}</div>
   {% if user.is_authenticated and staff_profile %}
-  <nav class="sticky top-0 z-40 border-b border-kitchen-border bg-kitchen-elevated/95 backdrop-blur">
-    <div class="mx-auto flex max-w-6xl items-center justify-between gap-4 px-4 py-3">
-      {% include "includes/brand_logo_horizontal.html" %}
-      <div class="flex flex-wrap items-center gap-2 text-sm">
-        <a href="{% url 'tables' %}" class="nav-link">{% trans "Tables" %}</a>
-        <a href="{% url 'kitchen' %}" class="nav-link">{% trans "Kitchen" %}</a>
-        <a href="{% url 'menu_manage' %}" class="nav-link">{% trans "Menu" %}</a>
-        {% if staff_profile.role == "manager" or staff_profile.role == "admin" %}
-        <a href="{% url 'guest_menu_hub' %}" class="nav-link">{% trans "Guest menu" %}</a>
-        <a href="{% url 'company_details' %}" class="nav-link">{% trans "Company" %}</a>
-        {% endif %}
-        {% if staff_profile.role == "admin" %}
-        <a href="{% url 'staff_user_list' %}" class="nav-link">{% trans "Users" %}</a>
-        {% endif %}
-        <a href="{% url 'reports' %}" class="nav-link">{% trans "Reports" %}</a>
+  <nav class="sticky top-0 z-40 border-b border-kitchen-border bg-kitchen-elevated/95 backdrop-blur"
+    x-data="{ navOpen: false }"
+    @keydown.escape.window="navOpen = false">
+    <div class="mx-auto flex max-w-6xl items-center justify-between gap-3 px-4 py-2 md:py-3">
+      <div class="min-w-0 shrink [&_img]:h-8 [&_img]:max-w-[9.5rem] md:[&_img]:h-9 md:[&_img]:max-w-[200px]">
+        {% include "includes/brand_logo_horizontal.html" %}
+      </div>
+
+      {# Desktop: inline nav when few items (e.g. waiter); else full bar #}
+      <div class="hidden items-center gap-2 text-sm md:flex">
+        {% include "includes/staff_nav_links.html" with link_class="desktop" %}
         {% include "includes/language_switcher.html" %}
         <form method="post" action="{% url 'logout' %}">{% csrf_token %}
-          <button class="rounded-lg border border-kitchen-border bg-kitchen px-3 py-2 hover:bg-kitchen-border/40">{% trans "Logout" %}</button>
+          <button type="submit" class="rounded-lg border border-kitchen-border bg-kitchen px-3 py-2 hover:bg-kitchen-border/40">{% trans "Logout" %}</button>
         </form>
       </div>
+
+      {# Mobile: hamburger only if more than one app section; else lang + logout #}
+      {% if staff_nav_multi_page %}
+      <button type="button"
+        class="nav-menu-toggle md:hidden"
+        :aria-expanded="navOpen"
+        aria-controls="staff-mobile-nav"
+        @click="navOpen = !navOpen">
+        <span class="sr-only">{% trans "Menu" %}</span>
+        <svg x-show="!navOpen" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
+          <path stroke-linecap="round" d="M4 7h16M4 12h16M4 17h16"/>
+        </svg>
+        <svg x-show="navOpen" x-cloak class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
+          <path stroke-linecap="round" d="M6 6l12 12M18 6L6 18"/>
+        </svg>
+      </button>
+      {% else %}
+      <div class="flex items-center gap-2 md:hidden">
+        {% include "includes/language_switcher.html" %}
+        <form method="post" action="{% url 'logout' %}">{% csrf_token %}
+          <button type="submit" class="rounded-lg border border-kitchen-border bg-kitchen px-3 py-2 text-sm font-semibold hover:bg-kitchen-border/40">{% trans "Logout" %}</button>
+        </form>
+      </div>
+      {% endif %}
     </div>
+
+    {# Mobile navigation panel #}
+    {% if staff_nav_multi_page %}
+    <div id="staff-mobile-nav"
+      class="border-t border-kitchen-border bg-kitchen-elevated md:hidden"
+      x-show="navOpen"
+      x-cloak
+      x-transition:enter="transition ease-out duration-150"
+      x-transition:enter-start="opacity-0 -translate-y-1"
+      x-transition:enter-end="opacity-100 translate-y-0"
+      x-transition:leave="transition ease-in duration-100"
+      x-transition:leave-start="opacity-100 translate-y-0"
+      x-transition:leave-end="opacity-0 -translate-y-1"
+      @click.outside="navOpen = false">
+      <div class="mx-auto max-w-6xl space-y-1.5 px-4 py-4">
+        {% include "includes/staff_nav_links.html" with link_class="mobile" %}
+        <div class="flex flex-col gap-3 border-t border-kitchen-border pt-4 sm:flex-row sm:items-center sm:justify-between">
+          <div class="flex justify-center sm:justify-start">
+            {% include "includes/language_switcher.html" %}
+          </div>
+          <form method="post" action="{% url 'logout' %}">{% csrf_token %}
+            <button type="submit" class="nav-link-mobile w-full justify-center">{% trans "Logout" %}</button>
+          </form>
+        </div>
+      </div>
+    </div>
+    {% endif %}
   </nav>
   {% else %}
   <div class="absolute right-4 top-4 z-50">
     {% include "includes/language_switcher.html" %}
   </div>
   {% endif %}
-  <main class="mx-auto max-w-6xl px-4 py-6">
+  <main class="mx-auto max-w-6xl px-4 py-4 md:py-6">
     {% if messages %}
       {% for message in messages %}
         <p class="mb-4 rounded-lg border border-order/30 bg-order/15 px-4 py-3 text-order-light">{{ message }}</p>
@@ -78,12 +125,15 @@
   {% if staff_profile and staff_profile.role == "waiter" or staff_profile and staff_profile.role == "cashier" or staff_profile and staff_profile.role == "manager" or staff_profile and staff_profile.role == "admin" %}
   <script>
     window.BARESTO_WAITER_ID = {{ staff_profile.pk }};
+    window.BARESTO_ALERTS_POLL_URL = "{% url 'waiter_alerts_poll' %}";
+    window.BARESTO_TABLE_READY_URL = "{% url 'table_ready_counts' %}";
     window.BARESTO_ALERT_I18N = {
       tableLabel: "{% trans 'Table'|escapejs %}",
       itemReadySuffix: "{% trans 'is ready'|escapejs %}",
       orderReadySuffix: "{% trans 'order is ready to serve'|escapejs %}",
       notificationItemTitle: "{% trans 'Dish ready'|escapejs %}",
       notificationOrderTitle: "{% trans 'Order ready'|escapejs %}",
+      enableAlerts: "{% trans 'Tap to enable sound & alerts'|escapejs %}",
     };
   </script>
   <script src="{% static 'js/waiter_alerts.js' %}"></script>

@@ -84,16 +84,28 @@ def update_item_status(order_item, new_status, user=None, request=None):
 
     order = order_item.order
     items = list(order.items.filter(is_deleted=False))
-    if items and all(i.status in ("ready", "served") for i in items):
+    if items and all(i.status == "served" for i in items):
+        order.status = "served"
+    elif items and all(i.status in ("ready", "served") for i in items):
         order.status = "ready"
     elif any(i.status == "ready" for i in items):
         order.status = "partially_ready"
+    elif any(i.status == "preparing" for i in items):
+        order.status = "preparing"
     order.save(update_fields=["status", "updated_at"])
 
     if user:
         log_audit(user, "order_item.status", "orders.OrderItem", order_item.pk, {"status": new_status}, request)
 
-    broadcast_order_event(order, event="order_item.updated", extra={"item_id": order_item.pk, "status": new_status})
+    broadcast_order_event(
+        order,
+        event="order_item.updated",
+        extra={
+            "item_id": order_item.pk,
+            "status": new_status,
+            "item_name": order_item.menu_item.name,
+        },
+    )
 
     if new_status == "ready":
         item_name = order_item.menu_item.name

@@ -2,6 +2,8 @@ from django.shortcuts import get_object_or_404, render
 from django.urls import reverse
 from django.utils.translation import gettext as _
 from django.views import View
+from django.views.decorators.clickjacking import xframe_options_sameorigin
+from django.utils.decorators import method_decorator
 from django.views.generic import TemplateView
 
 from apps.common.mixins import RestaurantScopedMixin
@@ -16,6 +18,7 @@ from apps.qr.services import (
 from apps.restaurants.models import Restaurant, Table
 
 
+@method_decorator(xframe_options_sameorigin, name="dispatch")
 class GuestMenuView(View):
     template_name = "public/guest_menu.html"
 
@@ -28,6 +31,7 @@ class GuestMenuView(View):
         return render(request, self.template_name, ctx)
 
 
+@method_decorator(xframe_options_sameorigin, name="dispatch")
 class GuestMenuSharedView(View):
     """Public menu without a specific table (one QR for all tables)."""
 
@@ -79,12 +83,23 @@ class GuestMenuHubView(MenuEditorMixin, TemplateView):
             preview_mode = "table"
 
         if preview_mode == "shared":
-            preview_url = build_shared_menu_qr_url(restaurant)
+            preview_path = reverse(
+                "guest_menu_shared",
+                kwargs={"menu_token": restaurant.menu_qr_token},
+            )
         elif preview_table:
-            preview_url = build_table_qr_url(preview_table)
+            preview_path = reverse(
+                "guest_menu",
+                kwargs={"table_token": preview_table.qr_token},
+            )
         else:
-            preview_url = build_shared_menu_qr_url(restaurant)
+            preview_path = reverse(
+                "guest_menu_shared",
+                kwargs={"menu_token": restaurant.menu_qr_token},
+            )
             preview_mode = "shared"
+
+        preview_url = self.request.build_absolute_uri(preview_path)
 
         ctx.update(
             {
@@ -93,6 +108,7 @@ class GuestMenuHubView(MenuEditorMixin, TemplateView):
                 "tables": tables,
                 "preview_table": preview_table,
                 "preview_mode": preview_mode,
+                "preview_path": preview_path,
                 "preview_url": preview_url,
                 "shared_menu_url": build_shared_menu_qr_url(restaurant),
                 "print_url_shared": reverse("guest_menu_qr_print") + "?mode=shared",

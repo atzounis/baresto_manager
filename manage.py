@@ -16,7 +16,8 @@ def _inject_runserver_port(argv):
     from django.conf import settings
 
     port = getattr(settings, "DJANGO_PORT", 8765)
-    return [*argv, f"127.0.0.1:{port}"]
+    bind = os.environ.get("DJANGO_BIND", "0.0.0.0")
+    return [*argv, f"{bind}:{port}"]
 
 
 def main():

@@ -30,7 +30,7 @@ class KitchenDisplayView(RestaurantScopedMixin, RolePermissionMixin, TemplateVie
                     queryset=OrderItem.objects.filter(is_deleted=False).select_related("menu_item"),
                 )
             )
-            .order_by("-is_priority", "created_at")
+            .order_by("-is_priority", "-created_at")
         )
         ctx["orders"] = orders
         ctx["branch"] = branch

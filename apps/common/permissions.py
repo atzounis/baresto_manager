@@ -3,6 +3,7 @@ ROLE_PERMISSIONS = {
     "modify_order": {"waiter", "cashier", "manager", "admin"},
     "apply_discount": {"cashier", "manager", "admin"},
     "close_bill": {"cashier", "manager", "admin"},
+    "print_receipt": {"waiter", "cashier", "manager", "admin"},
     "refund": {"manager", "admin"},
     "edit_menu": {"manager", "admin"},
     "edit_company": {"manager", "admin"},

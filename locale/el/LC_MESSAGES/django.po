@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-05-23 14:08+0300\n"
+"POT-Creation-Date: 2026-05-23 23:36+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,351 +17,930 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
+#: apps/accounts/forms.py:14 templates/accounts/login.html:18
+#: templates/accounts/staff_user_form.html:16
+msgid "Username"
+msgstr "Όνομα χρήστη"
+
+#: apps/accounts/forms.py:19 apps/accounts/forms.py:79
+msgid "First name"
+msgstr "Όνομα"
+
+#: apps/accounts/forms.py:24 apps/accounts/forms.py:84
+msgid "Last name"
+msgstr "Επώνυμο"
+
+#: apps/accounts/forms.py:29 apps/accounts/forms.py:89
+msgid "Email"
+msgstr "Email"
+
+#: apps/accounts/forms.py:33 templates/accounts/login.html:20
+msgid "Password"
+msgstr "Κωδικός"
+
+#: apps/accounts/forms.py:38 apps/accounts/forms.py:94
+#: templates/accounts/staff_user_list.html:21
+msgid "Role"
+msgstr "Ρόλος"
+
+#: apps/accounts/forms.py:44 apps/accounts/forms.py:100
+msgid "PIN (quick login)"
+msgstr "PIN (γρήγορη σύνδεση)"
+
+#: apps/accounts/forms.py:50 apps/accounts/forms.py:106
+#: templates/accounts/staff_user_list.html:22
+msgid "Branch"
+msgstr "Υποκατάστημα"
+
+#: apps/accounts/forms.py:64
+msgid "This username is already taken."
+msgstr "Το όνομα χρήστη υπάρχει ήδη."
+
+#: apps/accounts/forms.py:70 apps/accounts/forms.py:138
+msgid "PIN must be 4–6 digits."
+msgstr "Το PIN πρέπει να είναι 4–6 ψηφία."
+
+#: apps/accounts/forms.py:72 apps/accounts/forms.py:144
+msgid "This PIN is already used by another staff member."
+msgstr "Αυτό το PIN χρησιμοποιείται ήδη από άλλο μέλος του προσωπικού."
+
+#: apps/accounts/forms.py:111
+msgid "Account active"
+msgstr "Ενεργός λογαριασμός"
+
+#: apps/accounts/forms.py:115
+msgid "New password"
+msgstr "Νέος κωδικός"
+
+#: apps/accounts/forms.py:116
+msgid "Leave blank to keep the current password."
+msgstr "Αφήστε κενό για να κρατήσετε τον τρέχοντα κωδικό."
+
+#: apps/accounts/staff_views.py:47
+msgid "Add staff member"
+msgstr "Προσθήκη μέλους προσωπικού"
+
+#: apps/accounts/staff_views.py:48
+msgid "Create user"
+msgstr "Δημιουργία χρήστη"
+
+#: apps/accounts/staff_views.py:70
+#, python-format
+msgid "User “%(name)s” created."
+msgstr "Δημιουργήθηκε ο χρήστης «%(name)s»."
+
+#: apps/accounts/staff_views.py:96
+msgid "Edit staff member"
+msgstr "Επεξεργασία μέλους προσωπικού"
+
+#: apps/accounts/staff_views.py:97
+msgid "Save changes"
+msgstr "Αποθήκευση αλλαγών"
+
+#: apps/accounts/staff_views.py:112 templates/accounts/staff_user_form.html:92
+msgid "You cannot deactivate your own account."
+msgstr "Δεν μπορείτε να απενεργοποιήσετε τον δικό σας λογαριασμό."
+
+#: apps/accounts/staff_views.py:127
+#, python-format
+msgid "User “%(name)s” updated."
+msgstr "Ενημερώθηκε ο χρήστης «%(name)s»."
+
+#: apps/accounts/views.py:54
 msgid "Invalid PIN"
 msgstr "Μη έγκυρο PIN"
 
+#: apps/menus/forms.py:56 apps/menus/forms.py:98
+#: templates/menus/item_form.html:29 templates/menus/manage.html:40
 msgid "Category"
 msgstr "Κατηγορία"
 
 #
+#: apps/menus/forms.py:63
 msgid "Contains allergens"
 msgstr "Περιέχει αλλεργιογόνα"
 
+#: apps/menus/forms.py:99 apps/menus/forms.py:189
+#: templates/menus/category_form.html:23 templates/menus/item_form.html:36
 msgid "Name (Greek)"
 msgstr "Όνομα (Ελληνικά)"
 
+#: apps/menus/forms.py:100 apps/menus/forms.py:190
+#: templates/menus/category_form.html:34 templates/menus/item_form.html:50
 msgid "Name (English)"
 msgstr "Όνομα (Αγγλικά)"
 
+#: apps/menus/forms.py:101 apps/menus/forms.py:191
+#: templates/menus/category_form.html:27 templates/menus/item_form.html:40
 msgid "Description (Greek)"
 msgstr "Περιγραφή (Ελληνικά)"
 
+#: apps/menus/forms.py:102 apps/menus/forms.py:192
+#: templates/menus/category_form.html:38 templates/menus/item_form.html:54
 msgid "Description (English)"
 msgstr "Περιγραφή (Αγγλικά)"
 
+#: apps/menus/forms.py:103
 msgid "Photo"
 msgstr "Φωτογραφία"
 
+#: apps/menus/forms.py:104
 msgid "Price (€)"
 msgstr "Τιμή (€)"
 
+#: apps/menus/forms.py:105
 msgid "Happy hour price (optional)"
 msgstr "Τιμή happy hour (προαιρετικό)"
 
+#: apps/menus/forms.py:106
 msgid "Prep time (min)"
 msgstr "Χρόνος προετοιμασίας (λεπτά)"
 
 #
+#: apps/menus/forms.py:107 apps/menus/forms.py:193
+#: templates/menus/category_form.html:43
 msgid "Sort order"
 msgstr "Σειρά εμφάνισης"
 
+#: apps/menus/forms.py:108 templates/menus/partials/item_row.html:25
 msgid "Available"
 msgstr "Διαθέσιμο"
 
+#: apps/menus/forms.py:109
 msgid "Featured"
 msgstr "Προτεινόμενο"
 
+#: apps/menus/forms.py:110 templates/menus/partials/item_row.html:14
+#: templates/public/guest_menu.html:73
 msgid "Vegetarian"
 msgstr "Χορτοφαγικό"
 
+#: apps/menus/forms.py:111 templates/menus/partials/item_row.html:14
+#: templates/public/guest_menu.html:72
 msgid "Vegan"
 msgstr "Βίγκαν"
 
+#: apps/menus/forms.py:112 templates/menus/item_form.html:95
 msgid "Frozen product (*)"
 msgstr "Κατεψυγμένο προϊόν (*)"
 
+#: apps/menus/forms.py:113 templates/menus/item_form.html:97
 msgid "Oil used (salads/frying)"
 msgstr "Λάδι (σαλάτες / τηγάνισμα)"
 
+#: apps/menus/forms.py:114 templates/menus/item_form.html:102
 msgid "Origin / PDO note (Greek)"
 msgstr "Προέλευση / Π.Ο.Π. (Ελληνικά)"
 
+#: apps/menus/forms.py:115 templates/menus/item_form.html:106
 msgid "Origin / PDO note (English)"
 msgstr "Προέλευση / Π.Ο.Π. (Αγγλικά)"
 
+#: apps/menus/forms.py:116
 msgid "Calories (kcal)"
 msgstr "Θερμίδες (kcal)"
 
 #
+#: apps/menus/forms.py:117
 msgid "Protein (g)"
 msgstr "Πρωτεΐνη"
 
+#: apps/menus/forms.py:118
 msgid "Carbohydrates (g)"
 msgstr "Υδατάνθρακες (g)"
 
+#: apps/menus/forms.py:119
 msgid "Fat (g)"
 msgstr "Λιπαρά (g)"
 
+#: apps/menus/forms.py:120
 msgid "Fiber (g)"
 msgstr "Φυτικές ίνες (g)"
 
+#: apps/menus/forms.py:121
 msgid "Salt (g)"
 msgstr "Αλάτι (g)"
 
+#: apps/menus/forms.py:125
 msgid "Short description in Greek"
 msgstr "Σύντομη περιγραφή (Ελληνικά)"
 
+#: apps/menus/forms.py:128
 msgid "Short description in English"
 msgstr "Σύντομη περιγραφή (Αγγλικά)"
 
+#: apps/menus/forms.py:170 apps/menus/forms.py:188 templates/base.html:67
+#: templates/includes/staff_nav_links.html:13
+#: templates/includes/staff_nav_links.html:38
+#: templates/menus/category_form.html:17 templates/menus/manage.html:13
+#: templates/public/guest_menu.html:8
 msgid "Menu"
 msgstr "Μενού"
 
+#: apps/menus/forms.py:194 templates/accounts/staff_user_list.html:40
+#: templates/menus/category_form.html:46
 msgid "Active"
 msgstr "Ενεργό"
 
+#: apps/menus/models.py:63
 msgid "—"
 msgstr "—"
 
+#: apps/menus/models.py:64
+#: templates/menus/partials/item_compliance_badges.html:8
 msgid "Olive oil"
 msgstr "Ελαιόλαδο"
 
+#: apps/menus/models.py:65
 msgid "Seed oil (e.g. sunflower)"
 msgstr "Σπορέλαιο (π.χ. ηλιέλαιο)"
 
+#: apps/menus/models.py:66
+#: templates/menus/partials/item_compliance_badges.html:12
 msgid "Extra virgin olive oil"
 msgstr "Έξτρα παρθένο ελαιόλαδο"
 
+#: apps/menus/views.py:150
 #, python-format
 msgid "Cannot delete category “%(name)s” because it still has products."
 msgstr ""
 "Δεν είναι δυνατή η διαγραφή της κατηγορίας «%(name)s» επειδή περιέχει ακόμα "
 "προϊόντα."
 
+#: apps/menus/views.py:155
 #, python-format
 msgid "Category “%(name)s” removed."
 msgstr "Η κατηγορία «%(name)s» διαγράφηκε."
 
+#: apps/orders/models.py:12
 msgid "Open"
 msgstr "Ανοιχτή"
 
+#: apps/orders/models.py:13
 msgid "Confirmed"
 msgstr "Επιβεβαιωμένη"
 
+#: apps/orders/models.py:14 apps/orders/models.py:74
 msgid "Preparing"
 msgstr "Σε προετοιμασία"
 
+#: apps/orders/models.py:15
 msgid "Partially Ready"
 msgstr "Μερικώς έτοιμη"
 
+#: apps/orders/models.py:16 apps/orders/models.py:75
 msgid "Ready"
 msgstr "Έτοιμη"
 
+#: apps/orders/models.py:17 apps/orders/models.py:76
 msgid "Served"
 msgstr "Σερβιρισμένη"
 
+#: apps/orders/models.py:18
 msgid "Bill Requested"
 msgstr "Ζητήθηκε λογαριασμός"
 
+#: apps/orders/models.py:19
 msgid "Paid"
 msgstr "Πληρωμένη"
 
+#: apps/orders/models.py:20
 msgid "Cancelled"
 msgstr "Ακυρωμένη"
 
+#: apps/orders/models.py:73
 msgid "Pending"
 msgstr "Εκκρεμεί"
 
+#: apps/orders/models.py:79 templates/includes/staff_nav_links.html:10
+#: templates/includes/staff_nav_links.html:35 templates/kitchen/display.html:6
 msgid "Kitchen"
 msgstr "Κουζίνα"
 
+#: apps/orders/models.py:80
 msgid "Bar"
 msgstr "Μπαρ"
 
+#: apps/orders/models.py:81
 msgid "Grill"
 msgstr "Ψησταριά"
 
-msgid "Trade name (Greek)"
-msgstr "Επωνυμία (Ελληνικά)"
+#: apps/orders/views.py:164
+msgid "Table closed."
+msgstr "Το τραπέζι έκλεισε."
 
-msgid "Trade name (English)"
-msgstr "Επωνυμία (Αγγλικά)"
+#: apps/orders/views.py:200 templates/includes/staff_nav_links.html:7
+#: templates/includes/staff_nav_links.html:32 templates/orders/history.html:3
+#: templates/orders/history.html:7
+msgid "Orders"
+msgstr "Παραγγελίες"
 
-msgid "Full address (Greek)"
-msgstr "Πλήρης διεύθυνση (Ελληνικά)"
-
-msgid "Full address (English)"
-msgstr "Πλήρης διεύθυνση (Αγγλικά)"
-
-msgid "Phone"
-msgstr "Τηλέφωνο"
-
-msgid "GEMI no."
-msgstr "Αρ. Γ.Ε.ΜΗ."
-
-msgid "Consumer payment notice (Greek)"
-msgstr "Νομική φράση πληρωμής (Ελληνικά)"
-
-msgid "Consumer payment notice (English)"
-msgstr "Νομική φράση πληρωμής (Αγγλικά)"
-
-msgid "Complaint sheets notice (Greek)"
-msgstr "Φράση δελτίων παραπόνων (Ελληνικά)"
-
-msgid "Complaint sheets notice (English)"
-msgstr "Φράση δελτίων παραπόνων (Αγγλικά)"
-
-msgid "Tax inclusion notice (Greek)"
-msgstr "Δήλωση συμπερίληψης φόρων (Ελληνικά)"
-
-msgid "Tax inclusion notice (English)"
-msgstr "Δήλωση συμπερίληψης φόρων (Αγγλικά)"
-
-msgid "Cover / service charge applies"
-msgstr "Ισχύει χρέωση κουβέρ / service charge"
-
-msgid "Service charge (€)"
-msgstr "Χρέωση κουβέρ (€)"
-
-msgid "Service charge note (Greek)"
-msgstr "Σημείωση κουβέρ (Ελληνικά)"
-
-msgid "Service charge note (English)"
-msgstr "Σημείωση κουβέρ (Αγγλικά)"
-
-msgid "Allergen policy (Greek)"
-msgstr "Πολιτική αλλεργιογόνων (Ελληνικά)"
-
-msgid "Allergen policy (English)"
-msgstr "Πολιτική αλλεργιογόνων (Αγγλικά)"
-
-msgid "Product symbols legend (Greek)"
-msgstr "Υπόμνημα συμβόλων προϊόντων (Ελληνικά)"
-
-msgid "Product symbols legend (English)"
-msgstr "Υπόμνημα συμβόλων προϊόντων (Αγγλικά)"
-
-msgid "Show legal block on guest QR menu"
-msgstr "Εμφάνιση νομικών στοιχείων στο QR μενού επισκεπτών"
-
-msgid "Free"
-msgstr "Ελεύθερο"
-
-msgid "Occupied"
-msgstr "Κατειλημμένο"
-
-msgid "Reserved"
-msgstr "Κρατημένο"
-
-msgid "Cleaning"
-msgstr "Καθαρισμός"
-
-msgid "Company details saved."
-msgstr "Αποθηκεύτηκαν τα στοιχεία επιχείρησης."
-
-msgid "Staff Login"
-msgstr "Σύνδεση προσωπικού"
-
-msgid "Invalid username or password."
-msgstr "Λανθασμένο όνομα χρήστη ή κωδικός."
-
-msgid "Try"
-msgstr "Δοκιμάστε"
-
-msgid "Username"
-msgstr "Όνομα χρήστη"
-
-msgid "Password"
-msgstr "Κωδικός"
-
-msgid "Sign in"
-msgstr "Είσοδος"
-
-msgid "PIN quick login"
-msgstr "Γρήγορη σύνδεση PIN"
-
-msgid "PIN Login"
-msgstr "Σύνδεση PIN"
-
-msgid "Enter PIN"
-msgstr "Εισαγωγή PIN"
-
-msgid "Start shift"
-msgstr "Έναρξη βάρδιας"
-
-msgid "Password login"
-msgstr "Σύνδεση με κωδικό"
-
-msgid "Baresto Manager"
-msgstr "Baresto Manager"
-
-msgid "Offline — changes will sync when reconnected"
-msgstr "Χωρίς σύνδεση — συγχρονισμός όταν επανέλθει η σύνδεση"
-
+#: apps/orders/views.py:200 templates/dashboard.html:17
+#: templates/includes/staff_nav_links.html:4
+#: templates/includes/staff_nav_links.html:29
+#: templates/mobile/order_new.html:11 templates/restaurants/tables.html:3
+#: templates/restaurants/tables.html:11
 msgid "Tables"
 msgstr "Τραπέζια"
 
-msgid "Company"
-msgstr "Εταιρεία"
+#: apps/orders/views.py:242 apps/orders/views.py:244 apps/orders/views.py:280
+#: apps/orders/views.py:282 apps/orders/views.py:305
+msgid "No receipt available for this order."
+msgstr "Δεν υπάρχει απόδειξη για αυτή την παραγγελία."
 
-msgid "Reports"
-msgstr "Αναφορές"
+#: apps/orders/views.py:268
+msgid "Receipt printed. Order removed from kitchen."
+msgstr "Η απόδειξη εκτυπώθηκε. Η παραγγελία αφαιρέθηκε από την κουζίνα."
 
+#: apps/orders/views.py:349
+msgid "Order was already sent to the kitchen."
+msgstr "Η παραγγελία είχε ήδη σταλεί στην κουζίνα."
+
+#: apps/orders/views.py:351
+msgid "Add items before sending to the kitchen."
+msgstr "Προσθέστε προϊόντα πριν την αποστολή στην κουζίνα."
+
+#: apps/orders/views.py:354
+msgid "Order sent to kitchen."
+msgstr "Η παραγγελία στάλθηκε στην κουζίνα."
+
+#: apps/qr/views.py:155
+msgid "Scan for digital menu"
+msgstr "Σκανάρετε για ψηφιακό μενού"
+
+#: apps/qr/views.py:164
+#, python-format
+msgid "Table %(number)s"
+msgstr "Τραπέζι %(number)s"
+
+#: apps/qr/views.py:169 templates/restaurants/tables.html:130
+msgid "seats"
+msgstr "θέσεις"
+
+#: apps/restaurants/forms.py:11
+#: templates/restaurants/partials/floor_field.html:30
+msgid "Floor name"
+msgstr "Όνομα ορόφου"
+
+#: apps/restaurants/forms.py:14 apps/restaurants/views.py:236
+msgid "e.g. Terrace, 1st floor"
+msgstr "π.χ. Βεράντα, 1ος όροφος"
+
+#: apps/restaurants/forms.py:24
+#: templates/restaurants/partials/floor_filter.html:4
+msgid "Floor"
+msgstr "Όροφος"
+
+#: apps/restaurants/forms.py:25
+msgid "Table name (optional)"
+msgstr "Όνομα τραπεζιού (προαιρετικό)"
+
+#: apps/restaurants/forms.py:26
+msgid "Table number"
+msgstr "Αριθμός τραπεζιού"
+
+#: apps/restaurants/forms.py:27
+#: templates/restaurants/partials/table_card.html:24
+msgid "Seats"
+msgstr "Θέσεις"
+
+#: apps/restaurants/forms.py:31
+msgid "e.g. Terrace 3"
+msgstr "π.χ. Βεράντα 3"
+
+#: apps/restaurants/forms.py:56
+#, python-format
+msgid "Table number %(number)s already exists on this floor."
+msgstr "Ο αριθμός τραπεζιού %(number)s υπάρχει ήδη σε αυτό το επίπεδο."
+
+#: apps/restaurants/forms.py:110 templates/restaurants/company_details.html:32
+msgid "Company logo (guest menu)"
+msgstr "Λογότυπο επιχείρησης (μενού πελατών)"
+
+#: apps/restaurants/forms.py:111 templates/restaurants/company_details.html:44
+msgid "Trade name (Greek)"
+msgstr "Επωνυμία (Ελληνικά)"
+
+#: apps/restaurants/forms.py:112 templates/restaurants/company_details.html:55
+msgid "Trade name (English)"
+msgstr "Επωνυμία (Αγγλικά)"
+
+#: apps/restaurants/forms.py:113 templates/restaurants/company_details.html:48
+msgid "Full address (Greek)"
+msgstr "Πλήρης διεύθυνση (Ελληνικά)"
+
+#: apps/restaurants/forms.py:114 templates/restaurants/company_details.html:59
+msgid "Full address (English)"
+msgstr "Πλήρης διεύθυνση (Αγγλικά)"
+
+#: apps/restaurants/forms.py:115 templates/restaurants/company_details.html:66
+msgid "Phone"
+msgstr "Τηλέφωνο"
+
+#: apps/restaurants/forms.py:116 templates/restaurants/company_details.html:70
+msgid "GEMI no."
+msgstr "Αρ. Γ.Ε.ΜΗ."
+
+#: apps/restaurants/forms.py:117 templates/restaurants/company_details.html:82
+msgid "Consumer payment notice (Greek)"
+msgstr "Νομική φράση πληρωμής (Ελληνικά)"
+
+#: apps/restaurants/forms.py:118 templates/restaurants/company_details.html:93
+msgid "Consumer payment notice (English)"
+msgstr "Νομική φράση πληρωμής (Αγγλικά)"
+
+#: apps/restaurants/forms.py:119 templates/restaurants/company_details.html:86
+msgid "Complaint sheets notice (Greek)"
+msgstr "Φράση δελτίων παραπόνων (Ελληνικά)"
+
+#: apps/restaurants/forms.py:120 templates/restaurants/company_details.html:97
+msgid "Complaint sheets notice (English)"
+msgstr "Φράση δελτίων παραπόνων (Αγγλικά)"
+
+#: apps/restaurants/forms.py:121 templates/restaurants/company_details.html:108
+msgid "Tax inclusion notice (Greek)"
+msgstr "Δήλωση συμπερίληψης φόρων (Ελληνικά)"
+
+#: apps/restaurants/forms.py:122 templates/restaurants/company_details.html:112
+msgid "Tax inclusion notice (English)"
+msgstr "Δήλωση συμπερίληψης φόρων (Αγγλικά)"
+
+#: apps/restaurants/forms.py:123 templates/restaurants/company_details.html:116
+msgid "Cover / service charge applies"
+msgstr "Ισχύει χρέωση κουβέρ / service charge"
+
+#: apps/restaurants/forms.py:124 templates/restaurants/company_details.html:119
+msgid "Service charge (€)"
+msgstr "Χρέωση κουβέρ (€)"
+
+#: apps/restaurants/forms.py:125 templates/restaurants/company_details.html:125
+msgid "Service charge note (Greek)"
+msgstr "Σημείωση κουβέρ (Ελληνικά)"
+
+#: apps/restaurants/forms.py:126 templates/restaurants/company_details.html:129
+msgid "Service charge note (English)"
+msgstr "Σημείωση κουβέρ (Αγγλικά)"
+
+#: apps/restaurants/forms.py:127 templates/restaurants/company_details.html:155
+msgid "Allergen policy (Greek)"
+msgstr "Πολιτική αλλεργιογόνων (Ελληνικά)"
+
+#: apps/restaurants/forms.py:128 templates/restaurants/company_details.html:159
+msgid "Allergen policy (English)"
+msgstr "Πολιτική αλλεργιογόνων (Αγγλικά)"
+
+#: apps/restaurants/forms.py:129 templates/restaurants/company_details.html:140
+msgid "Product symbols legend (Greek)"
+msgstr "Υπόμνημα συμβόλων προϊόντων (Ελληνικά)"
+
+#: apps/restaurants/forms.py:130 templates/restaurants/company_details.html:144
+msgid "Product symbols legend (English)"
+msgstr "Υπόμνημα συμβόλων προϊόντων (Αγγλικά)"
+
+#: apps/restaurants/forms.py:131 templates/restaurants/company_details.html:166
+msgid "Show legal block on guest QR menu"
+msgstr "Εμφάνιση νομικών στοιχείων στο QR μενού επισκεπτών"
+
+#: apps/restaurants/models.py:133
+msgid "Free"
+msgstr "Ελεύθερο"
+
+#: apps/restaurants/models.py:134
+msgid "Occupied"
+msgstr "Κατειλημμένο"
+
+#: apps/restaurants/models.py:135
+msgid "Reserved"
+msgstr "Κρατημένο"
+
+#: apps/restaurants/models.py:136
+msgid "Cleaning"
+msgstr "Καθαρισμός"
+
+#: apps/restaurants/views.py:231
+msgid "Add floor"
+msgstr "Προσθήκη ορόφου"
+
+#: apps/restaurants/views.py:232
+msgid "New floor"
+msgstr "Νέος όροφος"
+
+#: apps/restaurants/views.py:233
+msgid "Save"
+msgstr "Αποθήκευση"
+
+#: apps/restaurants/views.py:234 templates/accounts/staff_user_form.html:99
+#: templates/menus/item_form.html:156
+msgid "Cancel"
+msgstr "Ακύρωση"
+
+#: apps/restaurants/views.py:235 templates/restaurants/tables.html:133
+msgid "Save failed"
+msgstr "Η αποθήκευση απέτυχε"
+
+#: apps/restaurants/views.py:299
+msgid "No branch configured."
+msgstr "Δεν έχει οριστεί υποκατάστημα."
+
+#: apps/restaurants/views.py:303 apps/restaurants/views.py:328
+msgid "Invalid JSON."
+msgstr "Μη έγκυρο JSON."
+
+#: apps/restaurants/views.py:307 apps/restaurants/views.py:332
+msgid "Enter a floor name."
+msgstr "Εισάγετε όνομα ορόφου."
+
+#: apps/restaurants/views.py:336
+msgid "A floor with this name already exists."
+msgstr "Υπάρχει ήδη όροφος με αυτό το όνομα."
+
+#: apps/restaurants/views.py:350
+#, python-format
+msgid ""
+"Cannot delete “%(name)s” — it has %(count)s table(s). Move or delete them "
+"first."
+msgstr ""
+"Αδυναμία διαγραφής «%(name)s» — έχει %(count)s τραπέζι(α). Μετακινήστε ή "
+"διαγράψτε τα πρώτα."
+
+#: apps/restaurants/views.py:366
+msgid "Could not add table. Check the form and try again."
+msgstr "Αδυναμία προσθήκης τραπεζιού. Ελέγξτε τη φόρμα και δοκιμάστε ξανά."
+
+#: apps/restaurants/views.py:380
+#, python-format
+msgid "Table “%(label)s” added with %(seats)s seats."
+msgstr "Προστέθηκε το τραπέζι «%(label)s» με %(seats)s θέσεις."
+
+#: apps/restaurants/views.py:399
+msgid "Seats must be a number between 1 and 99."
+msgstr "Οι θέσεις πρέπει να είναι αριθμός από 1 έως 99."
+
+#: apps/restaurants/views.py:407
+msgid "Table updated."
+msgstr "Το τραπέζι ενημερώθηκε."
+
+#: apps/restaurants/views.py:422
+#, python-format
+msgid "Cannot delete “%(label)s” while it has an active session."
+msgstr ""
+"Δεν είναι δυνατή η διαγραφή του «%(label)s» όσο έχει ενεργή συνεδρία."
+
+#: apps/restaurants/views.py:429
+#, python-format
+msgid ""
+"Cannot delete “%(label)s” while it is occupied. Close the session first."
+msgstr ""
+"Δεν είναι δυνατή η διαγραφή του «%(label)s» όσο είναι κατειλημμένο. "
+"Κλείστε πρώτα τη συνεδρία."
+
+#: apps/restaurants/views.py:434
+#, python-format
+msgid "Table “%(label)s” removed."
+msgstr "Αφαιρέθηκε το τραπέζι «%(label)s»."
+
+#: apps/restaurants/views.py:546
+msgid "Company details saved."
+msgstr "Αποθηκεύτηκαν τα στοιχεία επιχείρησης."
+
+#: templates/accounts/login.html:3 templates/accounts/login.html:9
+msgid "Staff Login"
+msgstr "Σύνδεση προσωπικού"
+
+#: templates/accounts/login.html:12
+msgid "Invalid username or password."
+msgstr "Λανθασμένο όνομα χρήστη ή κωδικός."
+
+#: templates/accounts/login.html:13
+msgid "Try"
+msgstr "Δοκιμάστε"
+
+#: templates/accounts/login.html:23
+msgid "Sign in"
+msgstr "Είσοδος"
+
+#: templates/accounts/login.html:27
+msgid "PIN quick login"
+msgstr "Γρήγορη σύνδεση PIN"
+
+#: templates/accounts/pin_login.html:3
+msgid "PIN Login"
+msgstr "Σύνδεση PIN"
+
+#: templates/accounts/pin_login.html:9
+msgid "Enter PIN"
+msgstr "Εισαγωγή PIN"
+
+#: templates/accounts/pin_login.html:28
+msgid "Start shift"
+msgstr "Έναρξη βάρδιας"
+
+#: templates/accounts/pin_login.html:31
+msgid "Password login"
+msgstr "Σύνδεση με κωδικό"
+
+#: templates/accounts/staff_user_form.html:13
+msgid "Back to users"
+msgstr "Πίσω στους χρήστες"
+
+#: templates/accounts/staff_user_list.html:3
+#: templates/accounts/staff_user_list.html:7
+msgid "Staff users"
+msgstr "Προσωπικό"
+
+#: templates/accounts/staff_user_list.html:8
+msgid "Manage logins, roles, and PINs for your restaurant."
+msgstr "Διαχείριση συνδέσεων, ρόλων και PIN για το κατάστημά σας."
+
+#: templates/accounts/staff_user_list.html:11
+msgid "Add user"
+msgstr "Προσθήκη χρήστη"
+
+#: templates/accounts/staff_user_list.html:20
+msgid "User"
+msgstr "Χρήστης"
+
+#: templates/accounts/staff_user_list.html:23
+msgid "PIN"
+msgstr "PIN"
+
+#: templates/accounts/staff_user_list.html:24
+msgid "Status"
+msgstr "Κατάσταση"
+
+#: templates/accounts/staff_user_list.html:42
+msgid "Inactive"
+msgstr "Ανενεργός"
+
+#: templates/accounts/staff_user_list.html:46 templates/menus/manage.html:19
+#: templates/menus/manage.html:20 templates/menus/partials/item_row.html:21
+msgid "Edit"
+msgstr "Επεξεργασία"
+
+#: templates/accounts/staff_user_list.html:51
+msgid "No staff users yet."
+msgstr "Δεν υπάρχουν χρήστες προσωπικού."
+
+#: templates/base.html:8 templates/includes/brand_logo_horizontal.html:5
+#: templates/includes/brand_logo_vertical.html:4
+#: templates/public/guest_menu.html:31
+msgid "Baresto Manager"
+msgstr "Baresto Manager"
+
+#: templates/base.html:41
+msgid "Offline — changes will sync when reconnected"
+msgstr "Χωρίς σύνδεση — συγχρονισμός όταν επανέλθει η σύνδεση"
+
+#: templates/base.html:56 templates/base.html:79 templates/base.html:105
 msgid "Logout"
 msgstr "Έξοδος"
 
+#: templates/base.html:131 templates/public/guest_menu.html:8
+#: templates/public/guest_menu.html:37
+msgid "Table"
+msgstr "Τραπέζι"
+
+#: templates/base.html:132
+msgid "is ready"
+msgstr "έτοιμο"
+
+#: templates/base.html:133
+msgid "order is ready to serve"
+msgstr "η παραγγελία είναι έτοιμη για σερβίρισμα"
+
+#: templates/base.html:134
+msgid "Dish ready"
+msgstr "Πιάτο έτοιμο"
+
+#: templates/base.html:135
+msgid "Order ready"
+msgstr "Παραγγελία έτοιμη"
+
+#: templates/base.html:136
+msgid "Tap to enable sound & alerts"
+msgstr "Πατήστε για ήχο και ειδοποιήσεις"
+
+#: templates/dashboard.html:3
 msgid "Dashboard"
 msgstr "Πίνακας ελέγχου"
 
+#: templates/dashboard.html:5
 msgid "Manager Dashboard"
 msgstr "Πίνακας διαχείρισης"
 
+#: templates/dashboard.html:9
 msgid "Revenue today"
 msgstr "Έσοδα σήμερα"
 
+#: templates/dashboard.html:13
 msgid "Active orders"
 msgstr "Ενεργές παραγγελίες"
 
+#: templates/dashboard.html:22
 msgid "Live orders"
 msgstr "Ζωντανές παραγγελίες"
 
+#: templates/dashboard.html:30
 msgid "View"
 msgstr "Προβολή"
 
+#: templates/dashboard.html:33
 msgid "No active orders"
 msgstr "Δεν υπάρχουν ενεργές παραγγελίες"
 
+#: templates/includes/staff_nav_links.html:16
+#: templates/includes/staff_nav_links.html:41 templates/menus/manage.html:22
+msgid "Guest menu"
+msgstr "Μενού πελατών"
+
+#: templates/includes/staff_nav_links.html:19
+#: templates/includes/staff_nav_links.html:44 templates/menus/manage.html:23
+msgid "Company"
+msgstr "Εταιρεία"
+
+#: templates/includes/staff_nav_links.html:22
+#: templates/includes/staff_nav_links.html:47
+msgid "Users"
+msgstr "Χρήστες"
+
+#: templates/includes/staff_nav_links.html:25
+#: templates/includes/staff_nav_links.html:50 templates/reports.html:3
+msgid "Reports"
+msgstr "Αναφορές"
+
 #
+#: templates/kitchen/display.html:3
 msgid "Kitchen Display"
 msgstr "Κουζίνα"
 
+#: templates/kitchen/display.html:22
 msgid "Advance"
 msgstr "Επόμενο"
 
+#: templates/kitchen/display.html:36
 msgid "Waiting for tickets…"
 msgstr "Αναμονή για παραγγελίες…"
 
+#: templates/menus/category_form.html:3 templates/menus/category_form.html:13
 msgid "New category"
 msgstr "Νέα κατηγορία"
 
+#: templates/menus/category_form.html:12 templates/menus/guest_menu_hub.html:23
+#: templates/menus/item_form.html:17
+#: templates/restaurants/company_details.html:14
 msgid "Back to menu"
 msgstr "Πίσω στο μενού"
 
+#: templates/menus/category_form.html:21 templates/menus/item_form.html:33
+#: templates/restaurants/company_details.html:42
+#: templates/restaurants/company_details.html:80
 msgid "Greek"
 msgstr "Ελληνικά"
 
+#: templates/menus/category_form.html:32 templates/menus/item_form.html:47
+#: templates/restaurants/company_details.html:53
+#: templates/restaurants/company_details.html:91
 msgid "English"
 msgstr "Αγγλικά"
 
+#: templates/menus/category_form.html:47
 msgid "Save category"
 msgstr "Αποθήκευση κατηγορίας"
 
+#: templates/menus/guest_menu_hub.html:3 templates/menus/guest_menu_hub.html:20
+msgid "Guest menu & QR"
+msgstr "Μενού πελατών & QR"
+
+#: templates/menus/guest_menu_hub.html:21
+msgid "Preview the customer menu and print QR codes for your tables."
+msgstr "Προεπισκόπηση του μενού πελατών και εκτύπωση QR για τα τραπέζια σας."
+
+#: templates/menus/guest_menu_hub.html:28
+msgid "Customer preview"
+msgstr "Προεπισκόπηση πελάτη"
+
+#: templates/menus/guest_menu_hub.html:31
+msgid "Preview type"
+msgstr "Τύπος προεπισκόπησης"
+
+#: templates/menus/guest_menu_hub.html:35
+msgid "With table"
+msgstr "Με τραπέζι"
+
+#: templates/menus/guest_menu_hub.html:39
+msgid "Shared menu (no table)"
+msgstr "Κοινό μενού (χωρίς τραπέζι)"
+
+#: templates/menus/guest_menu_hub.html:46
+msgid "Table for preview"
+msgstr "Τραπέζι για προεπισκόπηση"
+
+#: templates/menus/guest_menu_hub.html:59
+msgid "Preview URL"
+msgstr "URL προεπισκόπησης"
+
+#: templates/menus/guest_menu_hub.html:64
+msgid "Open in new tab"
+msgstr "Άνοιγμα σε νέα καρτέλα"
+
+#: templates/menus/guest_menu_hub.html:69
+msgid "Live preview"
+msgstr "Ζωντανή προεπισκόπηση"
+
+#: templates/menus/guest_menu_hub.html:70
+#: templates/restaurants/company_details.html:22
+msgid "Guest menu preview"
+msgstr "Προεπισκόπηση μενού πελάτη"
+
+#: templates/menus/guest_menu_hub.html:75 templates/menus/qr_print.html:7
+msgid "Print QR codes"
+msgstr "Εκτύπωση QR"
+
+#: templates/menus/guest_menu_hub.html:76
+msgid ""
+"Choose whether guests scan one menu for the whole venue or a code tied to a "
+"specific table."
+msgstr ""
+"Επιλέξτε αν οι πελάτες σκανάρουν ένα μενού για όλο το κατάστημα ή κωδικό "
+"συγκεκριμένου τραπεζιού."
+
+#: templates/menus/guest_menu_hub.html:80
+msgid "One QR for all tables"
+msgstr "Ένα QR για όλα τα τραπέζια"
+
+#: templates/menus/guest_menu_hub.html:81
+msgid ""
+"Same code everywhere. Guests see the menu without a table number. Best for "
+"shared menus on walls or counters."
+msgstr ""
+"Ίδιος κωδικός παντού. Οι πελάτες βλέπουν το μενού χωρίς αριθμό τραπεζιού. "
+"Ιδανικό για κοινόχρηστα μενού σε τοίχους ή πάγκους."
+
+#: templates/menus/guest_menu_hub.html:85 templates/menus/qr_print.html:87
+#: templates/orders/receipt_print.html:82
+msgid "Print"
+msgstr "Εκτύπωση"
+
+#: templates/menus/guest_menu_hub.html:87
+#: templates/menus/guest_menu_hub.html:100
+msgid "Preview print layout"
+msgstr "Προεπισκόπηση εκτύπωσης"
+
+#: templates/menus/guest_menu_hub.html:92
+msgid "QR per table (with table info)"
+msgstr "QR ανά τραπέζι (με στοιχεία τραπεζιού)"
+
+#: templates/menus/guest_menu_hub.html:93
+msgid ""
+"Each table gets its own code. Guests see the table name on the menu. The "
+"printout shows table name, floor, and seats."
+msgstr ""
+"Κάθε τραπέζι έχει δικό του κωδικό. Οι πελάτες βλέπουν το όνομα τραπεζιού στο "
+"μενού. Η εκτύπωση δείχνει όνομα, όροφο και θέσεις."
+
+#: templates/menus/guest_menu_hub.html:95
+#, python-format
+msgid "%(counter)s table"
+msgid_plural "%(counter)s tables"
+msgstr[0] "%(counter)s τραπέζι"
+msgstr[1] "%(counter)s τραπέζια"
+
+#: templates/menus/guest_menu_hub.html:98
+msgid "Print all tables"
+msgstr "Εκτύπωση όλων των τραπεζιών"
+
+#: templates/menus/guest_menu_hub.html:103
+msgid "No tables in this branch. Add tables first."
+msgstr ""
+"Δεν υπάρχουν τραπέζια σε αυτό το υποκατάστημα. Προσθέστε τραπέζια πρώτα."
+
+#: templates/menus/guest_menu_hub.html:104 templates/restaurants/tables.html:17
+#: templates/restaurants/tables.html:126
+msgid "Manage tables"
+msgstr "Διαχείριση τραπεζιών"
+
 #
+#: templates/menus/item_form.html:3 templates/menus/item_form.html:18
 msgid "Edit product"
 msgstr "Επεξεργασία προϊόντος"
 
+#: templates/menus/item_form.html:3 templates/menus/item_form.html:18
 msgid "New product"
 msgstr "Νέο προϊόν"
 
+#: templates/menus/item_form.html:27
 msgid "Basics"
 msgstr "Βασικά"
 
+#: templates/menus/item_form.html:66
 msgid "Leave empty to keep current image when editing."
 msgstr "Αφήστε κενό για να κρατήσετε την τρέχουσα εικόνα."
 
+#: templates/menus/item_form.html:93
 msgid "Legal product labelling"
 msgstr "Νόμιμη σήμανση προϊόντος"
 
+#: templates/menus/item_form.html:94
 msgid ""
 "Required disclosures for frozen goods, oils, and meat/seafood origin or PDO "
 "names."
@@ -369,39 +948,43 @@ msgstr ""
 "Υποχρεωτικές ενδείξεις για κατεψυγμένα, λάδια, προέλευση κρέατος/θαλασσινών "
 "ή Π.Ο.Π."
 
+#: templates/menus/item_form.html:113
 msgid "Dietary"
 msgstr "Διατροφή"
 
+#: templates/menus/item_form.html:125
 msgid "Nutrition"
 msgstr "Διατροφική αξία"
 
+#: templates/menus/item_form.html:125
 msgid "(per serving, optional)"
 msgstr "(ανά μερίδα, προαιρετικό)"
 
+#: templates/menus/item_form.html:155
 msgid "Save product"
 msgstr "Αποθήκευση προϊόντος"
 
-msgid "Cancel"
-msgstr "Ακύρωση"
-
+#: templates/menus/item_form.html:162
 msgid "Remove this product from the menu?"
 msgstr "Αφαίρεση προϊόντος από το μενού;"
 
+#: templates/menus/item_form.html:164
 msgid "Delete product"
 msgstr "Διαγραφή προϊόντος"
 
+#: templates/menus/manage.html:3
 msgid "Menu Management"
 msgstr "Διαχείριση μενού"
 
+#: templates/menus/manage.html:19 templates/restaurants/tables.html:125
 msgid "Done editing"
 msgstr "Τέλος επεξεργασίας"
 
-msgid "Edit"
-msgstr "Επεξεργασία"
-
+#: templates/menus/manage.html:25
 msgid "Add product"
 msgstr "Προσθήκη προϊόντος"
 
+#: templates/menus/manage.html:31
 msgid ""
 "Edit mode: empty categories can be deleted. Categories with products are "
 "protected."
@@ -409,118 +992,319 @@ msgstr ""
 "Λειτουργία επεξεργασίας: μπορείτε να διαγράψετε κενές κατηγορίες. Οι "
 "κατηγορίες με προϊόντα προστατεύονται."
 
+#: templates/menus/manage.html:38
 msgid "draft"
 msgstr "πρόχειρο"
 
+#: templates/menus/manage.html:50
 msgid "Remove all products before deleting this category."
 msgstr "Αφαιρέστε όλα τα προϊόντα πριν διαγράψετε αυτή την κατηγορία."
 
+#: templates/menus/manage.html:51
 #, python-format
 msgid "%(counter)s product — cannot delete"
 msgid_plural "%(counter)s products — cannot delete"
 msgstr[0] "%(counter)s προϊόν — δεν μπορεί να διαγραφεί"
 msgstr[1] "%(counter)s προϊόντα — δεν μπορεί να διαγραφεί"
 
+#: templates/menus/manage.html:55
 #, python-format
 msgid "Delete category “%(name)s”? This cannot be undone."
 msgstr "Διαγραφή κατηγορίας «%(name)s»; Η ενέργεια δεν αναιρείται."
 
+#: templates/menus/manage.html:58
 msgid "Delete"
 msgstr "Διαγραφή"
 
+#: templates/menus/manage.html:72
 msgid "No products in this category."
 msgstr "Δεν υπάρχουν προϊόντα σε αυτή την κατηγορία."
 
+#: templates/menus/manage.html:76
 msgid "Add to"
 msgstr "Προσθήκη σε"
 
+#: templates/menus/manage.html:80
 msgid "No categories yet."
 msgstr "Δεν υπάρχουν κατηγορίες ακόμα."
 
+#: templates/menus/manage.html:84
 msgid "No menus found. Run python manage.py seed_demo."
 msgstr "Δεν βρέθηκε μενού. Εκτελέστε python manage.py seed_demo."
 
+#: templates/menus/partials/item_compliance_badges.html:5
 msgid "Frozen product"
 msgstr "Κατεψυγμένο προϊόν"
 
+#: templates/menus/partials/item_compliance_badges.html:5
 msgid "Frozen"
 msgstr "Κατεψυγμένο"
 
+#: templates/menus/partials/item_compliance_badges.html:10
 msgid "Seed oil"
 msgstr "Σπορέλαιο"
 
+#: templates/menus/partials/item_row.html:6
 msgid "No photo"
 msgstr "Χωρίς φωτογραφία"
 
+#: templates/menus/partials/item_row.html:11
 msgid "kcal"
 msgstr "kcal"
 
+#: templates/menus/partials/item_row.html:25
 msgid "Unavailable"
 msgstr "Μη διαθέσιμο"
 
+#: templates/menus/qr_print.html:82
+msgid "Shared menu QR"
+msgstr "Κοινό QR μενού"
+
+#: templates/menus/qr_print.html:82
+msgid "Per-table QR"
+msgstr "QR ανά τραπέζι"
+
+#: templates/menus/qr_print.html:86
+msgid "Back"
+msgstr "Πίσω"
+
+#: templates/menus/qr_print.html:105
+msgid "No QR codes to print."
+msgstr "Δεν υπάρχουν QR για εκτύπωση."
+
+#: templates/mobile/order_new.html:3 templates/orders/detail.html:3
+#: templates/orders/detail.html:5 templates/orders/history.html:17
+#: templates/orders/partials/print_receipt_modal.html:8
+#: templates/orders/receipt.html:13 templates/orders/receipt_print.html:103
 msgid "Order"
 msgstr "Παραγγελία"
 
+#: templates/mobile/order_new.html:19
+#: templates/mobile/partials/order_summary.html:6
+#, python-format
+msgid "%(counter)s ready to serve"
+msgid_plural "%(counter)s ready to serve"
+msgstr[0] "%(counter)s έτοιμο για σερβίρισμα"
+msgstr[1] "%(counter)s έτοιμα για σερβίρισμα"
+
+#: templates/mobile/order_new.html:25
 #, python-format
 msgid "%(n)s guests"
 msgstr "%(n)s άτομα"
 
-#, python-format
-msgid "%(count)s items"
-msgstr "%(count)s προϊόντα"
+#: templates/mobile/partials/order_menu.html:24
+msgid "Add"
+msgstr "Προσθήκη"
 
+#: templates/mobile/partials/order_summary.html:12
+msgid "Current order"
+msgstr "Τρέχουσα παραγγελία"
+
+#: templates/mobile/partials/order_summary.html:20
+msgid "Ready to serve"
+msgstr "Έτοιμα για σερβίρισμα"
+
+#: templates/mobile/partials/order_summary.html:37
+#: templates/mobile/partials/order_summary.html:50
+#: templates/mobile/partials/order_summary.html:59
+msgid "Delivered"
+msgstr "Παραδόθηκε"
+
+#: templates/mobile/partials/order_summary.html:69
+msgid "Sent to kitchen"
+msgstr "Στάλθηκε στην κουζίνα"
+
+#: templates/mobile/partials/order_summary.html:92
+#: templates/orders/receipt.html:34 templates/orders/receipt_print.html:123
+msgid "Subtotal"
+msgstr "Υποσύνολο"
+
+#: templates/mobile/partials/order_summary.html:101
+msgid "New items"
+msgstr "Νέα πιάτα"
+
+#: templates/mobile/partials/order_summary.html:116
+msgid "Tap + to add items"
+msgstr "Πατήστε + για προσθήκη"
+
+#: templates/mobile/partials/order_summary.html:123
+#, python-format
+msgid "%(counter)s item"
+msgid_plural "%(counter)s items"
+msgstr[0] "%(counter)s πιάτο"
+msgstr[1] "%(counter)s πιάτα"
+
+#: templates/mobile/partials/order_summary.html:129
+msgid "Add more items or close the table."
+msgstr "Προσθέστε πιάτα ή κλείστε το τραπέζι."
+
+#: templates/mobile/partials/order_summary.html:138
 msgid "Send to kitchen"
 msgstr "Αποστολή στην κουζίνα"
 
+#: templates/mobile/partials/order_summary.html:144
+msgid "Close this table and request the bill?"
+msgstr "Κλείσιμο τραπεζιού και έκδοση λογαριασμού;"
+
+#: templates/mobile/partials/order_summary.html:147
+msgid "Close table"
+msgstr "Κλείσιμο τραπεζιού"
+
+#: templates/orders/detail.html:15 templates/orders/receipt.html:48
+#: templates/orders/receipt_print.html:137
 msgid "Total"
 msgstr "Σύνολο"
 
-msgid "Table"
-msgstr "Τραπέζι"
+#: templates/orders/history.html:8
+msgid "Closed tables — view and print receipts"
+msgstr "Κλειστά τραπέζια — προβολή και εκτύπωση αποδείξεων"
 
+#: templates/orders/history.html:33 templates/orders/history.html:38
+#: templates/orders/partials/print_receipt_modal.html:15
+msgid "Print receipt"
+msgstr "Εκτύπωση απόδειξης"
+
+#: templates/orders/history.html:45
+msgid "No closed orders yet."
+msgstr "Δεν υπάρχουν κλειστές παραγγελίες ακόμα."
+
+#: templates/orders/history.html:51
+msgid "Pagination"
+msgstr "Σελιδοποίηση"
+
+#: templates/orders/history.html:55
+msgid "Previous"
+msgstr "Προηγούμενη"
+
+#: templates/orders/history.html:59
+#, python-format
+msgid "Page %(num)s of %(total)s"
+msgstr "Σελίδα %(num)s από %(total)s"
+
+#: templates/orders/history.html:64
+msgid "Next"
+msgstr "Επόμενη"
+
+#: templates/orders/partials/print_receipt_modal.html:5
+msgid "Table closed"
+msgstr "Το τραπέζι έκλεισε"
+
+#: templates/orders/partials/print_receipt_modal.html:6
+msgid "Do you want to print a receipt?"
+msgstr "Θέλετε να εκτυπώσετε απόδειξη;"
+
+#: templates/orders/partials/print_receipt_modal.html:20
+msgid "Not now"
+msgstr "Όχι τώρα"
+
+#: templates/orders/receipt.html:3 templates/orders/receipt.html:12
+#: templates/orders/receipt_print.html:7 templates/orders/receipt_print.html:79
+msgid "Receipt"
+msgstr "Απόδειξη"
+
+#: templates/orders/receipt.html:38 templates/orders/receipt_print.html:127
+msgid "Tax"
+msgstr "ΦΠΑ"
+
+#: templates/orders/receipt.html:43 templates/orders/receipt_print.html:132
+msgid "Discount"
+msgstr "Έκπτωση"
+
+#: templates/orders/receipt.html:55
+msgid "Receipt already printed."
+msgstr "Η απόδειξη έχει ήδη εκτυπωθεί."
+
+#: templates/orders/receipt.html:59
+msgid "Print again"
+msgstr "Εκτύπωση ξανά"
+
+#: templates/orders/receipt.html:62 templates/orders/receipt_print.html:81
+msgid "Back to orders"
+msgstr "Πίσω στις παραγγελίες"
+
+#: templates/orders/receipt.html:62 templates/orders/receipt_print.html:81
+msgid "Back to tables"
+msgstr "Πίσω στα τραπέζια"
+
+#: templates/orders/receipt.html:67
+msgid ""
+"Table closed. Print the receipt to finish and remove this order from the "
+"kitchen display."
+msgstr ""
+"Το τραπέζι έκλεισε. Εκτυπώστε την απόδειξη για να ολοκληρώσετε και να "
+"αφαιρέσετε την παραγγελία από την οθόνη κουζίνας."
+
+#: templates/orders/receipt.html:72
+msgid "Print Receipt"
+msgstr "Εκτύπωση απόδειξης"
+
+#: templates/orders/receipt_print.html:143
+msgid "Thank you!"
+msgstr "Ευχαριστούμε!"
+
+#: templates/public/guest_menu.html:39
+msgid "Digital menu"
+msgstr "Ψηφιακό μενού"
+
+#: templates/public/guest_menu.html:75
 msgid "Allergen"
 msgstr "Αλλεργιογόνο"
 
+#: templates/public/guest_menu.html:86
 msgid "Menu not available."
 msgstr "Το μενού δεν είναι διαθέσιμο."
 
+#: templates/public/guest_menu.html:96
 msgid "A waiter has been notified."
 msgstr "Ειδοποιήθηκε ο σερβιτόρος."
 
+#: templates/public/guest_menu.html:97
 msgid "Call waiter"
 msgstr "Καλέστε σερβιτόρο"
 
+#: templates/public/includes/legal_catalogue_block.html:15
 msgid "Tel."
 msgstr "Τηλ."
 
+#: templates/public/includes/legal_catalogue_block.html:16
 msgid "GEMI"
 msgstr "Γ.Ε.ΜΗ."
 
+#: templates/public/includes/legal_catalogue_block.html:21
 msgid "Prices"
 msgstr "Τιμές"
 
+#: templates/public/includes/legal_catalogue_block.html:24
 #, python-format
 msgid "Cover / service charge: €%(amount)s"
 msgstr "Χρέωση κουβέρ / service charge: €%(amount)s"
 
+#: templates/reports.html:5
 msgid "Analytics"
 msgstr "Αναλυτικά"
 
+#: templates/reports.html:6
 msgid "Sessions (7 days)"
 msgstr "Σερβίς (7 ημέρες)"
 
+#: templates/reports.html:7
 msgid "Top items"
 msgstr "Δημοφιλή πιάτα"
 
+#: templates/reports.html:12
 msgid "sold"
 msgstr "πωλήθηκαν"
 
+#: templates/reports.html:15
 msgid "No data yet"
 msgstr "Δεν υπάρχουν δεδομένα ακόμα"
 
+#: templates/restaurants/company_details.html:3
+#: templates/restaurants/company_details.html:15
 msgid "Company details"
 msgstr "Στοιχεία επιχείρησης"
 
+#: templates/restaurants/company_details.html:17
 msgid ""
 "Mandatory business and legal information for your digital menu catalogue "
 "(Greek law & EU allergen rules). Shown on the guest QR menu when enabled."
@@ -529,370 +1313,198 @@ msgstr ""
 "κατάλογο (ελληνική νομοθεσία & ΕΕ για αλλεργιογόνα). Εμφανίζονται στο QR "
 "μενού επισκεπτών όταν είναι ενεργοποιημένες."
 
-msgid "Guest menu preview"
-msgstr "Προεπισκόπηση μενού πελάτη"
-
+#: templates/restaurants/company_details.html:30
 msgid "1. Business identity"
 msgstr "1. Στοιχεία επιχείρησης"
 
-msgid "Company logo (guest menu)"
-msgstr "Λογότυπο επιχείρησης (μενού πελατών)"
+#: templates/restaurants/company_details.html:33
+msgid ""
+"Displayed on customer QR menus only. Does not change the Baresto Manager "
+"logo in the app."
+msgstr ""
+"Εμφανίζεται μόνο στα QR μενού πελατών. Δεν αλλάζει το λογότυπο Baresto "
+"Manager στην εφαρμογή."
 
-msgid "Displayed on customer QR menus only. Does not change the Baresto Manager logo in the app."
-msgstr "Εμφανίζεται μόνο στα QR μενού πελατών. Δεν αλλάζει το λογότυπο Baresto Manager στην εφαρμογή."
-
+#: templates/restaurants/company_details.html:38
 msgid "Leave empty to keep the current logo when editing."
 msgstr "Αφήστε κενό για να κρατήσετε το τρέχον λογότυπο."
 
-msgid "Logo is taken from your restaurant settings."
-msgstr "Το λογότυπο λαμβάνεται από τις ρυθμίσεις του εστιατορίου."
-
+#: templates/restaurants/company_details.html:77
 msgid "2. Mandatory legal notices (footer)"
 msgstr "2. Υποχρεωτικές νομικές φράσεις (υποσέλιδο)"
 
+#: templates/restaurants/company_details.html:105
 msgid "3. Tax & pricing clarifications"
 msgstr "3. Φορολογικές & τιμολογικές διευκρινίσεις"
 
+#: templates/restaurants/company_details.html:136
 msgid "4. Product labelling legend"
 msgstr "4. Υπόμνημα σήμανσης προϊόντων"
 
+#: templates/restaurants/company_details.html:137
 msgid "Set frozen, oil type and origin on each product in Menu → Edit product."
-msgstr "Ορίστε κατεψυγμένο, λάδι και προέλευση σε κάθε προϊόν από Μενού → Επεξεργασία προϊόντος."
+msgstr ""
+"Ορίστε κατεψυγμένο, λάδι και προέλευση σε κάθε προϊόν από Μενού → "
+"Επεξεργασία προϊόντος."
 
+#: templates/restaurants/company_details.html:151
 msgid "5. Allergens (EU 1169/2011)"
 msgstr "5. Αλλεργιογόνα (ΕΕ 1169/2011)"
 
+#: templates/restaurants/company_details.html:152
 msgid ""
 "Assign allergens per dish in the product form; icons appear on the guest "
 "menu."
 msgstr ""
-"Ορίστε αλλεργιογόνα ανά πιάτο στη φόρμα προϊόντος· εμφανίζονται ως "
-"εικονίδια στο μενού επισκεπτών."
+"Ορίστε αλλεργιογόνα ανά πιάτο στη φόρμα προϊόντος· εμφανίζονται ως εικονίδια "
+"στο μενού επισκεπτών."
 
+#: templates/restaurants/company_details.html:169
 msgid "Save company details"
 msgstr "Αποθήκευση στοιχείων επιχείρησης"
 
+#: templates/restaurants/partials/add_table_form.html:16
+msgid "Leave empty for auto-number."
+msgstr "Αφήστε κενό για αυτόματη αρίθμηση."
+
+#: templates/restaurants/partials/add_table_form.html:24
+#: templates/restaurants/tables.html:49
+msgid "Add table"
+msgstr "Προσθήκη τραπεζιού"
+
+#: templates/restaurants/partials/floor_field.html:25
+msgid "Close"
+msgstr "Κλείσιμο"
+
+#: templates/restaurants/partials/floor_filter.html:3
+msgid "Filter by floor"
+msgstr "Φιλτράρισμα κατά όροφο"
+
+#: templates/restaurants/partials/floor_filter.html:8
+msgid "All"
+msgstr "Όλα"
+
+#: templates/restaurants/partials/table_card.html:12
 #, python-format
 msgid "%(n)s seats"
 msgstr "%(n)s θέσεις"
 
-msgid "Open & order"
-msgstr "Άνοιγμα & παραγγελία"
-
-msgid "Continue order"
-msgstr "Συνέχεια παραγγελίας"
-
-msgid "List"
-msgstr "Λίστα"
-
-msgid "Floor plan"
-msgstr "Κάτοψη"
-
-msgid "No tables configured for this branch."
-msgstr "Δεν υπάρχουν τραπέζια για αυτό το κατάστημα."
-
-msgid "Drag tables to arrange your floor. Click Save layout when finished."
-msgstr "Σύρετε τα τραπέζια για την κάτοψη. Πατήστε Αποθήκευση όταν τελειώσετε."
-
-msgid "Tap a table to open or continue an order."
-msgstr "Πατήστε τραπέζι για παραγγελία."
-
-msgid "Edit layout"
-msgstr "Επεξεργασία κάτοψης"
-
-msgid "Save layout"
-msgstr "Αποθήκευση κάτοψης"
-
-msgid "Saving…"
-msgstr "Αποθήκευση…"
-
-msgid "seats"
-msgstr "θέσεις"
-
-msgid "Manage tables"
-msgstr "Διαχείριση τραπεζιών"
-
-msgid "Done managing"
-msgstr "Τέλος διαχείρισης"
-
-msgid "Add table"
-msgstr "Προσθήκη τραπεζιού"
-
-msgid "Table name (optional)"
-msgstr "Όνομα τραπεζιού (προαιρετικό)"
-
-msgid "Table number"
-msgstr "Αριθμός τραπεζιού"
-
-msgid "Seats"
-msgstr "Θέσεις"
-
-msgid "Leave empty for auto-number."
-msgstr "Αφήστε κενό για αυτόματη αρίθμηση."
-
+#: templates/restaurants/partials/table_card.html:20
 msgid "Table name"
 msgstr "Όνομα τραπεζιού"
 
+#: templates/restaurants/partials/table_card.html:28
 msgid "Save table"
 msgstr "Αποθήκευση τραπεζιού"
 
+#: templates/restaurants/partials/table_card.html:33
+#, python-format
+msgid "Delete table “%(label)s”?"
+msgstr "Διαγραφή τραπεζιού «%(label)s»;"
+
+#: templates/restaurants/partials/table_card.html:36
 msgid "Delete table"
 msgstr "Διαγραφή τραπεζιού"
 
+#: templates/restaurants/partials/table_card.html:39
 msgid "Close the session before deleting this table."
 msgstr "Κλείστε τη συνεδρία πριν διαγράψετε το τραπέζι."
 
-msgid "Remove tables from the list view, or tap × on a free table here."
-msgstr "Διαγραφή από τη λίστα, ή πατήστε × σε ελεύθερο τραπέζι εδώ."
-
-msgid "Delete this table?"
-msgstr "Διαγραφή αυτού του τραπεζιού;"
-
-msgid "Could not delete table"
-msgstr "Αδυναμία διαγραφής τραπεζιού"
-
-msgid "Table updated."
-msgstr "Το τραπέζι ενημερώθηκε."
-
-msgid "Could not add table. Check the form and try again."
-msgstr "Αδυναμία προσθήκης τραπεζιού. Ελέγξτε τη φόρμα και δοκιμάστε ξανά."
-
-msgid "Table number %(number)s already exists on this floor."
-msgstr "Ο αριθμός τραπεζιού %(number)s υπάρχει ήδη σε αυτό το επίπεδο."
-
-msgid "Seats must be a number between 1 and 99."
-msgstr "Οι θέσεις πρέπει να είναι αριθμός από 1 έως 99."
-
-msgid "Table “%(label)s” added with %(seats)s seats."
-msgstr "Προστέθηκε το τραπέζι «%(label)s» με %(seats)s θέσεις."
-
-msgid "Table “%(label)s” removed."
-msgstr "Αφαιρέθηκε το τραπέζι «%(label)s»."
-
-msgid "Guest menu"
-msgstr "Μενού πελατών"
-
-msgid "Guest menu & QR"
-msgstr "Μενού πελατών & QR"
-
-msgid "Preview the customer menu and print QR codes for your tables."
-msgstr "Προεπισκόπηση του μενού πελατών και εκτύπωση QR για τα τραπέζια σας."
-
-msgid "Customer preview"
-msgstr "Προεπισκόπηση πελάτη"
-
-msgid "Preview type"
-msgstr "Τύπος προεπισκόπησης"
-
-msgid "With table"
-msgstr "Με τραπέζι"
-
-msgid "Shared menu (no table)"
-msgstr "Κοινό μενού (χωρίς τραπέζι)"
-
-msgid "Table for preview"
-msgstr "Τραπέζι για προεπισκόπηση"
-
-msgid "Open in new tab"
-msgstr "Άνοιγμα σε νέα καρτέλα"
-
-msgid "Live preview"
-msgstr "Ζωντανή προεπισκόπηση"
-
-msgid "Choose whether guests scan one menu for the whole venue or a code tied to a specific table."
-msgstr "Επιλέξτε αν οι πελάτες σκανάρουν ένα μενού για όλο το κατάστημα ή κωδικό συγκεκριμένου τραπεζιού."
-
-msgid "One QR for all tables"
-msgstr "Ένα QR για όλα τα τραπέζια"
-
-msgid "Same code everywhere. Guests see the menu without a table number. Best for shared menus on walls or counters."
-msgstr "Ίδιος κωδικός παντού. Οι πελάτες βλέπουν το μενού χωρίς αριθμό τραπεζιού. Ιδανικό για κοινόχρηστα μενού σε τοίχους ή πάγκους."
-
-msgid "QR per table (with table info)"
-msgstr "QR ανά τραπέζι (με στοιχεία τραπεζιού)"
-
-msgid "Each table gets its own code. Guests see the table name on the menu. The printout shows table name, floor, and seats."
-msgstr "Κάθε τραπέζι έχει δικό του κωδικό. Οι πελάτες βλέπουν το όνομα τραπεζιού στο μενού. Η εκτύπωση δείχνει όνομα, όροφο και θέσεις."
-
-msgid "Print all tables"
-msgstr "Εκτύπωση όλων των τραπεζιών"
-
-msgid "Preview print layout"
-msgstr "Προεπισκόπηση εκτύπωσης"
-
-msgid "No tables in this branch. Add tables first."
-msgstr "Δεν υπάρχουν τραπέζια σε αυτό το υποκατάστημα. Προσθέστε τραπέζια πρώτα."
-
-msgid "Digital menu"
-msgstr "Ψηφιακό μενού"
-
-msgid "Scan for digital menu"
-msgstr "Σκανάρετε για ψηφιακό μενού"
-
-msgid "Print QR codes"
-msgstr "Εκτύπωση QR"
-
-msgid "Shared menu QR"
-msgstr "Κοινό QR μενού"
-
-msgid "Per-table QR"
-msgstr "QR ανά τραπέζι"
-
-msgid "No QR codes to print."
-msgstr "Δεν υπάρχουν QR για εκτύπωση."
-
-msgid "Print"
-msgstr "Εκτύπωση"
-
-msgid "Users"
-msgstr "Χρήστες"
-
-msgid "Staff users"
-msgstr "Προσωπικό"
-
-msgid "Manage logins, roles, and PINs for your restaurant."
-msgstr "Διαχείριση συνδέσεων, ρόλων και PIN για το κατάστημά σας."
-
-msgid "Add user"
-msgstr "Προσθήκη χρήστη"
-
-msgid "Add staff member"
-msgstr "Προσθήκη μέλους προσωπικού"
-
-msgid "Edit staff member"
-msgstr "Επεξεργασία μέλους προσωπικού"
-
-msgid "Create user"
-msgstr "Δημιουργία χρήστη"
-
-msgid "Save changes"
-msgstr "Αποθήκευση αλλαγών"
-
-msgid "Back to users"
-msgstr "Πίσω στους χρήστες"
-
-msgid "No staff users yet."
-msgstr "Δεν υπάρχουν χρήστες προσωπικού."
-
-msgid "PIN (quick login)"
-msgstr "PIN (γρήγορη σύνδεση)"
-
-msgid "Account active"
-msgstr "Ενεργός λογαριασμός"
-
-msgid "New password"
-msgstr "Νέος κωδικός"
-
-msgid "Leave blank to keep the current password."
-msgstr "Αφήστε κενό για να κρατήσετε τον τρέχοντα κωδικό."
-
-msgid "This username is already taken."
-msgstr "Το όνομα χρήστη υπάρχει ήδη."
-
-msgid "PIN must be 4–6 digits."
-msgstr "Το PIN πρέπει να είναι 4–6 ψηφία."
-
-msgid "This PIN is already used by another staff member."
-msgstr "Αυτό το PIN χρησιμοποιείται ήδη από άλλο μέλος του προσωπικού."
-
-msgid "You cannot deactivate your own account."
-msgstr "Δεν μπορείτε να απενεργοποιήσετε τον δικό σας λογαριασμό."
-
-msgid "User “%(name)s” created."
-msgstr "Δημιουργήθηκε ο χρήστης «%(name)s»."
-
-msgid "User “%(name)s” updated."
-msgstr "Ενημερώθηκε ο χρήστης «%(name)s»."
-
-msgid "Inactive"
-msgstr "Ανενεργός"
-
-msgid "Current order"
-msgstr "Τρέχουσα παραγγελία"
-
-msgid "Tap + to add items"
-msgstr "Πατήστε + για προσθήκη"
-
-msgid "Close table"
-msgstr "Κλείσιμο τραπεζιού"
-
-msgid "Close this table and request the bill?"
-msgstr "Κλείσιμο τραπεζιού και έκδοση λογαριασμού;"
-
-msgid "Table closed. Order sent to kitchen and bill requested."
-msgstr "Το τραπέζι έκλεισε. Η παραγγελία στάλθηκε στην κουζίνα και ζητήθηκε λογαριασμός."
-
-msgid "Table closed."
-msgstr "Το τραπέζι έκλεισε."
-
-msgid "Add items before sending to the kitchen."
-msgstr "Προσθέστε προϊόντα πριν την αποστολή στην κουζίνα."
-
-msgid "Order was already sent to the kitchen."
-msgstr "Η παραγγελία είχε ήδη σταλεί στην κουζίνα."
-
-msgid "Filter by floor"
-msgstr "Φιλτράρισμα κατά όροφο"
-
-msgid "All"
-msgstr "Όλα"
-
+#: templates/restaurants/partials/table_card.html:50
+msgid "Open & order"
+msgstr "Άνοιγμα & παραγγελία"
+
+#: templates/restaurants/partials/table_card.html:55
+msgid "Continue order"
+msgstr "Συνέχεια παραγγελίας"
+
+#: templates/restaurants/tables.html:18 templates/restaurants/tables.html:127
+msgid "Done managing"
+msgstr "Τέλος διαχείρισης"
+
+#: templates/restaurants/tables.html:24
+msgid "List"
+msgstr "Λίστα"
+
+#: templates/restaurants/tables.html:28
+msgid "Floor plan"
+msgstr "Κάτοψη"
+
+#: templates/restaurants/tables.html:59
 msgid "No tables on this floor."
 msgstr "Δεν υπάρχουν τραπέζια σε αυτόν τον όροφο."
 
-msgid "New floor"
-msgstr "Νέος όροφος"
+#: templates/restaurants/tables.html:59
+msgid "No tables configured for this branch."
+msgstr "Δεν υπάρχουν τραπέζια για αυτό το κατάστημα."
 
-msgid "Floor name"
-msgstr "Όνομα ορόφου"
+#: templates/restaurants/tables.html:64
+msgid "Drag tables to arrange your floor. Click Save layout when finished."
+msgstr "Σύρετε τα τραπέζια για την κάτοψη. Πατήστε Αποθήκευση όταν τελειώσετε."
 
-msgid "Manage floors"
-msgstr "Διαχείριση ορόφων"
+#: templates/restaurants/tables.html:65
+msgid "Tap a table to open or continue an order."
+msgstr "Πατήστε τραπέζι για παραγγελία."
 
-msgid "No floors yet. Add one above."
-msgstr "Δεν υπάρχουν όροφοι. Προσθέστε έναν παραπάνω."
+#: templates/restaurants/tables.html:124
+msgid "Edit layout"
+msgstr "Επεξεργασία κάτοψης"
 
-msgid "Delete this floor?"
-msgstr "Διαγραφή αυτού του ορόφου;"
+#: templates/restaurants/tables.html:128
+msgid "Save layout"
+msgstr "Αποθήκευση κάτοψης"
 
-msgid "A floor with this name already exists."
-msgstr "Υπάρχει ήδη όροφος με αυτό το όνομα."
+#: templates/restaurants/tables.html:129
+msgid "Saving…"
+msgstr "Αποθήκευση…"
 
-msgid "Cannot delete “%(name)s” — it has %(count)s table(s). Move or delete them first."
-msgstr "Αδυναμία διαγραφής «%(name)s» — έχει %(count)s τραπέζι(α). Μετακινήστε ή διαγράψτε τα πρώτα."
+#: templates/restaurants/tables.html:131
+msgid "ready"
+msgstr "έτοιμα"
 
-msgid "No branch configured."
-msgstr "Δεν έχει οριστεί υποκατάστημα."
-
-msgid "Invalid JSON."
-msgstr "Μη έγκυρο JSON."
-
-msgid "Add floor"
-msgstr "Προσθήκη ορόφου"
-
-msgid "Save floor"
-msgstr "Αποθήκευση ορόφου"
-
-msgid "e.g. Terrace, 1st floor"
-msgstr "π.χ. Βεράντα, 1ος όροφος"
-
-msgid "Enter a floor name."
-msgstr "Εισάγετε όνομα ορόφου."
-
-msgid "No branch configured for your account."
-msgstr "Δεν έχει οριστεί υποκατάστημα στον λογαριασμό σας."
-
-msgid "Floor “%(name)s” already exists."
-msgstr "Ο όροφος «%(name)s» υπάρχει ήδη."
-
-msgid "Floor “%(name)s” added."
-msgstr "Προστέθηκε ο όροφος «%(name)s»."
-
+#: templates/restaurants/tables.html:132
 msgid "Layout saved"
 msgstr "Η κάτοψη αποθηκεύτηκε"
 
-msgid "Save failed"
-msgstr "Η αποθήκευση απέτυχε"
+#: templates/restaurants/tables.html:134
+msgid "Delete this table?"
+msgstr "Διαγραφή αυτού του τραπεζιού;"
+
+#: templates/restaurants/tables.html:135
+msgid "Could not delete table"
+msgstr "Αδυναμία διαγραφής τραπεζιού"
+
+#~ msgid "Logo is taken from your restaurant settings."
+#~ msgstr "Το λογότυπο λαμβάνεται από τις ρυθμίσεις του εστιατορίου."
+
+#~ msgid "Remove tables from the list view, or tap × on a free table here."
+#~ msgstr "Διαγραφή από τη λίστα, ή πατήστε × σε ελεύθερο τραπέζι εδώ."
+
+#~ msgid "Table closed. Order sent to kitchen and bill requested."
+#~ msgstr ""
+#~ "Το τραπέζι έκλεισε. Η παραγγελία στάλθηκε στην κουζίνα και ζητήθηκε "
+#~ "λογαριασμός."
+
+#~ msgid "Manage floors"
+#~ msgstr "Διαχείριση ορόφων"
+
+#~ msgid "No floors yet. Add one above."
+#~ msgstr "Δεν υπάρχουν όροφοι. Προσθέστε έναν παραπάνω."
+
+#~ msgid "Delete this floor?"
+#~ msgstr "Διαγραφή αυτού του ορόφου;"
+
+#~ msgid "Save floor"
+#~ msgstr "Αποθήκευση ορόφου"
+
+#~ msgid "No branch configured for your account."
+#~ msgstr "Δεν έχει οριστεί υποκατάστημα στον λογαριασμό σας."
+
+#~ msgid "Floor “%(name)s” already exists."
+#~ msgstr "Ο όροφος «%(name)s» υπάρχει ήδη."
+
+#~ msgid "Floor “%(name)s” added."
+#~ msgstr "Προστέθηκε ο όροφος «%(name)s»."
 
 #~ msgid "Name"
 #~ msgstr "Όνομα"

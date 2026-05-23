@@ -11,6 +11,8 @@ from django.views.generic import TemplateView
 
 from apps.common.mixins import RestaurantScopedMixin
 from apps.common.permissions import RolePermissionMixin, get_employee_role, role_has_permission
+from apps.orders.models import Order
+from apps.orders.utils import ready_item_counts_by_table_id
 from apps.realtime import broadcast_table_update
 from apps.restaurants.forms import CompanyLegalProfileForm, FloorForm, TableForm
 from apps.restaurants.models import CompanyLegalProfile, Floor, Table, TableSession
@@ -56,7 +58,7 @@ def _build_tables_url(request, floor_pk=None, view_mode=None):
     return f"{base}?{q.urlencode()}" if q else base
 
 
-def _table_to_plan_dict(table, index=0):
+def _table_to_plan_dict(table, index=0, ready_count=0):
     cols = 4
     default_x = (index % cols) * 22 + 4
     default_y = (index // cols) * 22 + 8
@@ -70,6 +72,7 @@ def _table_to_plan_dict(table, index=0):
         "status": table.status,
         "status_display": str(table.get_status_display()),
         "capacity": table.capacity,
+        "ready_count": ready_count,
         "x": table.plan_x if table.plan_x is not None else default_x,
         "y": table.plan_y if table.plan_y is not None else default_y,
         "w": table.plan_w,
@@ -79,6 +82,21 @@ def _table_to_plan_dict(table, index=0):
         "open_url": f"/orders/new/{session.pk}/" if session else None,
         "open_post_url": f"/tables/{table.pk}/open/",
     }
+
+
+def _attach_ready_counts(tables, ready_counts):
+    for table in tables:
+        table.ready_item_count = ready_counts.get(table.pk, 0)
+
+
+class TableReadyCountsView(RestaurantScopedMixin, RolePermissionMixin, View):
+    """JSON map of table_id → ready item count (for live badge updates on phones)."""
+
+    required_permission = "take_order"
+
+    def get(self, request):
+        counts = ready_item_counts_by_table_id(self.get_branch())
+        return JsonResponse({"counts": {str(k): v for k, v in counts.items()}})
 
 
 class TableFloorView(RestaurantScopedMixin, RolePermissionMixin, TemplateView):
@@ -107,6 +125,8 @@ class TableFloorView(RestaurantScopedMixin, RolePermissionMixin, TemplateView):
         filter_floor_id = _resolve_floor_filter(self.request, floors) if branch else None
 
         all_tables = list(_tables_queryset(branch)) if branch else []
+        ready_counts = ready_item_counts_by_table_id(branch)
+        _attach_ready_counts(all_tables, ready_counts)
         if filter_floor_id:
             tables = [t for t in all_tables if t.floor_id == filter_floor_id]
         else:
@@ -159,7 +179,7 @@ class TableFloorView(RestaurantScopedMixin, RolePermissionMixin, TemplateView):
         for t in all_tables:
             idx = floor_index.get(t.floor_id, 0)
             floor_index[t.floor_id] = idx + 1
-            plan_tables.append(_table_to_plan_dict(t, idx))
+            plan_tables.append(_table_to_plan_dict(t, idx, ready_counts.get(t.pk, 0)))
         ctx["tables_json"] = json.dumps(plan_tables)
         ctx["floors_json"] = json.dumps([{"id": f.id, "name": f.name} for f in floors])
         floors_select = [
@@ -173,6 +193,29 @@ class TableFloorView(RestaurantScopedMixin, RolePermissionMixin, TemplateView):
         ]
         ctx["floors_select_json"] = json.dumps(floors_select)
         ctx["floor_field_config"] = None
+        print_receipt_order = None
+        print_receipt_id = self.request.GET.get("print_receipt")
+        if print_receipt_id and branch:
+            try:
+                print_receipt_order = (
+                    Order.objects.filter(
+                        pk=int(print_receipt_id),
+                        session__table__floor__branch=branch,
+                        is_deleted=False,
+                        status__in=["bill_requested", "paid"],
+                        bill__isnull=False,
+                    )
+                    .select_related("session__table", "bill")
+                    .first()
+                )
+            except (TypeError, ValueError):
+                print_receipt_order = None
+        ctx["print_receipt_order"] = print_receipt_order
+        if print_receipt_order:
+            q = self.request.GET.copy()
+            q.pop("print_receipt", None)
+            dismiss = reverse("tables")
+            ctx["dismiss_print_modal_url"] = f"{dismiss}?{q.urlencode()}" if q else dismiss
         if table_form and branch:
             from django.middleware.csrf import get_token
 
@@ -456,7 +499,12 @@ class OpenSessionView(RestaurantScopedMixin, View):
         TableSession.objects.filter(table=table, is_active=True).update(is_active=False)
         session = TableSession.objects.create(table=table, cover_count=cover_count)
         table.status = "occupied"
-        table.save(update_fields=["status"])
+        profile = getattr(request.user, "employee_profile", None)
+        if profile:
+            table.assigned_to = profile
+            table.save(update_fields=["status", "assigned_to"])
+        else:
+            table.save(update_fields=["status"])
         broadcast_table_update(table)
         return redirect("order_new", session_id=session.pk)
 
