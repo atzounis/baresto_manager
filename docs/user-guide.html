@@ -1,0 +1,774 @@
+<!DOCTYPE html>
+<html lang="el">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Baresto Manager — User Guide / Οδηγός χρήσης</title>
+  <meta name="description" content="Staff user guide for Baresto Manager restaurant system. Οδηγός χρήσης για το Baresto Manager.">
+  <style>
+    :root {
+      --bg: #1e2129;
+      --surface: #282c36;
+      --border: #3d4454;
+      --text: #e8eaed;
+      --muted: #9aa3b2;
+      --accent: #2db5a3;
+      --accent-dark: #249688;
+      --highlight: #f9a12e;
+      --danger: #e85d5d;
+      --success: #4caf7a;
+      --radius: 10px;
+      --shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+      --max: 920px;
+      --font: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    }
+
+    * { box-sizing: border-box; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      margin: 0;
+      font-family: var(--font);
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      font-size: 16px;
+    }
+
+    a { color: var(--accent); text-decoration: none; }
+    a:hover { color: var(--highlight); text-decoration: underline; }
+
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: rgba(30, 33, 41, 0.95);
+      backdrop-filter: blur(8px);
+      border-bottom: 1px solid var(--border);
+      padding: 0.75rem 1rem;
+    }
+
+    .topbar-inner {
+      max-width: var(--max);
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .brand img { height: 40px; width: auto; }
+
+    .brand span {
+      font-weight: 700;
+      font-size: 1.05rem;
+      letter-spacing: 0.02em;
+    }
+
+    .lang-switch {
+      display: flex;
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      overflow: hidden;
+    }
+
+    .lang-switch button {
+      border: none;
+      background: transparent;
+      color: var(--muted);
+      padding: 0.4rem 0.9rem;
+      cursor: pointer;
+      font: inherit;
+      font-size: 0.9rem;
+      font-weight: 600;
+    }
+
+    .lang-switch button.active {
+      background: var(--accent);
+      color: #fff;
+    }
+
+    .wrap {
+      max-width: var(--max);
+      margin: 0 auto;
+      padding: 1.5rem 1rem 4rem;
+    }
+
+    .hero {
+      background: linear-gradient(135deg, var(--surface) 0%, #1a1d24 100%);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1.75rem;
+      margin-bottom: 1.5rem;
+      box-shadow: var(--shadow);
+    }
+
+    .hero h1 {
+      margin: 0 0 0.5rem;
+      font-size: clamp(1.5rem, 4vw, 2rem);
+      line-height: 1.25;
+    }
+
+    .hero p { margin: 0; color: var(--muted); max-width: 60ch; }
+
+    .toc {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1.25rem 1.5rem;
+      margin-bottom: 2rem;
+    }
+
+    .toc h2 {
+      margin: 0 0 0.75rem;
+      font-size: 1rem;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--highlight);
+    }
+
+    .toc ol {
+      margin: 0;
+      padding-left: 1.25rem;
+      columns: 2;
+      column-gap: 2rem;
+    }
+
+    @media (max-width: 640px) {
+      .toc ol { columns: 1; }
+    }
+
+    .toc li { margin: 0.25rem 0; break-inside: avoid; }
+
+  section {
+      margin-bottom: 2.5rem;
+      scroll-margin-top: 5rem;
+    }
+
+    section > h2 {
+      font-size: 1.35rem;
+      margin: 0 0 1rem;
+      padding-bottom: 0.5rem;
+      border-bottom: 2px solid var(--accent);
+    }
+
+    h3 {
+      font-size: 1.05rem;
+      margin: 1.5rem 0 0.75rem;
+      color: var(--highlight);
+    }
+
+    p { margin: 0 0 0.85rem; }
+
+    ul, ol { margin: 0 0 1rem; padding-left: 1.35rem; }
+    li { margin: 0.35rem 0; }
+
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1.25rem;
+      margin-bottom: 1rem;
+    }
+
+    .card-title {
+      font-weight: 700;
+      margin: 0 0 0.5rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .badge {
+      display: inline-block;
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      padding: 0.15rem 0.5rem;
+      border-radius: 999px;
+      background: var(--accent-dark);
+      color: #fff;
+    }
+
+    .badge-waiter { background: #3d7dd4; }
+    .badge-kitchen { background: #c45c26; }
+    .badge-manager { background: #7b5ea7; }
+    .badge-admin { background: #b83280; }
+    .badge-cashier { background: #2a9d6e; }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 0 0 1rem;
+      font-size: 0.92rem;
+    }
+
+    th, td {
+      border: 1px solid var(--border);
+      padding: 0.55rem 0.65rem;
+      text-align: left;
+      vertical-align: top;
+    }
+
+    th {
+      background: #323844;
+      font-weight: 600;
+    }
+
+    tr:nth-child(even) td { background: rgba(255, 255, 255, 0.02); }
+
+    code, .path {
+      font-family: ui-monospace, "Cascadia Code", "SF Mono", Consolas, monospace;
+      font-size: 0.88em;
+      background: #1a1d24;
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 0.1rem 0.35rem;
+    }
+
+    .steps {
+      counter-reset: step;
+      list-style: none;
+      padding: 0;
+      margin: 0 0 1rem;
+    }
+
+    .steps li {
+      counter-increment: step;
+      position: relative;
+      padding: 0.75rem 0 0.75rem 2.75rem;
+      border-left: 2px solid var(--border);
+      margin-left: 0.85rem;
+    }
+
+    .steps li:last-child { border-left-color: transparent; }
+
+    .steps li::before {
+      content: counter(step);
+      position: absolute;
+      left: -0.85rem;
+      top: 0.65rem;
+      width: 1.7rem;
+      height: 1.7rem;
+      border-radius: 50%;
+      background: var(--accent);
+      color: #fff;
+      font-weight: 700;
+      font-size: 0.85rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .tip {
+      border-left: 4px solid var(--accent);
+      background: rgba(45, 181, 163, 0.08);
+      padding: 0.85rem 1rem;
+      border-radius: 0 var(--radius) var(--radius) 0;
+      margin: 1rem 0;
+    }
+
+    .warn {
+      border-left: 4px solid var(--highlight);
+      background: rgba(249, 161, 46, 0.08);
+      padding: 0.85rem 1rem;
+      border-radius: 0 var(--radius) var(--radius) 0;
+      margin: 1rem 0;
+    }
+
+  .status-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+      gap: 0.5rem;
+      margin: 0.75rem 0 1rem;
+    }
+
+    .status {
+      padding: 0.5rem 0.65rem;
+      border-radius: 6px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      text-align: center;
+    }
+
+    .status-free { background: #1e3d32; color: #6dd4a8; }
+    .status-occupied { background: #3d2e1a; color: var(--highlight); }
+    .status-ready { background: #1a3340; color: #6ec8e8; }
+
+    footer {
+      margin-top: 3rem;
+      padding-top: 1.5rem;
+      border-top: 1px solid var(--border);
+      color: var(--muted);
+      font-size: 0.88rem;
+      text-align: center;
+    }
+
+    [data-lang] { display: none; }
+    html[lang="el"] [data-lang="el"],
+    html[lang="en"] [data-lang="en"] { display: block; }
+    html[lang="el"] span[data-lang="el"],
+    html[lang="en"] span[data-lang="en"] { display: inline; }
+    html[lang="el"] a[data-lang="el"],
+    html[lang="en"] a[data-lang="en"] { display: inline; }
+    html[lang="el"] th[data-lang="el"],
+    html[lang="en"] th[data-lang="en"],
+    html[lang="el"] td[data-lang="el"],
+    html[lang="en"] td[data-lang="en"] { display: table-cell; }
+    html[lang="el"] tr[data-lang="el"],
+    html[lang="en"] tr[data-lang="en"] { display: table-row; }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <div class="topbar-inner">
+      <div class="brand">
+        <img src="../static/brand/baresto-vertical.png" alt="Baresto Manager" onerror="this.style.display='none'">
+        <span>Baresto Manager</span>
+      </div>
+      <div class="lang-switch" role="group" aria-label="Language">
+        <button type="button" id="btn-el" class="active" aria-pressed="true">ΕΛ</button>
+        <button type="button" id="btn-en" aria-pressed="false">EN</button>
+      </div>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <div class="hero">
+      <h1>
+        <span data-lang="el">Οδηγός χρήσης προσωπικού</span>
+        <span data-lang="en">Staff user guide</span>
+      </h1>
+      <p data-lang="el">Οδηγίες για σερβιτόρους, κουζίνα, ταμείο, διαχειριστές και διαχειριστές συστήματος. Η διεπαφή προεπιλέγεται στα Ελληνικά — μπορείτε να αλλάξετε γλώσσα από τη γραμμή πλοήγησης (ΕΛ / EN).</p>
+      <p data-lang="en">Instructions for waiters, kitchen, cashiers, managers, and administrators. The interface defaults to Greek — switch language from the navigation bar (ΕΛ / EN).</p>
+    </div>
+
+    <nav class="toc" aria-label="Table of contents">
+      <h2 data-lang="el">Περιεχόμενα</h2>
+      <h2 data-lang="en">Contents</h2>
+      <ol>
+        <li><a href="#start" data-lang="el">Έναρξη &amp; σύνδεση</a><a href="#start" data-lang="en">Getting started &amp; login</a></li>
+        <li><a href="#roles" data-lang="el">Ρόλοι &amp; δικαιώματα</a><a href="#roles" data-lang="en">Roles &amp; permissions</a></li>
+        <li><a href="#waiter" data-lang="el">Σερβιτόρος / ταμείο</a><a href="#waiter" data-lang="en">Waiter / cashier</a></li>
+        <li><a href="#kitchen" data-lang="el">Κουζίνα (KDS)</a><a href="#kitchen" data-lang="en">Kitchen (KDS)</a></li>
+        <li><a href="#manager" data-lang="el">Διαχειριστής</a><a href="#manager" data-lang="en">Manager</a></li>
+        <li><a href="#admin" data-lang="el">Διαχειριστής συστήματος</a><a href="#admin" data-lang="en">Administrator</a></li>
+        <li><a href="#guest" data-lang="el">Μενού επισκεπτών (QR)</a><a href="#guest" data-lang="en">Guest menu (QR)</a></li>
+        <li><a href="#urls" data-lang="el">Διευθύνσεις URL</a><a href="#urls" data-lang="en">URL reference</a></li>
+        <li><a href="#tips" data-lang="el">Συμβουλές &amp; αντιμετώπιση προβλημάτων</a><a href="#tips" data-lang="en">Tips &amp; troubleshooting</a></li>
+      </ol>
+    </nav>
+
+    <!-- Getting started -->
+    <section id="start">
+      <h2 data-lang="el">Έναρξη &amp; σύνδεση</h2>
+      <h2 data-lang="en">Getting started &amp; login</h2>
+
+      <p data-lang="el">Ανοίξτε την εφαρμογή στον browser του υπολογιστή ή του κινητού (π.χ. <code>http://127.0.0.1:8765</code> στον τοπικό server). Η θύρα προεπιλογής είναι <strong>8765</strong>, όχι 8000.</p>
+      <p data-lang="en">Open the app in your computer or phone browser (e.g. <code>http://127.0.0.1:8765</code> on a local server). The default port is <strong>8765</strong>, not 8000.</p>
+
+      <h3 data-lang="el">Τρόποι σύνδεσης</h3>
+      <h3 data-lang="en">Login methods</h3>
+
+      <div class="card">
+        <p class="card-title" data-lang="el">Κωδικός πρόσβασης — <span class="path">/login/</span></p>
+        <p class="card-title" data-lang="en">Password login — <span class="path">/login/</span></p>
+        <p data-lang="el">Όνομα χρήστη + κωδικός. Κατάλληλο για προσωπικό με δικό του λογαριασμό.</p>
+        <p data-lang="en">Username and password. Best for staff with their own account.</p>
+      </div>
+
+      <div class="card">
+        <p class="card-title" data-lang="el">Γρήγορη σύνδεση PIN — <span class="path">/login/pin/</span></p>
+        <p class="card-title" data-lang="en">PIN quick login — <span class="path">/login/pin/</span></p>
+        <p data-lang="el">4ψήφιο PIN σε μεγάλο πληκτρολόγιο — ιδανικό για κοινό tablet σερβιτόρων. Με την επιτυχή σύνδεση ξεκινά η βάρδια (<em>active shift</em>).</p>
+        <p data-lang="en">4-digit PIN on a large keypad — ideal for a shared waiter tablet. A successful login starts the active shift.</p>
+      </div>
+
+      <h3 data-lang="el">Λογαριασμοί επίδειξης (demo)</h3>
+      <h3 data-lang="en">Demo accounts</h3>
+
+      <table>
+        <thead>
+          <tr>
+            <th data-lang="el">Ρόλος</th>
+            <th data-lang="en">Role</th>
+            <th data-lang="el">Χρήστης</th>
+            <th data-lang="en">Username</th>
+            <th data-lang="el">Κωδικός</th>
+            <th data-lang="en">Password</th>
+            <th>PIN</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td data-lang="el">Διαχειριστής συστήματος</td><td data-lang="en">Admin</td><td><code>admin</code></td><td><code>admin1234</code></td><td><code>0000</code></td></tr>
+          <tr><td data-lang="el">Διαχειριστής</td><td data-lang="en">Manager</td><td><code>manager</code></td><td><code>manager1234</code></td><td><code>1111</code></td></tr>
+          <tr><td data-lang="el">Σερβιτόρος</td><td data-lang="en">Waiter</td><td><code>waiter</code></td><td><code>waiter1234</code></td><td><code>2222</code></td></tr>
+          <tr><td data-lang="el">Κουζίνα</td><td data-lang="en">Kitchen</td><td><code>kitchen</code></td><td><code>kitchen1234</code></td><td><code>3333</code></td></tr>
+          <tr><td data-lang="el">Ταμείο</td><td data-lang="en">Cashier</td><td><code>cashier</code></td><td><code>cashier1234</code></td><td><code>4444</code></td></tr>
+        </tbody>
+      </table>
+
+      <div class="tip" data-lang="el">
+        <strong>Κινητό σερβιτόρου:</strong> PC και τηλέφωνο στο ίδιο Wi‑Fi. Ανοίξτε <code>http://&lt;IP-υπολογιστή&gt;:8765/login/pin/</code> και συνδεθείτε με PIN <code>2222</code>.
+      </div>
+      <div class="tip" data-lang="en">
+        <strong>Waiter phone:</strong> PC and phone on the same Wi‑Fi. Open <code>http://&lt;computer-IP&gt;:8765/login/pin/</code> and sign in with PIN <code>2222</code>.
+      </div>
+    </section>
+
+    <!-- Roles -->
+    <section id="roles">
+      <h2 data-lang="el">Ρόλοι &amp; δικαιώματα</h2>
+      <h2 data-lang="en">Roles &amp; permissions</h2>
+
+      <p data-lang="el">Μετά τη σύνδεση, η αρχική σελίδα εξαρτάται από τον ρόλο: σερβιτόρος → τραπέζια, κουζίνα → οθόνη κουζίνας, λοιποί → πίνακας ελέγχου.</p>
+      <p data-lang="en">After login, the home page depends on role: waiter → tables, kitchen → kitchen display, others → dashboard.</p>
+
+      <div class="card">
+        <p class="card-title"><span class="badge badge-waiter">Waiter</span> <span data-lang="el">Σερβιτόρος</span><span data-lang="en">Waiter</span></p>
+        <p data-lang="el">Τραπέζια, παραγγελίες, αποστολή στην κουζίνα, παράδοση έτοιμων πιάτων, κλείσιμο τραπεζιού, ιστορικό παραγγελιών.</p>
+        <p data-lang="en">Tables, orders, send to kitchen, mark ready items delivered, close table, order history.</p>
+      </div>
+
+      <div class="card">
+        <p class="card-title"><span class="badge badge-cashier">Cashier</span> <span data-lang="el">Ταμείο</span><span data-lang="en">Cashier</span></p>
+        <p data-lang="el">Ίδια πλοήγηση με σερβιτόρο (τραπέζια, παραγγελίες). Επιπλέον δικαιώματα για έκπτωση και κλείσιμο λογαριασμού (όπου υλοποιηθεί στη ροή).</p>
+        <p data-lang="en">Same navigation as waiter (tables, orders). Extra permissions for discounts and closing bills (where implemented in the flow).</p>
+      </div>
+
+      <div class="card">
+        <p class="card-title"><span class="badge badge-kitchen">Kitchen</span> <span data-lang="el">Κουζίνα</span><span data-lang="en">Kitchen</span></p>
+        <p data-lang="el">Μόνο η οθόνη κουζίνας (KDS): λήψη παραγγελιών, ενημέρωση κατάστασης ανά πιάτο, φίλτρο σταθμού (κουζίνα / bar / grill).</p>
+        <p data-lang="en">Kitchen display (KDS) only: receive orders, update item status, filter by station (kitchen / bar / grill).</p>
+      </div>
+
+      <div class="card">
+        <p class="card-title"><span class="badge badge-manager">Manager</span> <span data-lang="el">Διαχειριστής</span><span data-lang="en">Manager</span></p>
+        <p data-lang="el">Μενού (δίγλωσσο), εταιρεία / νομικά στοιχεία, QR επισκεπτών, τραπέζια &amp; όροφοι, κάτοψη, αναφορές, κουζίνα.</p>
+        <p data-lang="en">Bilingual menu, company details, guest QR, tables &amp; floors, floor plan, reports, kitchen access.</p>
+      </div>
+
+      <div class="card">
+        <p class="card-title"><span class="badge badge-admin">Admin</span> <span data-lang="el">Διαχ. συστήματος</span><span data-lang="en">Administrator</span></p>
+        <p data-lang="el">Ό,τι ο διαχειριστής, συν διαχείριση χρηστών προσωπικού (<span class="path">/staff/users/</span>).</p>
+        <p data-lang="en">Everything a manager can do, plus staff user management (<span class="path">/staff/users/</span>).</p>
+      </div>
+    </section>
+
+    <!-- Waiter -->
+    <section id="waiter">
+      <h2 data-lang="el">Σερβιτόρος / ταμείο — ροή εργασίας</h2>
+      <h2 data-lang="en">Waiter / cashier — workflow</h2>
+
+      <h3 data-lang="el">1. Τραπέζια (<span class="path">/tables/</span>)</h3>
+      <h3 data-lang="en">1. Tables (<span class="path">/tables/</span>)</h3>
+
+      <p data-lang="el">Δείτε λίστα ή κάτοψη όρου. Φιλτράρετε ανά όροφο. Χρώματα κατάστασης:</p>
+      <p data-lang="en">View list or floor plan. Filter by floor. Status colours:</p>
+
+      <div class="status-grid">
+        <div class="status status-free" data-lang="el">Ελεύθερο</div>
+        <div class="status status-free" data-lang="en">Free</div>
+        <div class="status status-occupied" data-lang="el">Κατειλημμένο</div>
+        <div class="status status-occupied" data-lang="en">Occupied</div>
+        <div class="status status-ready" data-lang="el">Έτοιμα πιάτα (badge)</div>
+        <div class="status status-ready" data-lang="en">Ready items (badge)</div>
+      </div>
+
+      <p data-lang="el">Το badge «έτοιμα» δείχνει πόσα πιάτα είναι έτοιμα από την κουζίνα αλλά δεν έχουν παραδοθεί ακόμα.</p>
+      <p data-lang="en">The ready badge shows how many kitchen-ready items have not been delivered yet.</p>
+
+      <h3 data-lang="el">2. Άνοιγμα τραπεζιού &amp; παραγγελία</h3>
+      <h3 data-lang="en">2. Open table &amp; order</h3>
+
+      <ol class="steps">
+        <li data-lang="el">Πατήστε <strong>Άνοιγμα τραπεζιού</strong> σε ελεύθερο τραπέζι — ορίστε αριθμό καλυψών (ατόμων).</li>
+        <li data-lang="en">Tap <strong>Open table</strong> on a free table — set cover count (number of guests).</li>
+        <li data-lang="el">Ανοίγει η οθόνη παραγγελίας (<span class="path">/orders/new/&lt;session&gt;/</span>) — βελτιστοποιημένη για κινητό.</li>
+        <li data-lang="en">The ordering screen opens (<span class="path">/orders/new/&lt;session&gt;/</span>) — optimised for mobile.</li>
+        <li data-lang="el">Πατήστε κατηγορία → πιάτο για προσθήκη. Το συρτάρι παραγγελίας (κάτω) δείχνει live το σύνολο.</li>
+        <li data-lang="en">Tap category → dish to add. The order drawer (bottom) shows the live total.</li>
+        <li data-lang="el">Προαιρετικά: σημειώσεις ανά πιάτο, modifiers αν υπάρχουν.</li>
+        <li data-lang="en">Optional: notes per item, modifiers where configured.</li>
+      </ol>
+
+      <h3 data-lang="el">3. Αποστολή στην κουζίνα</h3>
+      <h3 data-lang="en">3. Send to kitchen</h3>
+
+      <p data-lang="el">Πατήστε <strong>Αποστολή στην κουζίνα</strong>. Τα νέα πιάτα περνούν στην κουζίνα· η οθόνη KDS ενημερώνεται σε πραγματικό χρόνο. Μπορείτε να συνεχίσετε να προσθέτετε πιάτα και να στέλνετε ξανά.</p>
+      <p data-lang="en">Tap <strong>Send to kitchen</strong>. New items go to the kitchen; the KDS updates in real time. You can keep adding items and sending again.</p>
+
+      <h3 data-lang="el">4. Έτοιμα πιάτα &amp; ειδοποιήσεις</h3>
+      <h3 data-lang="en">4. Ready items &amp; alerts</h3>
+
+      <p data-lang="el">Όταν η κουζίνα σημάνει πιάτο ως <strong>έτοιμο</strong>, λαμβάνετε ειδοποίηση (ήχος / websocket). Στην παραγγελία ή στα τραπέζια, σημειώστε το πιάτο ως <strong>παραδομένο</strong> όταν το σερβίρετε.</p>
+      <p data-lang="en">When the kitchen marks an item <strong>ready</strong>, you get an alert (sound / WebSocket). On the order or tables screen, mark the item <strong>delivered</strong> when served.</p>
+
+      <h3 data-lang="el">5. Κλείσιμο τραπεζιού &amp; απόδειξη</h3>
+      <h3 data-lang="en">5. Close table &amp; receipt</h3>
+
+      <ol class="steps">
+        <li data-lang="el">Πατήστε <strong>Κλείσιμο τραπεζιού</strong> όταν οι πελάτες φύγουν.</li>
+        <li data-lang="en">Tap <strong>Close table</strong> when guests leave.</li>
+        <li data-lang="el">Το σύστημα <strong>δεν επιτρέπει</strong> κλείσιμο αν: υπάρχουν μη αποσταλμένα πιάτα, πιάτα ακόμα στην κουζίνα, ή έτοιμα πιάτα που δεν παραδόθηκαν.</li>
+        <li data-lang="en">The system <strong>blocks</strong> closing if: unsent items remain, items are still in the kitchen, or ready items were not delivered.</li>
+        <li data-lang="el">Μετά το επιτυχές κλείσιμο: δημιουργείται λογαριασμός, το τραπέζι γίνεται ελεύθερο, εμφανίζεται παράθυρο εκτύπωσης απόδειξης.</li>
+        <li data-lang="en">After successful close: a bill is created, the table becomes free, a receipt print dialog appears.</li>
+        <li data-lang="el">Οριστικοποιήστε την πληρωμή από την οθόνη απόδειξης (<span class="path">/orders/&lt;id&gt;/receipt/</span>).</li>
+        <li data-lang="en">Finalize payment from the receipt screen (<span class="path">/orders/&lt;id&gt;/receipt/</span>).</li>
+      </ol>
+
+      <div class="warn" data-lang="el">
+        <strong>Ιστορικό παραγγελιών:</strong> <span class="path">/orders/</span> — φιλτράρετε ανά ημερομηνία, επανεκτύπωση απόδειξης, εξαγωγή CSV (διαχειριστές).
+      </div>
+      <div class="warn" data-lang="en">
+        <strong>Order history:</strong> <span class="path">/orders/</span> — filter by date, reprint receipts; CSV export for managers.
+      </div>
+    </section>
+
+    <!-- Kitchen -->
+    <section id="kitchen">
+      <h2 data-lang="el">Κουζίνα — οθόνη KDS</h2>
+      <h2 data-lang="en">Kitchen — KDS display</h2>
+
+      <p data-lang="el">Συνδεθείτε ως <code>kitchen</code> ή χρησιμοποιήστε PIN <code>3333</code>. Ανοίγει αυτόματα η <span class="path">/kitchen/</span>.</p>
+      <p data-lang="en">Sign in as <code>kitchen</code> or use PIN <code>3333</code>. You land on <span class="path">/kitchen/</span> automatically.</p>
+
+      <h3 data-lang="el">Χρήση της οθόνης</h3>
+      <h3 data-lang="en">Using the display</h3>
+
+      <ul data-lang="el">
+        <li>Οι παραγγελίες εμφανίζονται ως tickets ανά τραπέζι, με νεότερες πρώτες.</li>
+        <li>Φιλτράρετε ανά <strong>σταθμό</strong>: κουζίνα, bar, grill.</li>
+        <li>Για κάθε πιάτο: <strong>Επόμενο</strong> / Advance — κατάσταση: αναμονή → προετοιμασία → έτοιμο → σερβιρισμένο.</li>
+        <li>Νέες παραγγελίες: ηχητική ειδοποίηση (αν ενεργή στο browser).</li>
+        <li>Οι ενημερώσεις συγχρονίζονται live (WebSocket) σε όλες τις οθόνες κουζίνας.</li>
+      </ul>
+      <ul data-lang="en">
+        <li>Orders appear as tickets per table, newest first.</li>
+        <li>Filter by <strong>station</strong>: kitchen, bar, grill.</li>
+        <li>Per item: <strong>Advance</strong> — status flow: pending → preparing → ready → served.</li>
+        <li>New orders trigger a sound alert (if enabled in the browser).</li>
+        <li>Updates sync live (WebSocket) across all kitchen screens.</li>
+      </ul>
+
+      <div class="tip" data-lang="el">
+        Κρατήστε τον browser σε πλήρη οθόνη (F11) σε dedicated οθόνη κουζίνας. Μην κλείνετε το tab — η ουρά εξαφανίζεται μόνο όταν όλα τα πιάτα σημειωθούν σερβιρισμένα ή η παραγγελία πληρωθεί.
+      </div>
+      <div for="tip" data-lang="en">
+        Use full-screen browser (F11) on a dedicated kitchen monitor. Keep the tab open — tickets clear when all items are served or the order is paid.
+      </div>
+    </section>
+
+    <!-- Manager -->
+    <section id="manager">
+      <h2 data-lang="el">Διαχειριστής — ρύθμιση &amp; αναφορές</h2>
+      <h2 data-lang="en">Manager — setup &amp; reports</h2>
+
+      <h3 data-lang="el">Πίνακας ελέγχου (<span class="path">/dashboard/</span>)</h3>
+      <h3 data-lang="en">Dashboard (<span class="path">/dashboard/</span>)</h3>
+      <p data-lang="el">Ζωντανή εικόνα: κατάσταση τραπεζιών, ενεργές παραγγελίες, έσοδα σήμερα.</p>
+      <p data-lang="en">Live snapshot: table status, active orders, today’s revenue.</p>
+
+      <h3 data-lang="el">Μενού (<span class="path">/menu/</span>)</h3>
+      <h3 data-lang="en">Menu (<span class="path">/menu/</span>)</h3>
+      <ul data-lang="el">
+        <li>Προσθήκη / επεξεργασία κατηγοριών και πιάτων.</li>
+        <li>Δίγλωσσα περιεχομένου: πεδία Ελληνικά (ΕΛ) και English (EN) — όνομα, περιγραφή.</li>
+        <li>Διακόπτης διαθεσιμότητας (sold out) ανά πιάτο.</li>
+        <li>Τιμές, allergens, dietary tags, modifiers (όπου ρυθμισμένα).</li>
+      </ul>
+      <ul data-lang="en">
+        <li>Add / edit categories and dishes.</li>
+        <li>Bilingual content: Greek (ΕΛ) and English fields — name, description.</li>
+        <li>Availability toggle (sold out) per dish.</li>
+        <li>Prices, allergens, dietary tags, modifiers (where configured).</li>
+      </ul>
+
+      <h3 data-lang="el">Εταιρεία (<span class="path">/company/</span>)</h3>
+      <h3 data-lang="en">Company (<span class="path">/company/</span>)</h3>
+      <p data-lang="el">Νομικά στοιχεία, λογότυπο, στοιχεία που εμφανίζονται στο δημόσιο μενού επισκεπτών (GR/EN).</p>
+      <p data-lang="en">Legal details, logo, information shown on the public guest menu (GR/EN).</p>
+
+      <h3 data-lang="el">Τραπέζια &amp; όροφοι (<span class="path">/tables/</span>)</h3>
+      <h3 data-lang="en">Tables &amp; floors (<span class="path">/tables/</span>)</h3>
+      <ul data-lang="el">
+        <li><strong>+ Προσθήκη ορόφου</strong> — δημιουργία ορόφου (π.χ. Ισόγειο, Βεράντα).</li>
+        <li>Προσθήκη / επεξεργασία / διαγραφή τραπεζιών, χωρητικότητα, ετικέτα.</li>
+        <li><strong>Κάτοψη</strong> (<code>?view=plan</code>) — drag &amp; drop θέσεων, αποθήκευση.</li>
+        <li>Ανάθεση σερβιτόρου σε τραπέζι.</li>
+      </ul>
+      <ul data-lang="en">
+        <li><strong>+ Add floor</strong> — create floors (e.g. Ground, Terrace).</li>
+        <li>Add / edit / delete tables, capacity, label.</li>
+        <li><strong>Floor plan</strong> (<code>?view=plan</code>) — drag &amp; drop layout, save.</li>
+        <li>Assign waiter to a table.</li>
+      </ul>
+
+      <h3 data-lang="el">Αναφορές (<span class="path">/reports/</span>)</h3>
+      <h3 data-lang="en">Reports (<span class="path">/reports/</span>)</h3>
+      <p data-lang="el">Επιλέξτε εύρος ημερομηνιών. Δείτε έσοδα, αριθμό παραγγελιών, sessions, γραφήματα top πιάτων. <strong>Λήψη CSV</strong> από <span class="path">/reports/export/</span>.</p>
+      <p data-lang="en">Pick a date range. View revenue, order count, sessions, top-items charts. <strong>Download CSV</strong> from <span class="path">/reports/export/</span>.</p>
+    </section>
+
+    <!-- Admin -->
+    <section id="admin">
+      <h2 data-lang="el">Διαχειριστής συστήματος — χρήστες</h2>
+      <h2 data-lang="en">Administrator — staff users</h2>
+
+      <p data-lang="el">Μόνο ο ρόλος <strong>admin</strong> έχει πρόσβαση στο <span class="path">/staff/users/</span>.</p>
+      <p data-lang="en">Only the <strong>admin</strong> role can access <span class="path">/staff/users/</span>.</p>
+
+      <ol class="steps">
+        <li data-lang="el">Δημιουργήστε νέο χρήστη (<span class="path">/staff/users/new/</span>): όνομα, email, ρόλος, PIN.</li>
+        <li data-lang="en">Create a user (<span class="path">/staff/users/new/</span>): name, email, role, PIN.</li>
+        <li data-lang="el">Επεξεργαστείτε ρόλο, PIN, κατάστημα/υποκατάστημα (<span class="path">/staff/users/&lt;id&gt;/edit/</span>).</li>
+        <li data-lang="en">Edit role, PIN, branch assignment (<span class="path">/staff/users/&lt;id&gt;/edit/</span>).</li>
+        <li data-lang="el">Ρόλοι: admin, manager, waiter, cashier, kitchen — καθορίζουν μενού και δικαιώματα.</li>
+        <li data-lang="en">Roles: admin, manager, waiter, cashier, kitchen — control menu access and permissions.</li>
+      </ol>
+    </section>
+
+    <!-- Guest menu -->
+    <section id="guest">
+      <h2 data-lang="el">Μενού επισκεπτών (QR)</h2>
+      <h2 data-lang="en">Guest menu (QR)</h2>
+
+      <h3 data-lang="el">Ρύθμιση (διαχειριστής)</h3>
+      <h3 data-lang="en">Setup (manager)</h3>
+
+      <ol class="steps">
+        <li data-lang="el">Μενού → <strong>Μενού επισκεπτών</strong> (<span class="path">/menu/guest/</span>).</li>
+        <li data-lang="en">Menu → <strong>Guest menu</strong> (<span class="path">/menu/guest/</span>).</li>
+        <li data-lang="el">Προεπισκόπηση όπως το βλέπει ο πελάτης.</li>
+        <li data-lang="en">Preview as the customer sees it.</li>
+        <li data-lang="el">Εκτύπωση QR: <strong>ένα QR για όλα τα τραπέζια</strong> ή <strong>QR ανά τραπέζι</strong> (με όνομα τραπεζιού).</li>
+        <li data-lang="en">Print QR: <strong>one QR for all tables</strong> or <strong>QR per table</strong> (includes table name).</li>
+        <li data-lang="el">Βεβαιωθείτε ότι το <code>SITE_BASE_URL</code> στο <code>.env</code> ταιριάζει με τη δημόσια διεύθυνση (π.χ. LAN IP για δοκιμές).</li>
+        <li data-lang="en">Ensure <code>SITE_BASE_URL</code> in <code>.env</code> matches your public URL (e.g. LAN IP for testing).</li>
+      </ol>
+
+      <h3 data-lang="el">Πελάτης (χωρίς σύνδεση)</h3>
+      <h3 data-lang="en">Customer (no login)</h3>
+
+      <table>
+        <thead>
+          <tr>
+            <th data-lang="el">Τύπος</th>
+            <th data-lang="en">Type</th>
+            <th>URL</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td data-lang="el">Ανά τραπέζι</td>
+            <td data-lang="en">Per table</td>
+            <td><span class="path">/qr/&lt;table-uuid&gt;/</span></td>
+          </tr>
+          <tr>
+            <td data-lang="el">Κοινό μενού</td>
+            <td data-lang="en">Shared menu</td>
+            <td><span class="path">/qr/menu/&lt;restaurant-uuid&gt;/</span></td>
+          </tr>
+        </tbody>
+      </table>
+
+      <p data-lang="el">Οι πελάτες σκανάρουν το QR, βλέπουν το μενού στη γλώσσα τους (GR/EN), allergens και διαθεσιμότητα.</p>
+      <p data-lang="en">Customers scan the QR, view the menu in their language (GR/EN), allergens, and availability.</p>
+    </section>
+
+    <!-- URLs -->
+    <section id="urls">
+      <h2 data-lang="el">Διευθύνσεις URL — γρήγορη αναφορά</h2>
+      <h2 data-lang="en">URL reference — quick lookup</h2>
+
+      <table>
+        <thead>
+          <tr>
+            <th>Path</th>
+            <th data-lang="el">Περιγραφή</th>
+            <th data-lang="en">Description</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td><span class="path">/login/</span></td><td data-lang="el">Σύνδεση με κωδικό</td><td data-lang="en">Password login</td></tr>
+          <tr><td><span class="path">/login/pin/</span></td><td data-lang="el">Σύνδεση PIN</td><td data-lang="en">PIN login</td></tr>
+          <tr><td><span class="path">/dashboard/</span></td><td data-lang="el">Πίνακας ελέγχου</td><td data-lang="en">Dashboard</td></tr>
+          <tr><td><span class="path">/tables/</span></td><td data-lang="el">Τραπέζια &amp; κάτοψη</td><td data-lang="en">Tables &amp; floor plan</td></tr>
+          <tr><td><span class="path">/orders/new/&lt;session&gt;/</span></td><td data-lang="el">Παραγγελία σερβιτόρου</td><td data-lang="en">Waiter ordering</td></tr>
+          <tr><td><span class="path">/orders/</span></td><td data-lang="el">Ιστορικό παραγγελιών</td><td data-lang="en">Order history</td></tr>
+          <tr><td><span class="path">/kitchen/</span></td><td data-lang="el">Οθόνη κουζίνας</td><td data-lang="en">Kitchen display</td></tr>
+          <tr><td><span class="path">/menu/</span></td><td data-lang="el">Διαχείριση μενού</td><td data-lang="en">Menu management</td></tr>
+          <tr><td><span class="path">/menu/guest/</span></td><td data-lang="el">Μενού επισκεπτών &amp; QR</td><td data-lang="en">Guest menu &amp; QR</td></tr>
+          <tr><td><span class="path">/company/</span></td><td data-lang="el">Στοιχεία εταιρείας</td><td data-lang="en">Company details</td></tr>
+          <tr><td><span class="path">/reports/</span></td><td data-lang="el">Αναφορές πωλήσεων</td><td data-lang="en">Sales reports</td></tr>
+          <tr><td><span class="path">/staff/users/</span></td><td data-lang="el">Χρήστες (admin)</td><td data-lang="en">Staff users (admin)</td></tr>
+          <tr><td><span class="path">/qr/&lt;token&gt;/</span></td><td data-lang="el">Δημόσιο μενού</td><td data-lang="en">Public guest menu</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- Tips -->
+    <section id="tips">
+      <h2 data-lang="el">Συμβουλές &amp; αντιμετώπιση προβλημάτων</h2>
+      <h2 data-lang="en">Tips &amp; troubleshooting</h2>
+
+      <ul data-lang="el">
+        <li><strong>Γλώσσα διεπαφής:</strong> ΕΛ / EN στη γραμμή πλοήγησης — αλλάζει labels, όχι τα δεδομένα μενού (αυτά επεξεργάζονται στο /menu/).</li>
+        <li><strong>Real-time:</strong> Τοπικά χρησιμοποιείται in-memory WebSocket· αν η κουζίνα δεν ενημερώνεται, ανανεώστε τη σελίδα ή ελέγξτε ότι ο server τρέχει.</li>
+        <li><strong>Κινητό δεν συνδέεται:</strong> Ίδιο Wi‑Fi, firewall, σωστή IP και θύρα 8765.</li>
+        <li><strong>QR δεν ανοίγει στο κινητό:</strong> Ελέγξτε <code>SITE_BASE_URL</code> και τρέξτε <code>python manage.py generate_qr_codes</code>.</li>
+        <li><strong>Δεν κλείνει το τραπέζι:</strong> Στείλτε όλα τα πιάτα, περιμένετε την κουζίνα, παραδώστε τα έτοιμα — μετά δοκιμάστε ξανά.</li>
+        <li><strong>Αποσύνδεση:</strong> Από το μενού προφίλ — τερματίζει και την ενεργή βάρδια.</li>
+      </ul>
+      <ul data-lang="en">
+        <li><strong>UI language:</strong> ΕΛ / EN in the nav bar — changes labels, not menu data (edit those at /menu/).</li>
+        <li><strong>Real-time:</strong> Local dev uses in-memory WebSockets; if KDS stalls, refresh or confirm the server is running.</li>
+        <li><strong>Phone won’t connect:</strong> Same Wi‑Fi, firewall, correct IP and port 8765.</li>
+        <li><strong>QR won’t open on phone:</strong> Check <code>SITE_BASE_URL</code> and run <code>python manage.py generate_qr_codes</code>.</li>
+        <li><strong>Can’t close table:</strong> Send all items, wait for kitchen, deliver ready items — then retry.</li>
+        <li><strong>Logout:</strong> From the profile menu — also ends the active shift.</li>
+      </ul>
+    </section>
+
+    <footer>
+      <p data-lang="el">Baresto Manager — Οδηγός χρήσης · MIT License · Antonis Tzounis</p>
+      <p data-lang="en">Baresto Manager — User guide · MIT License · Antonis Tzounis</p>
+    </footer>
+  </main>
+
+  <script>
+    (function () {
+      var html = document.documentElement;
+      var btnEl = document.getElementById('btn-el');
+      var btnEn = document.getElementById('btn-en');
+
+      function setLang(lang) {
+        html.lang = lang;
+        btnEl.classList.toggle('active', lang === 'el');
+        btnEn.classList.toggle('active', lang === 'en');
+        btnEl.setAttribute('aria-pressed', lang === 'el');
+        btnEn.setAttribute('aria-pressed', lang === 'en');
+        try { localStorage.setItem('baresto-guide-lang', lang); } catch (e) {}
+      }
+
+      btnEl.addEventListener('click', function () { setLang('el'); });
+      btnEn.addEventListener('click', function () { setLang('en'); });
+
+      try {
+        var saved = localStorage.getItem('baresto-guide-lang');
+        if (saved === 'en' || saved === 'el') setLang(saved);
+      } catch (e) {}
+    })();
+  </script>
+</body>
+</html>

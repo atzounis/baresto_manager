@@ -37,10 +37,15 @@
 ## Contents / Περιεχόμενα
 
 - [Screenshots / Στιγμιότυπα](#screenshots--στιγμιότυπα)
+- [User guide (HTML) / Οδηγός χρήσης](docs/user-guide.html)
 - [English](#english)
+  - [Running on Windows (beginners)](#running-on-windows-beginners)
+  - [Running on macOS / Linux](#running-on-macos--linux)
   - [Configuration](#configuration-env)
   - [Development server](#development-server)
 - [Ελληνικά](#ελληνικά)
+  - [Εκτέλεση σε Windows (αρχάριοι)](#εκτέλεση-σε-windows-αρχάριοι)
+  - [Εκτέλεση σε macOS / Linux](#εκτέλεση-σε-macos--linux)
   - [Ρυθμίσεις](#ρυθμίσεις-env)
   - [Εκκίνηση server](#εκκίνηση-server)
 
@@ -64,6 +69,230 @@
 - Python 3.12 or newer
 - `pip` and `venv`
 - Optional: Docker & Docker Compose for PostgreSQL + Redis
+
+### Running on Windows (beginners)
+
+This section is for a **plain Windows 10 or 11 PC** — no programming background assumed. The demo database and images are **already included**; you do not need to install PostgreSQL, Redis, or Docker for a local trial.
+
+#### What you need
+
+| Item | Details |
+|------|---------|
+| **Computer** | Windows 10 or 11 (64-bit) |
+| **Internet** | Only for the first-time download of Python and the project files (~5 minutes) |
+| **Disk space** | About **500 MB** free |
+| **Browser** | Microsoft Edge, Chrome, or Firefox |
+| **Optional — phone/tablet** | Same Wi‑Fi as the PC if you want to try the waiter app on mobile |
+
+You do **not** need: a server, a credit card, Linux, or prior coding experience.
+
+#### Install Python (one time)
+
+1. Open **https://www.python.org/downloads/windows/** in your browser.
+2. Download **Python 3.12** or newer (the big yellow **Download** button).
+3. Run the installer.
+4. On the **first** screen, turn on **“Add python.exe to PATH”** (bottom checkbox) — this is important.
+5. Click **Install Now** and wait until it finishes.
+
+To check it worked: press **Win + R**, type `cmd`, press Enter, then type:
+
+```text
+python --version
+```
+
+You should see something like `Python 3.12.x`. If you get “not recognized”, reinstall Python with **Add to PATH** checked.
+
+#### Get the project files (one time)
+
+**Option A — Download ZIP (easiest)**
+
+1. Open the project page on GitHub in your browser.
+2. Click the green **Code** button → **Download ZIP**.
+3. Right-click the ZIP → **Extract All…** → choose e.g. `Documents\baresto_manager`.
+4. Remember that folder path — you will open it in the next steps.
+
+**Option B — Git**
+
+If you already use Git, clone the repository into a folder such as `Documents\baresto_manager`.
+
+#### Start the app (first time)
+
+1. Press **Win + R**, type `cmd`, press **Enter** (Command Prompt opens).
+2. Go to the project folder (change the path if yours is different):
+
+```bat
+cd Documents\baresto_manager
+```
+
+3. Run these commands **one line at a time**, pressing Enter after each. The first `pip install` may take several minutes.
+
+```bat
+python -m venv .venv
+.venv\Scripts\activate
+pip install -r requirements\local.txt
+copy .env.example .env
+python manage.py runserver
+```
+
+4. Leave this window **open** while you use the app. When you see “Starting development server”, open your browser and go to:
+
+**http://127.0.0.1:8765/login/**
+
+5. Log in with a demo account — see [Demo accounts](#demo-accounts) below (e.g. waiter: user `waiter`, password `waiter1234`, or PIN `2222` at `/login/pin/`).
+
+To stop the server: click the Command Prompt window and press **Ctrl + C**.
+
+#### Start the app (every time after)
+
+1. Open **Command Prompt**.
+2. Run:
+
+```bat
+cd Documents\baresto_manager
+.venv\Scripts\activate
+python manage.py runserver
+```
+
+3. Open **http://127.0.0.1:8765/login/** in your browser.
+
+#### Phone or tablet on the same Wi‑Fi (optional)
+
+1. PC and phone on the **same home Wi‑Fi** (not guest network).
+2. In Command Prompt, type `ipconfig` and note your PC’s **IPv4 Address** (e.g. `192.168.1.15`).
+3. If Windows asks to allow **Python** through the firewall, choose **Allow** on private networks.
+4. On the phone browser, open: `http://<IPv4-ADDRESS>:8765/login/pin/` (example: `http://192.168.1.15:8765/login/pin/`).
+
+#### If something goes wrong
+
+| Problem | What to try |
+|---------|-------------|
+| `'python' is not recognized` | Reinstall Python with **Add python.exe to PATH** checked, then open a **new** Command Prompt. |
+| `'pip' is not recognized` | Use `python -m pip install -r requirements\local.txt` instead of `pip install …`. |
+| Page does not load | Make sure `runserver` is still running and you use port **8765**, not 8000. |
+| Phone cannot connect | Same Wi‑Fi, firewall allows Python, use the PC’s IPv4 address from `ipconfig`. |
+
+For a fresh empty database instead of the bundled demo, see [Quick start (local)](#quick-start-local) below.
+
+### Running on macOS / Linux
+
+For **macOS** (Apple Silicon or Intel) or **Linux** (Ubuntu, Debian, Fedora, etc.) — no prior coding experience assumed. The demo database and images are **already included**; PostgreSQL, Redis, and Docker are optional.
+
+#### What you need
+
+| Item | Details |
+|------|---------|
+| **Computer** | Mac (macOS 12+) or Linux PC (64-bit) |
+| **Internet** | First-time download of Python and project files (~5 minutes) |
+| **Disk space** | About **500 MB** free |
+| **Browser** | Safari, Chrome, Firefox, or Edge |
+| **Optional — phone/tablet** | Same Wi‑Fi as the computer for the waiter app |
+
+You do **not** need: a cloud server or paid hosting for a local trial.
+
+#### Install Python (one time)
+
+**macOS**
+
+1. Open **https://www.python.org/downloads/macos/** and download **Python 3.12** or newer.
+2. Open the `.pkg` installer and follow the prompts (defaults are fine).
+3. Open **Terminal** (Spotlight: **Cmd + Space**, type `Terminal`, Enter) and check:
+
+```bash
+python3 --version
+```
+
+**Alternative (developers):** [Homebrew](https://brew.sh/) — `brew install python@3.12`
+
+**Linux (Ubuntu / Debian)**
+
+```bash
+sudo apt update
+sudo apt install python3 python3-venv python3-pip
+python3 --version
+```
+
+**Linux (Fedora)**
+
+```bash
+sudo dnf install python3 python3-pip
+python3 --version
+```
+
+On other distributions, install **Python 3.12+** and a `venv` module from your package manager.
+
+#### Get the project files (one time)
+
+**Option A — Download ZIP**
+
+1. Open the project on GitHub → **Code** → **Download ZIP**.
+2. Unzip to e.g. `~/Documents/baresto_manager`.
+
+**Option B — Git**
+
+```bash
+cd ~/Documents
+git clone https://github.com/atzounis/baresto_manager.git
+cd baresto_manager
+```
+
+#### Start the app (first time)
+
+1. Open **Terminal**.
+2. Go to the project folder (adjust the path if needed):
+
+```bash
+cd ~/Documents/baresto_manager
+```
+
+3. Run **one line at a time**. The first `pip install` may take several minutes.
+
+```bash
+python3 -m venv .venv
+source .venv/bin/activate
+pip install -r requirements/local.txt
+cp .env.example .env
+python manage.py runserver
+```
+
+4. Leave Terminal **open** while using the app. When you see “Starting development server”, open:
+
+**http://127.0.0.1:8765/login/**
+
+5. Log in with a demo account — see [Demo accounts](#demo-accounts) (e.g. waiter: `waiter` / `waiter1234`, PIN `2222` at `/login/pin/`).
+
+Stop the server: **Ctrl + C** in Terminal.
+
+#### Start the app (every time after)
+
+```bash
+cd ~/Documents/baresto_manager
+source .venv/bin/activate
+python manage.py runserver
+```
+
+Then open **http://127.0.0.1:8765/login/**.
+
+#### Phone or tablet on the same Wi‑Fi (optional)
+
+1. Computer and phone on the **same Wi‑Fi** (not guest network).
+2. Find your computer’s LAN address:
+   - **macOS:** `ipconfig getifaddr en0` (Wi‑Fi) or check **System Settings → Network**
+   - **Linux:** `hostname -I | awk '{print $1}'` or `ip -4 addr show`
+3. On the phone, open: `http://<LAN-IP>:8765/login/pin/` (example: `http://192.168.1.42:8765/login/pin/`).
+
+On macOS, allow **Python** through the firewall if prompted. On Linux, ensure port **8765** is not blocked by `ufw` or similar.
+
+#### If something goes wrong
+
+| Problem | What to try |
+|---------|-------------|
+| `python3: command not found` | Install Python (see above) or use the full path from `which python3`. |
+| `ensurepip` / venv errors on Linux | Install the `python3-venv` package (`sudo apt install python3-venv`). |
+| `pip install` fails on newer Ubuntu | Use the virtualenv above; do not install into system Python. |
+| Page does not load | Keep `runserver` running; use port **8765**, not 8000. |
+| Phone cannot connect | Same Wi‑Fi, correct LAN IP, firewall allows the server. |
+
+For a fresh empty database instead of the bundled demo, see [Quick start (local)](#quick-start-local) below.
 
 ### Quick start (local)
 
@@ -319,6 +548,230 @@ cp images/barestomanager-vertical-logo.png static/brand/baresto-vertical.png
 - Python 3.12 ή νεότερο
 - `pip` και `venv`
 - Προαιρετικά: Docker & Docker Compose για PostgreSQL + Redis
+
+### Εκτέλεση σε Windows (αρχάριοι)
+
+Αυτή η ενότητα απευθύνεται σε **απλό PC με Windows 10 ή 11** — χωρίς προγραμματιστικές γνώσεις. Η demo βάση και οι εικόνες **περιλαμβάνονται ήδη**· δεν χρειάζεται PostgreSQL, Redis ή Docker για δοκιμή στον υπολογιστή σας.
+
+#### Τι χρειάζεστε
+
+| Στοιχείο | Λεπτομέρειες |
+|----------|--------------|
+| **Υπολογιστής** | Windows 10 ή 11 (64-bit) |
+| **Internet** | Μόνο την πρώτη φορά, για λήψη Python και αρχείων project (~5 λεπτά) |
+| **Χώρος δίσκου** | Περίπου **500 MB** ελεύθερα |
+| **Browser** | Microsoft Edge, Chrome ή Firefox |
+| **Προαιρετικά — κινητό/tablet** | Ίδιο Wi‑Fi με τον PC για δοκιμή εφαρμογής σερβιτόρου |
+
+Δεν χρειάζεστε: server, πιστωτική κάρτα, Linux ή προηγούμενη εμπειρία προγραμματισμού.
+
+#### Εγκατάσταση Python (μία φορά)
+
+1. Ανοίξτε **https://www.python.org/downloads/windows/** στον browser.
+2. Κατεβάστε **Python 3.12** ή νεότερο (κουμπί **Download**).
+3. Τρέξτε το installer.
+4. Στην **πρώτη** οθόνη, ενεργοποιήστε **«Add python.exe to PATH»** (checkbox κάτω) — είναι σημαντικό.
+5. Πατήστε **Install Now** και περιμένετε να ολοκληρωθεί.
+
+Έλεγχος: **Win + R** → πληκτρολογήστε `cmd` → Enter → πληκτρολογήστε:
+
+```text
+python --version
+```
+
+Θα πρέπει να εμφανιστεί κάτι σαν `Python 3.12.x`. Αν βλέπετε «not recognized», εγκαταστήστε ξανά Python με ενεργό το **Add to PATH**.
+
+#### Λήψη αρχείων project (μία φορά)
+
+**Επιλογή Α — Λήψη ZIP (πιο εύκολη)**
+
+1. Ανοίξτε τη σελίδα του project στο GitHub.
+2. Πράσινο κουμπί **Code** → **Download ZIP**.
+3. Δεξί κλικ στο ZIP → **Extract All…** → π.χ. `Documents\baresto_manager`.
+4. Θυμηθείτε τη διαδρομή — θα τη χρησιμοποιήσετε στα επόμενα βήματα.
+
+**Επιλογή Β — Git**
+
+Αν έχετε ήδη Git, κάντε clone το repository σε φάκελο όπως `Documents\baresto_manager`.
+
+#### Εκκίνηση εφαρμογής (πρώτη φορά)
+
+1. **Win + R** → `cmd` → **Enter** (ανοίγει Command Prompt).
+2. Μεταβείτε στον φάκελο (αλλάξτε τη διαδρομή αν χρειάζεται):
+
+```bat
+cd Documents\baresto_manager
+```
+
+3. Τρέξτε **μία γραμμή τη φορά**, Enter μετά από κάθε μία. Το πρώτο `pip install` μπορεί να πάρει αρκετά λεπτά.
+
+```bat
+python -m venv .venv
+.venv\Scripts\activate
+pip install -r requirements\local.txt
+copy .env.example .env
+python manage.py runserver
+```
+
+4. Αφήστε το παράθυρο **ανοιχτό** όσο χρησιμοποιείτε την εφαρμογή. Όταν δείτε «Starting development server», ανοίξτε browser:
+
+**http://127.0.0.1:8765/login/**
+
+5. Σύνδεση με demo λογαριασμό — δείτε [Λογαριασμοί επίδειξης](#λογαριασμοί-επίδειξης) (π.χ. σερβιτόρος: `waiter` / `waiter1234`, ή PIN `2222` στο `/login/pin/`).
+
+Διακοπή server: παράθυρο Command Prompt → **Ctrl + C**.
+
+#### Εκκίνηση εφαρμογής (κάθε φορά μετά)
+
+1. Ανοίξτε **Command Prompt**.
+2. Τρέξτε:
+
+```bat
+cd Documents\baresto_manager
+.venv\Scripts\activate
+python manage.py runserver
+```
+
+3. Browser: **http://127.0.0.1:8765/login/**
+
+#### Κινητό/tablet στο ίδιο Wi‑Fi (προαιρετικά)
+
+1. PC και κινητό στο **ίδιο Wi‑Fi σπιτιού** (όχι guest).
+2. Στο Command Prompt: `ipconfig` → σημειώστε **IPv4 Address** (π.χ. `192.168.1.15`).
+3. Αν το Windows ζητήσει firewall για **Python**, επιλέξτε **Allow** σε private network.
+4. Στο κινητό: `http://<IPv4>:8765/login/pin/` (π.χ. `http://192.168.1.15:8765/login/pin/`).
+
+#### Αν κάτι πάει στραβά
+
+| Πρόβλημα | Τι να δοκιμάσετε |
+|----------|-------------------|
+| `'python' is not recognized` | Επανεγκατάσταση Python με **Add python.exe to PATH**, νέο Command Prompt. |
+| `'pip' is not recognized` | Χρησιμοποιήστε `python -m pip install -r requirements\local.txt`. |
+| Δεν ανοίγει η σελίδα | Το `runserver` πρέπει να τρέχει· χρησιμοποιήστε θύρα **8765**, όχι 8000. |
+| Το κινητό δεν συνδέεται | Ίδιο Wi‑Fi, firewall επιτρέπει Python, IPv4 από `ipconfig`. |
+
+Για καθαρή βάση αντί της έτοιμης demo, δείτε [Γρήγορη εκκίνηση (τοπικά)](#γρήγορη-εκκίνηση-τοπικά) παρακάτω.
+
+### Εκτέλεση σε macOS / Linux
+
+Για **macOS** (Apple Silicon ή Intel) ή **Linux** (Ubuntu, Debian, Fedora κ.λπ.) — χωρίς προγραμματιστικές γνώσεις. Η demo βάση και οι εικόνες **περιλαμβάνονται ήδη**· PostgreSQL, Redis και Docker είναι προαιρετικά.
+
+#### Τι χρειάζεστε
+
+| Στοιχείο | Λεπτομέρειες |
+|----------|--------------|
+| **Υπολογιστής** | Mac (macOS 12+) ή Linux PC (64-bit) |
+| **Internet** | Πρώτη φορά για λήψη Python και αρχείων (~5 λεπτά) |
+| **Χώρος δίσκου** | Περίπου **500 MB** ελεύθερα |
+| **Browser** | Safari, Chrome, Firefox ή Edge |
+| **Προαιρετικά — κινητό/tablet** | Ίδιο Wi‑Fi με τον υπολογιστή για εφαρμογή σερβιτόρου |
+
+Δεν χρειάζεστε cloud server ή πληρωμένο hosting για τοπική δοκιμή.
+
+#### Εγκατάσταση Python (μία φορά)
+
+**macOS**
+
+1. Ανοίξτε **https://www.python.org/downloads/macos/** και κατεβάστε **Python 3.12** ή νεότερο.
+2. Τρέξτε το `.pkg` installer (προεπιλογές OK).
+3. Ανοίξτε **Terminal** (Spotlight: **Cmd + Space**, `Terminal`, Enter) και ελέγξτε:
+
+```bash
+python3 --version
+```
+
+**Εναλλακτικά (developers):** [Homebrew](https://brew.sh/) — `brew install python@3.12`
+
+**Linux (Ubuntu / Debian)**
+
+```bash
+sudo apt update
+sudo apt install python3 python3-venv python3-pip
+python3 --version
+```
+
+**Linux (Fedora)**
+
+```bash
+sudo dnf install python3 python3-pip
+python3 --version
+```
+
+Σε άλλες διανομές, εγκαταστήστε **Python 3.12+** και module `venv` από το package manager.
+
+#### Λήψη αρχείων project (μία φορά)
+
+**Επιλογή Α — Λήψη ZIP**
+
+1. Σελίδα project στο GitHub → **Code** → **Download ZIP**.
+2. Αποσυμπίεση π.χ. σε `~/Documents/baresto_manager`.
+
+**Επιλογή Β — Git**
+
+```bash
+cd ~/Documents
+git clone https://github.com/atzounis/baresto_manager.git
+cd baresto_manager
+```
+
+#### Εκκίνηση εφαρμογής (πρώτη φορά)
+
+1. Ανοίξτε **Terminal**.
+2. Μεταβείτε στον φάκελο (αλλάξτε διαδρομή αν χρειάζεται):
+
+```bash
+cd ~/Documents/baresto_manager
+```
+
+3. Τρέξτε **μία γραμμή τη φορά**. Το πρώτο `pip install` μπορεί να πάρει αρκετά λεπτά.
+
+```bash
+python3 -m venv .venv
+source .venv/bin/activate
+pip install -r requirements/local.txt
+cp .env.example .env
+python manage.py runserver
+```
+
+4. Αφήστε το Terminal **ανοιχτό**. Όταν δείτε «Starting development server», ανοίξτε:
+
+**http://127.0.0.1:8765/login/**
+
+5. Σύνδεση με demo λογαριασμό — [Λογαριασμοί επίδειξης](#λογαριασμοί-επίδειξης) (π.χ. σερβιτόρος: `waiter` / `waiter1234`, PIN `2222` στο `/login/pin/`).
+
+Διακοπή: **Ctrl + C** στο Terminal.
+
+#### Εκκίνηση εφαρμογής (κάθε φορά μετά)
+
+```bash
+cd ~/Documents/baresto_manager
+source .venv/bin/activate
+python manage.py runserver
+```
+
+Μετά ανοίξτε **http://127.0.0.1:8765/login/**.
+
+#### Κινητό/tablet στο ίδιο Wi‑Fi (προαιρετικά)
+
+1. Υπολογιστής και κινητό στο **ίδιο Wi‑Fi** (όχι guest).
+2. Διεύθυνση LAN:
+   - **macOS:** `ipconfig getifaddr en0` ή **Ρυθμίσεις συστήματος → Δίκτυο**
+   - **Linux:** `hostname -I | awk '{print $1}'` ή `ip -4 addr show`
+3. Στο κινητό: `http://<LAN-IP>:8765/login/pin/` (π.χ. `http://192.168.1.42:8765/login/pin/`).
+
+Στο macOS, επιτρέψτε **Python** στο firewall αν ζητηθεί. Στο Linux, βεβαιωθείτε ότι η θύρα **8765** δεν μπλοκάρεται από `ufw` κ.λπ.
+
+#### Αν κάτι πάει στραβά
+
+| Πρόβλημα | Τι να δοκιμάσετε |
+|----------|-------------------|
+| `python3: command not found` | Εγκατάσταση Python (παραπάνω) ή πλήρης διαδρομή από `which python3`. |
+| Σφάλματα venv / `ensurepip` στο Linux | `sudo apt install python3-venv` |
+| Αποτυχία `pip install` σε νέο Ubuntu | Χρησιμοποιήστε virtualenv· όχι system Python. |
+| Δεν ανοίγει η σελίδα | Το `runserver` πρέπει να τρέχει· θύρα **8765**, όχι 8000. |
+| Το κινητό δεν συνδέεται | Ίδιο Wi‑Fi, σωστό LAN IP, firewall. |
+
+Για καθαρή βάση αντί της έτοιμης demo, δείτε [Γρήγορη εκκίνηση (τοπικά)](#γρήγορη-εκκίνηση-τοπικά) παρακάτω.
 
 ### Γρήγορη εκκίνηση (τοπικά)
 
