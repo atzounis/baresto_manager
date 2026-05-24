@@ -58,11 +58,13 @@
 - [User guide (HTML) / Οδηγός χρήσης](docs/user-guide.html)
 - [English](#english)
   - [Running on Windows (beginners)](#running-on-windows-beginners)
+  - [Windows one-click launcher](#windows-one-click-launcher)
   - [Running on macOS / Linux](#running-on-macos--linux)
   - [Configuration](#configuration-env)
   - [Development server](#development-server)
 - [Ελληνικά](#ελληνικά)
   - [Εκτέλεση σε Windows (αρχάριοι)](#εκτέλεση-σε-windows-αρχάριοι)
+  - [Εκκίνηση με ένα κλικ (Windows)](#εκκίνηση-με-ένα-κλικ-windows)
   - [Εκτέλεση σε macOS / Linux](#εκτέλεση-σε-macos--linux)
   - [Ρυθμίσεις](#ρυθμίσεις-env)
   - [Εκκίνηση server](#εκκίνηση-server)
@@ -84,41 +86,41 @@
 
 ### Requirements
 
-- Python 3.12 or newer
+- Python 3.12 or newer (installed automatically on Windows by [`Start-BarestoManager.bat`](Start-BarestoManager.bat) when possible)
 - `pip` and `venv`
 - Optional: Docker & Docker Compose for PostgreSQL + Redis
 
+**Windows users:** see [Quick start (3 steps)](#quick-start-3-steps) — no Command Prompt required.
+
 ### Running on Windows (beginners)
 
-This section is for a **plain Windows 10 or 11 PC** — no programming background assumed. The demo database and images are **already included**; you do not need to install PostgreSQL, Redis, or Docker for a local trial.
+This section is for a **plain Windows 10 or 11 PC** — no programming background assumed. The demo database and images are **already included**; you do not need PostgreSQL, Redis, or Docker for a local trial.
+
+#### Quick start (3 steps)
+
+1. **Download the project** — GitHub → green **Code** → **Download ZIP** → extract to e.g. `Documents\baresto_manager`.
+2. **Double-click** **`Start-BarestoManager.bat`** in that folder (same level as `manage.py`).
+3. **Wait for the browser** — the launcher sets everything up on first run and opens **http://127.0.0.1:8765/login/** automatically.
+
+Leave the black console window **open** while you use the app. Press **Ctrl + C** in that window to stop the server.
+
+Log in with a demo account — see [Demo accounts](#demo-accounts) (e.g. waiter: `waiter` / `waiter1234`, or PIN `2222` at `/login/pin/`).
+
+On **every later run**, double-click **`Start-BarestoManager.bat`** again (setup is skipped after the first time).
 
 #### What you need
 
 | Item | Details |
 |------|---------|
 | **Computer** | Windows 10 or 11 (64-bit) |
-| **Internet** | Only for the first-time download of Python and the project files (~5 minutes) |
+| **Internet** | First run only — downloads Python (if needed) and Python libraries (~5–15 minutes) |
 | **Disk space** | About **500 MB** free |
 | **Browser** | Microsoft Edge, Chrome, or Firefox |
-| **Optional — phone/tablet** | Same Wi‑Fi as the PC if you want to try the waiter app on mobile |
+| **Optional — phone/tablet** | Same Wi‑Fi as the PC for the waiter app |
 
-You do **not** need: a server, a credit card, Linux, or prior coding experience.
+You do **not** need: a server, a credit card, Linux, Docker, or prior coding experience.
 
-#### Install Python (one time)
-
-1. Open **https://www.python.org/downloads/windows/** in your browser.
-2. Download **Python 3.12** or newer (the big yellow **Download** button).
-3. Run the installer.
-4. On the **first** screen, turn on **“Add python.exe to PATH”** (bottom checkbox) — this is important.
-5. Click **Install Now** and wait until it finishes.
-
-To check it worked: press **Win + R**, type `cmd`, press Enter, then type:
-
-```text
-python --version
-```
-
-You should see something like `Python 3.12.x`. If you get “not recognized”, reinstall Python with **Add to PATH** checked.
+The launcher tries to install **Python 3.12** automatically via `winget` if it is missing. If that fails, see [Install Python manually](#install-python-manually-one-time) below.
 
 #### Get the project files (one time)
 
@@ -127,24 +129,31 @@ You should see something like `Python 3.12.x`. If you get “not recognized”, 
 1. Open the project page on GitHub in your browser.
 2. Click the green **Code** button → **Download ZIP**.
 3. Right-click the ZIP → **Extract All…** → choose e.g. `Documents\baresto_manager`.
-4. Remember that folder path — you will open it in the next steps.
 
 **Option B — Git**
 
 If you already use Git, clone the repository into a folder such as `Documents\baresto_manager`.
 
-#### Start the app (first time)
+#### Install Python manually (one time)
 
-1. Press **Win + R**, type `cmd`, press **Enter** (Command Prompt opens).
-2. Go to the project folder (change the path if yours is different):
+Only needed if the launcher cannot install Python for you.
+
+1. Open **https://www.python.org/downloads/windows/** in your browser.
+2. Download **Python 3.12** or newer.
+3. Run the installer.
+4. On the **first** screen, turn on **“Add python.exe to PATH”** (bottom checkbox) — this is important.
+5. Click **Install Now** and wait until it finishes.
+
+Check: **Win + R** → `cmd` → Enter → `python --version` — you should see `Python 3.12.x`.
+
+#### Manual setup (Command Prompt)
+
+If you prefer not to use the batch launcher:
+
+**First time:**
 
 ```bat
 cd Documents\baresto_manager
-```
-
-3. Run these commands **one line at a time**, pressing Enter after each. The first `pip install` may take several minutes.
-
-```bat
 python -m venv .venv
 .venv\Scripts\activate
 pip install -r requirements\local.txt
@@ -152,18 +161,7 @@ copy .env.example .env
 python manage.py runserver
 ```
 
-4. Leave this window **open** while you use the app. When you see “Starting development server”, open your browser and go to:
-
-**http://127.0.0.1:8765/login/**
-
-5. Log in with a demo account — see [Demo accounts](#demo-accounts) below (e.g. waiter: user `waiter`, password `waiter1234`, or PIN `2222` at `/login/pin/`).
-
-To stop the server: click the Command Prompt window and press **Ctrl + C**.
-
-#### Start the app (every time after)
-
-1. Open **Command Prompt**.
-2. Run:
+**Every time after:**
 
 ```bat
 cd Documents\baresto_manager
@@ -171,7 +169,37 @@ cd Documents\baresto_manager
 python manage.py runserver
 ```
 
-3. Open **http://127.0.0.1:8765/login/** in your browser.
+Then open **http://127.0.0.1:8765/login/** in your browser.
+
+#### Windows one-click launcher
+
+| File | Purpose |
+|------|---------|
+| [`Start-BarestoManager.bat`](Start-BarestoManager.bat) | **Recommended** — setup + run; installs Python via `winget` if needed |
+| [`BarestoManager.exe`](BarestoManager.exe) | Same behaviour as a single `.exe` — [build on Windows](#build-barestomanagerexe) |
+| [`scripts/windows/baresto_launcher.py`](scripts/windows/baresto_launcher.py) | Launcher source (used by the `.bat` and `.exe`) |
+
+**What the launcher does automatically**
+
+1. Finds the project folder (`manage.py`)
+2. Installs Python 3.12 via `winget` if missing (or opens python.org)
+3. Creates `.venv` and runs `pip install -r requirements/local.txt` (first run only)
+4. Copies `.env.example` → `.env` if needed, runs database migrations
+5. Starts the dev server on port **8765**
+6. Opens the login page in your default browser
+
+More detail: [`scripts/windows/README.md`](scripts/windows/README.md).
+
+##### Build `BarestoManager.exe`
+
+The `.exe` must be built **on a Windows PC** (PyInstaller cannot cross-compile from macOS/Linux). After extracting the project:
+
+```bat
+cd scripts\windows
+build-exe.bat
+```
+
+This copies **`BarestoManager.exe`** to the project root. Place it next to `manage.py` and double-click. Distribute the **whole project folder** (ZIP) together with the exe — the exe is a launcher, not a standalone app bundle.
 
 #### Phone or tablet on the same Wi‑Fi (optional)
 
@@ -184,10 +212,12 @@ python manage.py runserver
 
 | Problem | What to try |
 |---------|-------------|
-| `'python' is not recognized` | Reinstall Python with **Add python.exe to PATH** checked, then open a **new** Command Prompt. |
+| `'python' is not recognized` | Install Python with **Add python.exe to PATH**, or let the launcher use `winget`; open a **new** window after install. |
 | `'pip' is not recognized` | Use `python -m pip install -r requirements\local.txt` instead of `pip install …`. |
-| Page does not load | Make sure `runserver` is still running and you use port **8765**, not 8000. |
+| `manage.py` not found | Run `Start-BarestoManager.bat` from the folder that contains `manage.py`, not from inside `scripts\`. |
+| Page does not load | Make sure the server window is still open; use port **8765**, not 8000. |
 | Phone cannot connect | Same Wi‑Fi, firewall allows Python, use the PC’s IPv4 address from `ipconfig`. |
+| Port already in use | Close the other app on 8765, or change `DJANGO_PORT` in `.env`. |
 
 For a fresh empty database instead of the bundled demo, see [Quick start (local)](#quick-start-local) below.
 
@@ -563,41 +593,41 @@ cp images/barestomanager-vertical-logo.png static/brand/baresto-vertical.png
 
 ### Απαιτήσεις
 
-- Python 3.12 ή νεότερο
+- Python 3.12 ή νεότερο (εγκαθίσταται αυτόματα σε Windows από το [`Start-BarestoManager.bat`](Start-BarestoManager.bat) όπου είναι δυνατό)
 - `pip` και `venv`
 - Προαιρετικά: Docker & Docker Compose για PostgreSQL + Redis
+
+**Windows:** δείτε [Γρήγορη εκκίνηση (3 βήματα)](#γρήγορη-εκκίνηση-3-βήματα) — χωρίς Command Prompt.
 
 ### Εκτέλεση σε Windows (αρχάριοι)
 
 Αυτή η ενότητα απευθύνεται σε **απλό PC με Windows 10 ή 11** — χωρίς προγραμματιστικές γνώσεις. Η demo βάση και οι εικόνες **περιλαμβάνονται ήδη**· δεν χρειάζεται PostgreSQL, Redis ή Docker για δοκιμή στον υπολογιστή σας.
+
+#### Γρήγορη εκκίνηση (3 βήματα)
+
+1. **Λήψη project** — GitHub → πράσινο **Code** → **Download ZIP** → εξαγωγή π.χ. σε `Documents\baresto_manager`.
+2. **Διπλό κλικ** στο **`Start-BarestoManager.bat`** στον φάκελο (δίπλα στο `manage.py`).
+3. **Περιμένετε τον browser** — ο launcher κάνει όλη την εγκατάσταση την πρώτη φορά και ανοίγει αυτόματα το **http://127.0.0.1:8765/login/**.
+
+Αφήστε το **μαύρο παράθυρο κονσόλας ανοιχτό** όσο χρησιμοποιείτε την εφαρμογή. **Ctrl + C** στο παράθυρο για διακοπή του server.
+
+Σύνδεση με demo λογαριασμό — [Λογαριασμοί επίδειξης](#λογαριασμοί-επίδειξης) (π.χ. σερβιτόρος: `waiter` / `waiter1234`, PIN `2222` στο `/login/pin/`).
+
+**Κάθε επόμενη φορά:** ξανά διπλό κλικ στο **`Start-BarestoManager.bat`** (η εγκατάσταση γίνεται μόνο την πρώτη φορά).
 
 #### Τι χρειάζεστε
 
 | Στοιχείο | Λεπτομέρειες |
 |----------|--------------|
 | **Υπολογιστής** | Windows 10 ή 11 (64-bit) |
-| **Internet** | Μόνο την πρώτη φορά, για λήψη Python και αρχείων project (~5 λεπτά) |
+| **Internet** | Μόνο την πρώτη φορά — Python (αν λείπει) και βιβλιοθήκες (~5–15 λεπτά) |
 | **Χώρος δίσκου** | Περίπου **500 MB** ελεύθερα |
 | **Browser** | Microsoft Edge, Chrome ή Firefox |
-| **Προαιρετικά — κινητό/tablet** | Ίδιο Wi‑Fi με τον PC για δοκιμή εφαρμογής σερβιτόρου |
+| **Προαιρετικά — κινητό/tablet** | Ίδιο Wi‑Fi με τον PC για εφαρμογή σερβιτόρου |
 
-Δεν χρειάζεστε: server, πιστωτική κάρτα, Linux ή προηγούμενη εμπειρία προγραμματισμού.
+Δεν χρειάζεστε: server, πιστωτική κάρτα, Linux, Docker ή προηγούμενη εμπειρία προγραμματισμού.
 
-#### Εγκατάσταση Python (μία φορά)
-
-1. Ανοίξτε **https://www.python.org/downloads/windows/** στον browser.
-2. Κατεβάστε **Python 3.12** ή νεότερο (κουμπί **Download**).
-3. Τρέξτε το installer.
-4. Στην **πρώτη** οθόνη, ενεργοποιήστε **«Add python.exe to PATH»** (checkbox κάτω) — είναι σημαντικό.
-5. Πατήστε **Install Now** και περιμένετε να ολοκληρωθεί.
-
-Έλεγχος: **Win + R** → πληκτρολογήστε `cmd` → Enter → πληκτρολογήστε:
-
-```text
-python --version
-```
-
-Θα πρέπει να εμφανιστεί κάτι σαν `Python 3.12.x`. Αν βλέπετε «not recognized», εγκαταστήστε ξανά Python με ενεργό το **Add to PATH**.
+Ο launcher προσπαθεί να εγκαταστήσει **Python 3.12** αυτόματα μέσω `winget`. Αν αποτύχει, δείτε [Εγκατάσταση Python χειροκίνητα](#εγκατάσταση-python-χειροκίνητα-μία-φορά) παρακάτω.
 
 #### Λήψη αρχείων project (μία φορά)
 
@@ -606,24 +636,29 @@ python --version
 1. Ανοίξτε τη σελίδα του project στο GitHub.
 2. Πράσινο κουμπί **Code** → **Download ZIP**.
 3. Δεξί κλικ στο ZIP → **Extract All…** → π.χ. `Documents\baresto_manager`.
-4. Θυμηθείτε τη διαδρομή — θα τη χρησιμοποιήσετε στα επόμενα βήματα.
 
 **Επιλογή Β — Git**
 
 Αν έχετε ήδη Git, κάντε clone το repository σε φάκελο όπως `Documents\baresto_manager`.
 
-#### Εκκίνηση εφαρμογής (πρώτη φορά)
+#### Εγκατάσταση Python χειροκίνητα (μία φορά)
 
-1. **Win + R** → `cmd` → **Enter** (ανοίγει Command Prompt).
-2. Μεταβείτε στον φάκελο (αλλάξτε τη διαδρομή αν χρειάζεται):
+Μόνο αν ο launcher δεν μπορεί να εγκαταστήσει Python.
+
+1. Ανοίξτε **https://www.python.org/downloads/windows/**.
+2. Κατεβάστε **Python 3.12** ή νεότερο.
+3. Τρέξτε το installer.
+4. Ενεργοποιήστε **«Add python.exe to PATH»** στην πρώτη οθόνη.
+5. **Install Now** και περιμένετε.
+
+Έλεγχος: **Win + R** → `cmd` → `python --version` — θα πρέπει να δείτε `Python 3.12.x`.
+
+#### Χειροκίνητη εκκίνηση (Command Prompt)
+
+**Πρώτη φορά:**
 
 ```bat
 cd Documents\baresto_manager
-```
-
-3. Τρέξτε **μία γραμμή τη φορά**, Enter μετά από κάθε μία. Το πρώτο `pip install` μπορεί να πάρει αρκετά λεπτά.
-
-```bat
 python -m venv .venv
 .venv\Scripts\activate
 pip install -r requirements\local.txt
@@ -631,18 +666,7 @@ copy .env.example .env
 python manage.py runserver
 ```
 
-4. Αφήστε το παράθυρο **ανοιχτό** όσο χρησιμοποιείτε την εφαρμογή. Όταν δείτε «Starting development server», ανοίξτε browser:
-
-**http://127.0.0.1:8765/login/**
-
-5. Σύνδεση με demo λογαριασμό — δείτε [Λογαριασμοί επίδειξης](#λογαριασμοί-επίδειξης) (π.χ. σερβιτόρος: `waiter` / `waiter1234`, ή PIN `2222` στο `/login/pin/`).
-
-Διακοπή server: παράθυρο Command Prompt → **Ctrl + C**.
-
-#### Εκκίνηση εφαρμογής (κάθε φορά μετά)
-
-1. Ανοίξτε **Command Prompt**.
-2. Τρέξτε:
+**Κάθε φορά μετά:**
 
 ```bat
 cd Documents\baresto_manager
@@ -650,7 +674,37 @@ cd Documents\baresto_manager
 python manage.py runserver
 ```
 
-3. Browser: **http://127.0.0.1:8765/login/**
+Browser: **http://127.0.0.1:8765/login/**
+
+#### Εκκίνηση με ένα κλικ (Windows)
+
+| Αρχείο | Σκοπός |
+|--------|--------|
+| [`Start-BarestoManager.bat`](Start-BarestoManager.bat) | **Προτείνεται** — εγκατάσταση + εκκίνηση· εγκαθιστά Python via `winget` αν λείπει |
+| [`BarestoManager.exe`](BarestoManager.exe) | Ίδια συμπεριφορά ως `.exe` — [build σε Windows](#δημιουργία-barestomanagerexe) |
+| [`scripts/windows/baresto_launcher.py`](scripts/windows/baresto_launcher.py) | Πηγαίος κώδικας launcher (`.bat` και `.exe`) |
+
+**Τι κάνει αυτόματα ο launcher**
+
+1. Βρίσκει τον φάκελο project (`manage.py`)
+2. Εγκαθιστά Python 3.12 via `winget` αν λείπει (ή ανοίγει python.org)
+3. Δημιουργεί `.venv` και `pip install -r requirements/local.txt` (μόνο πρώτη φορά)
+4. Αντιγράφει `.env.example` → `.env`, τρέχει migrations
+5. Εκκινεί server στη θύρα **8765**
+6. Ανοίγει τη σελίδα σύνδεσης στον default browser
+
+Λεπτομέρειες: [`scripts/windows/README.md`](scripts/windows/README.md).
+
+##### Δημιουργία `BarestoManager.exe`
+
+Το `.exe` πρέπει να χτιστεί **σε PC με Windows** (το PyInstaller δεν κάνει cross-compile από macOS/Linux). Μετά την εξαγωγή του project:
+
+```bat
+cd scripts\windows
+build-exe.bat
+```
+
+Αντιγράφει το **`BarestoManager.exe`** στη ρίζα του project. Τοποθετήστε το δίπλα στο `manage.py` και κάντε διπλό κλικ. Διανέμετε **ολόκληρο τον φάκελο project** (ZIP) μαζί με το exe.
 
 #### Κινητό/tablet στο ίδιο Wi‑Fi (προαιρετικά)
 
@@ -663,10 +717,12 @@ python manage.py runserver
 
 | Πρόβλημα | Τι να δοκιμάσετε |
 |----------|-------------------|
-| `'python' is not recognized` | Επανεγκατάσταση Python με **Add python.exe to PATH**, νέο Command Prompt. |
-| `'pip' is not recognized` | Χρησιμοποιήστε `python -m pip install -r requirements\local.txt`. |
-| Δεν ανοίγει η σελίδα | Το `runserver` πρέπει να τρέχει· χρησιμοποιήστε θύρα **8765**, όχι 8000. |
+| `'python' is not recognized` | Εγκατάσταση Python με **Add to PATH**, ή αφήστε τον launcher να χρησιμοποιήσει `winget`· νέο παράθυρο μετά την εγκατάσταση. |
+| `'pip' is not recognized` | `python -m pip install -r requirements\local.txt`. |
+| `manage.py` not found | Τρέξτε το `Start-BarestoManager.bat` από τον φάκελο με το `manage.py`, όχι από `scripts\`. |
+| Δεν ανοίγει η σελίδα | Το παράθυρο server πρέπει να είναι ανοιχτό· θύρα **8765**, όχι 8000. |
 | Το κινητό δεν συνδέεται | Ίδιο Wi‑Fi, firewall επιτρέπει Python, IPv4 από `ipconfig`. |
+| Η θύρα είναι κατειλημμένη | Κλείστε την άλλη εφαρμογή στη 8765 ή αλλάξτε `DJANGO_PORT` στο `.env`. |
 
 Για καθαρή βάση αντί της έτοιμης demo, δείτε [Γρήγορη εκκίνηση (τοπικά)](#γρήγορη-εκκίνηση-τοπικά) παρακάτω.
 
