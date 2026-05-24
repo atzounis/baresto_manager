@@ -111,7 +111,7 @@ DJANGO_PORT = env.int("DJANGO_PORT", default=8765)
 SITE_BASE_URL = env("SITE_BASE_URL", default=f"http://127.0.0.1:{DJANGO_PORT}")
 
 LOGIN_URL = "/login/"
-LOGIN_REDIRECT_URL = "/dashboard/"
+LOGIN_REDIRECT_URL = "/tables/"
 LOGOUT_REDIRECT_URL = "/login/"
 
 DATABASES = {

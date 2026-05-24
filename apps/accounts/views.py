@@ -17,9 +17,7 @@ def staff_home_url(user):
         return "/login/"
     if profile.role == "kitchen":
         return "/kitchen/"
-    if profile.role == "waiter":
-        return "/tables/"
-    return "/dashboard/"
+    return "/tables/"
 
 
 class HomeView(View):

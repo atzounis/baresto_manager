@@ -111,6 +111,8 @@ Log in with a demo account — see [Demo accounts](#demo-accounts) (e.g. waiter:
 
 On **every later run**, double-click **`Start-BarestoManager.bat`** again (setup is skipped after the first time).
 
+To **update** to the latest version: stop the server (**Ctrl+C**), then double-click **`Update-BarestoManager.bat`** (or **`BarestoUpdate.exe`**). It downloads updates from GitHub and runs migrations. Your `.env`, database, and media are preserved.
+
 #### What you need
 
 | Item | Details |
@@ -475,7 +477,6 @@ python manage.py shell -c "from django.conf import settings; print(settings.ALLO
 |------|-------------|
 | `/login/` | Staff password login |
 | `/login/pin/` | PIN quick login |
-| `/dashboard/` | Manager dashboard |
 | `/tables/` | Table list & floor plan (filter by floor) |
 | `/orders/new/<session_id>/` | Waiter ordering |
 | `/kitchen/` | Kitchen display |
@@ -617,6 +618,8 @@ cp images/barestomanager-vertical-logo.png static/brand/baresto-vertical.png
 Σύνδεση με demo λογαριασμό — [Λογαριασμοί επίδειξης](#λογαριασμοί-επίδειξης) (π.χ. σερβιτόρος: `waiter` / `waiter1234`, PIN `2222` στο `/login/pin/`).
 
 **Κάθε επόμενη φορά:** ξανά διπλό κλικ στο **`Start-BarestoManager.bat`** (η εγκατάσταση γίνεται μόνο την πρώτη φορά).
+
+**Ενημέρωση:** σταματήστε τον server (**Ctrl+C**), μετά διπλό κλικ στο **`Update-BarestoManager.bat`** (ή **`BarestoUpdate.exe`**). Κατεβάζει την τελευταία έκδοση από GitHub και τρέχει migrations. Διατηρούνται το `.env`, η βάση και τα media.
 
 #### Τι χρειάζεστε
 
@@ -978,7 +981,6 @@ python manage.py shell -c "from django.conf import settings; print(settings.ALLO
 |-----------|-----------|
 | `/login/` | Σύνδεση με κωδικό |
 | `/login/pin/` | Σύνδεση με PIN |
-| `/dashboard/` | Πίνακας διαχείρισης |
 | `/tables/` | Λίστα τραπεζιών & κάτοψη (φίλτρο ορόφου) |
 | `/orders/new/<session_id>/` | Παραγγελία σερβιτόρου |
 | `/kitchen/` | Οθόνη κουζίνας |

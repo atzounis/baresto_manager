@@ -3,7 +3,8 @@
 Double-click launcher for Baresto Manager on **Windows 10/11**. No Docker or Redis required. Download the project ZIP, then either:
 
 1. **`BarestoManager.exe`** (recommended) — place in the project folder next to `manage.py`, then double-click.
-2. **`scripts/windows/Start-BarestoManager.bat`** — same setup, requires Python 3.12+ already on PATH.
+2. **`BarestoUpdate.exe`** — download the latest version, refresh libraries, and run migrations (see [Update](#update) below).
+3. **`scripts/windows/Start-BarestoManager.bat`** — same setup as the launcher, requires Python 3.12+ already on PATH.
 
 ## What the launcher does
 
@@ -17,6 +18,23 @@ Double-click launcher for Baresto Manager on **Windows 10/11**. No Docker or Red
 
 Leave the console window open while using the app. Press **Ctrl+C** to stop.
 
+## Update
+
+Stop the server first (**Ctrl+C** in the launcher window), then either:
+
+1. **`BarestoUpdate.exe`** in the project root (build with `build-update-exe.bat`), or
+2. **`Update-BarestoManager.bat`** at the project root, or
+3. **`scripts/windows/Update-BarestoManager.bat`**
+
+The updater will:
+
+1. **`git pull`** if the folder is a git clone and git is installed
+2. Otherwise download the latest **GitHub release** ZIP, or the **`main`** branch archive
+3. Merge files into the project folder — **preserves** `.env`, `db.sqlite3`, `media/`, and `.venv/`
+4. Run `pip install -r requirements/local.txt` and `python manage.py migrate`
+
+Optional in `.env`: `BARESTO_GITHUB_REPO`, `BARESTO_UPDATE_BRANCH`.
+
 ## Build the `.exe` (on a Windows PC)
 
 PyInstaller cannot cross-compile from macOS/Linux. On Windows, after extracting the project:
@@ -27,6 +45,15 @@ build-exe.bat
 ```
 
 This creates **`BarestoManager.exe`** in the project root. Copy the whole project folder (or ZIP release) with that exe inside.
+
+Build the updater executable:
+
+```bat
+cd scripts\windows
+build-update-exe.bat
+```
+
+This creates **`BarestoUpdate.exe`** in the project root.
 
 Alternatively:
 
@@ -52,5 +79,6 @@ copy dist\BarestoManager.exe ..\..\BarestoManager.exe
 | Python install fails | Install manually from [python.org](https://www.python.org/downloads/windows/) with **Add to PATH**. |
 | Firewall / phone access | The launcher adds rule **Baresto Manager (TCP 8765)** automatically. If phones still cannot connect, run **`Add-Firewall-Rule.bat`** as administrator (reads `DJANGO_PORT` from `.env`). |
 | Port in use | Change `DJANGO_PORT` in `.env` or close the other app using 8765. |
+| Update failed | Stop the server first; run **`Update-BarestoManager.bat`** as administrator if files are locked. |
 
 See also [README — Running on Windows (beginners)](../../README.md#running-on-windows-beginners).
