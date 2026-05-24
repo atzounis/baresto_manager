@@ -2,7 +2,7 @@ import socket
 
 from .base import *  # noqa: F403
 
-DEBUG = True
+DEBUG = env.bool("DEBUG", default=False)  # noqa: F405
 
 # Local dev never requires a Redis daemon. (Production uses Redis via config/settings/production.py.)
 CACHES = {  # noqa: F405
