@@ -11,8 +11,9 @@ Double-click launcher for Baresto Manager on **Windows 10/11**. No Docker or Red
 2. Installs **Python 3.12** via `winget` if missing (or opens python.org)
 3. Creates `.venv` and runs `pip install -r requirements/local.txt` (first run only)
 4. Copies `.env.example` → `.env` if needed, runs migrations
-5. Starts `python manage.py runserver` on port **8765**
-6. Opens **http://127.0.0.1:8765/login/** in your default browser
+5. Adds a Windows Firewall inbound rule for TCP port **8765** (private networks), or prints how to run `Add-Firewall-Rule.bat` as administrator
+6. Starts `python manage.py runserver` on port **8765**
+7. Opens **http://127.0.0.1:8765/login/** in your default browser
 
 Leave the console window open while using the app. Press **Ctrl+C** to stop.
 
@@ -49,7 +50,7 @@ copy dist\BarestoManager.exe ..\..\BarestoManager.exe
 |---------|-----|
 | `manage.py` not found | Put `BarestoManager.exe` in the same folder as `manage.py`. |
 | Python install fails | Install manually from [python.org](https://www.python.org/downloads/windows/) with **Add to PATH**. |
-| Firewall prompt | Allow Python on **Private** networks for phone/tablet access on Wi‑Fi. |
+| Firewall / phone access | The launcher adds rule **Baresto Manager (TCP 8765)** automatically. If phones still cannot connect, run **`Add-Firewall-Rule.bat`** as administrator (reads `DJANGO_PORT` from `.env`). |
 | Port in use | Change `DJANGO_PORT` in `.env` or close the other app using 8765. |
 
 See also [README — Running on Windows (beginners)](../../README.md#running-on-windows-beginners).

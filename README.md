@@ -208,7 +208,7 @@ This copies **`BarestoManager.exe`** to the project root. Place it next to `mana
 
 1. PC and phone on the **same home Wi‑Fi** (not guest network).
 2. In Command Prompt, type `ipconfig` and note your PC’s **IPv4 Address** (e.g. `192.168.1.15`).
-3. If Windows asks to allow **Python** through the firewall, choose **Allow** on private networks.
+3. The launcher adds a Windows Firewall rule for inbound TCP on port **8765** (private networks). If that fails, right-click **`scripts\windows\Add-Firewall-Rule.bat`** → **Run as administrator** (one time).
 4. On the phone browser, open: `http://<IPv4-ADDRESS>:8765/login/pin/` (example: `http://192.168.1.15:8765/login/pin/`).
 
 #### If something goes wrong
@@ -219,7 +219,7 @@ This copies **`BarestoManager.exe`** to the project root. Place it next to `mana
 | `'pip' is not recognized` | Use `python -m pip install -r requirements\local.txt` instead of `pip install …`. |
 | `manage.py` not found | Run `Start-BarestoManager.bat` from the folder that contains `manage.py`, not from inside `scripts\`. |
 | Page does not load | Make sure the server window is still open; use port **8765**, not 8000. |
-| Phone cannot connect | Same Wi‑Fi, firewall allows Python, use the PC’s IPv4 address from `ipconfig`. |
+| Phone cannot connect | Same Wi‑Fi; run **`scripts\windows\Add-Firewall-Rule.bat`** as administrator if needed; use the PC’s IPv4 from `ipconfig`. |
 | Port already in use | Close the other app on 8765, or change `DJANGO_PORT` in `.env`. |
 
 For a fresh empty database instead of the bundled demo, see [Quick start (local)](#quick-start-local) below.
@@ -713,7 +713,7 @@ build-exe.bat
 
 1. PC και κινητό στο **ίδιο Wi‑Fi σπιτιού** (όχι guest).
 2. Στο Command Prompt: `ipconfig` → σημειώστε **IPv4 Address** (π.χ. `192.168.1.15`).
-3. Αν το Windows ζητήσει firewall για **Python**, επιλέξτε **Allow** σε private network.
+3. Ο launcher προσθέτει κανόνα Windows Firewall για εισερχόμενες συνδέσεις TCP στη θύρα **8765** (private networks). Αν αποτύχει, κάντε δεξί κλικ στο **`scripts\windows\Add-Firewall-Rule.bat`** → **Run as administrator** (μία φορά).
 4. Στο κινητό: `http://<IPv4>:8765/login/pin/` (π.χ. `http://192.168.1.15:8765/login/pin/`).
 
 #### Αν κάτι πάει στραβά
@@ -724,7 +724,7 @@ build-exe.bat
 | `'pip' is not recognized` | `python -m pip install -r requirements\local.txt`. |
 | `manage.py` not found | Τρέξτε το `Start-BarestoManager.bat` από τον φάκελο με το `manage.py`, όχι από `scripts\`. |
 | Δεν ανοίγει η σελίδα | Το παράθυρο server πρέπει να είναι ανοιχτό· θύρα **8765**, όχι 8000. |
-| Το κινητό δεν συνδέεται | Ίδιο Wi‑Fi, firewall επιτρέπει Python, IPv4 από `ipconfig`. |
+| Το κινητό δεν συνδέεται | Ίδιο Wi‑Fi· τρέξτε **`scripts\windows\Add-Firewall-Rule.bat`** ως administrator αν χρειάζεται· IPv4 από `ipconfig`. |
 | Η θύρα είναι κατειλημμένη | Κλείστε την άλλη εφαρμογή στη 8765 ή αλλάξτε `DJANGO_PORT` στο `.env`. |
 
 Για καθαρή βάση αντί της έτοιμης demo, δείτε [Γρήγορη εκκίνηση (τοπικά)](#γρήγορη-εκκίνηση-τοπικά) παρακάτω.

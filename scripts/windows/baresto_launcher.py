@@ -207,6 +207,69 @@ def setup_project(project_root: Path, system_python: str) -> Path:
     return py
 
 
+def firewall_rule_name(port: int) -> str:
+    return f"Baresto Manager (TCP {port})"
+
+
+def firewall_rule_exists(name: str) -> bool:
+    result = subprocess.run(
+        ["netsh", "advfirewall", "firewall", "show", "rule", f"name={name}"],
+        capture_output=True,
+        text=True,
+        timeout=30,
+        check=False,
+    )
+    return result.returncode == 0 and name in result.stdout
+
+
+def ensure_firewall_rule(project_root: Path, port: int) -> None:
+    """Allow inbound TCP on the app port so phones on the same Wi‑Fi can connect."""
+    if sys.platform != "win32":
+        return
+
+    name = firewall_rule_name(port)
+    if firewall_rule_exists(name):
+        log(f"Windows Firewall rule already present: {name}")
+        return
+
+    log(f"Adding Windows Firewall rule for incoming TCP port {port} (private networks)...")
+    result = subprocess.run(
+        [
+            "netsh",
+            "advfirewall",
+            "firewall",
+            "add",
+            "rule",
+            f"name={name}",
+            "dir=in",
+            "action=allow",
+            "protocol=TCP",
+            f"localport={port}",
+            "profile=private",
+            "enable=yes",
+        ],
+        capture_output=True,
+        text=True,
+        timeout=30,
+        check=False,
+    )
+    if result.returncode == 0:
+        log(f"Firewall rule added: {name}")
+        return
+
+    bat = project_root / "scripts" / "windows" / "Add-Firewall-Rule.bat"
+    bat_hint = str(bat.relative_to(project_root)) if bat.is_file() else "scripts\\windows\\Add-Firewall-Rule.bat"
+    log(
+        "Could not add the firewall rule automatically (Administrator rights may be required).\n"
+        "Phones on Wi‑Fi may not connect until you allow the port.\n"
+        f"  Option 1: Right-click {bat_hint} → Run as administrator\n"
+        f"  Option 2: In an elevated Command Prompt, run:\n"
+        f'    netsh advfirewall firewall add rule name="{name}" dir=in action=allow '
+        f"protocol=TCP localport={port} profile=private enable=yes\n"
+        "  Option 3: Allow Python when Windows prompts you on first run."
+    )
+
+
 def wait_for_server(url: str, timeout: int = 90) -> bool:
     for _ in range(timeout):
         try:
@@ -257,6 +320,7 @@ def main() -> int:
     port = parse_port(project_root)
     login_url = f"http://127.0.0.1:{port}{LOGIN_PATH}"
 
+    ensure_firewall_rule(project_root, port)
     server = start_server(project_root, py, port)
     try:
         log(f"Waiting for server at {login_url} ...")
