@@ -1,4 +1,5 @@
 from django.db.models import Prefetch
+from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, redirect
 from django.views import View
 from django.views.generic import TemplateView
@@ -7,6 +8,7 @@ from apps.common.mixins import RestaurantScopedMixin
 from apps.common.permissions import RolePermissionMixin
 from apps.orders.models import Order, OrderItem
 from apps.orders.services import update_item_status
+from apps.realtime import pop_branch_kitchen_alerts
 
 
 class KitchenDisplayView(RestaurantScopedMixin, RolePermissionMixin, TemplateView):
@@ -36,6 +38,19 @@ class KitchenDisplayView(RestaurantScopedMixin, RolePermissionMixin, TemplateVie
         ctx["branch"] = branch
         ctx["stations"] = ["kitchen", "bar", "grill"]
         return ctx
+
+
+class KitchenAlertsPollView(RestaurantScopedMixin, RolePermissionMixin, View):
+    """HTTP fallback when the kitchen WebSocket drops."""
+
+    required_permission = "kitchen_display"
+
+    def get(self, request):
+        branch = self.get_branch()
+        if not branch:
+            return JsonResponse({"alerts": []})
+        alerts = pop_branch_kitchen_alerts(branch.id)
+        return JsonResponse({"alerts": alerts})
 
 
 class KitchenItemStatusView(RestaurantScopedMixin, RolePermissionMixin, View):

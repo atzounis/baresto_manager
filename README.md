@@ -26,9 +26,13 @@
 | :---: | :---: |
 | ![Floor plan — drag-and-drop table layout with ready badges](images/baresto-manager-screen-3.png) | ![Tables list — floor filter, occupied/free status, ready badges on Continue order](images/baresto-manager-screen-4.png) |
 
-| Guest menu & QR hub | QR menu card |
+| Guest menu & QR hub | Guest waiter call alert |
 | :---: | :---: |
-| ![Guest menu hub — table preview, live mobile preview, open in new tab](images/baresto-manager-screen-5.png) | ![Printed QR menu card — scan for digital menu (GR/EN)](images/baresto-menu-qr.png) |
+| ![Guest menu hub — table preview, live mobile preview, open in new tab](images/baresto-manager-screen-5.png) | ![Tables — guest tapped Call waiter; staff alert modal with table and floor](images/baresto-manager-screen-6.png) |
+
+| Printed QR menu cards |
+| :---: |
+| ![Per-table QR printout — trade name, table label, floor, scan URL](images/baresto-menu-qr.png) |
 
 ### Mobile (waiter)
 

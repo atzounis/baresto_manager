@@ -4,7 +4,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>{% trans "Print QR codes" %} — {{ restaurant.name }}</title>
+  <title>{% trans "Print QR codes" %} — {{ brand_name }}</title>
   <style>
     * { box-sizing: border-box; }
     body {
@@ -77,7 +77,7 @@
 <body>
   <div class="toolbar no-print">
     <div>
-      <strong>{{ restaurant.name }}</strong>
+      <strong>{{ brand_name }}</strong>
       <span style="opacity:0.7;margin-left:0.5rem;">
         {% if mode == 'shared' %}{% trans "Shared menu QR" %}{% else %}{% trans "Per-table QR" %}{% endif %}
       </span>

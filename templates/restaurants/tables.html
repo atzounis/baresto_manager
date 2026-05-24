@@ -240,6 +240,7 @@ function floorTables() {
       });
       this.refreshReadyCounts();
       this._readyPoll = setInterval(() => this.refreshReadyCounts(), 5000);
+      window.dispatchEvent(new CustomEvent("baresto-tables-ready"));
     },
     showGuestCallModal(data) {
       this.guestCallModal = {

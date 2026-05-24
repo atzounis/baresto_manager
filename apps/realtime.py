@@ -97,6 +97,55 @@ def broadcast_waiter_kitchen_ready(order, *, item_name=None, order_fully_ready=F
         _send_waiter_alert(order, payload)
 
 
+def _cache_kitchen_alert(branch_id, payload):
+    """Store for HTTP poll fallback on kitchen display screens."""
+    key = f"kitchen_alerts:branch:{branch_id}"
+    try:
+        alerts = cache.get(key) or []
+        alerts.append(payload)
+        cache.set(key, alerts[-30:], timeout=600)
+    except Exception:
+        logger.exception("Failed to cache kitchen alert for branch %s", branch_id)
+
+
+def pop_branch_kitchen_alerts(branch_id):
+    key = f"kitchen_alerts:branch:{branch_id}"
+    try:
+        alerts = cache.get(key) or []
+        cache.delete(key)
+        return alerts
+    except Exception:
+        logger.exception("Failed to read kitchen alerts for branch %s", branch_id)
+        return []
+
+
+def broadcast_kitchen_new_ticket(order):
+    """Sound/modal alert on KDS when a waiter sends an order to the kitchen."""
+    branch_id = order.branch.id
+    table = order.session.table
+    items_qs = order.items.filter(is_deleted=False).select_related("menu_item")
+    items = list(items_qs)
+    item_count = sum(row.quantity for row in items)
+    item_lines = [f"{row.quantity}× {row.menu_item.name}" for row in items[:8]]
+    remaining = len(items) - len(item_lines)
+    if remaining > 0:
+        item_lines.append(f"+{remaining}")
+
+    payload = {
+        "event": "order.new_ticket",
+        "order_id": order.pk,
+        "table": str(table),
+        "table_id": table.pk,
+        "floor": table.floor.name if table.floor_id else "",
+        "item_count": item_count,
+        "item_lines": item_lines,
+        "is_priority": order.is_priority,
+        "sent_at": time.time(),
+    }
+    _group_send(f"kitchen.{branch_id}", "kitchen.message", payload)
+    _cache_kitchen_alert(branch_id, payload)
+
+
 def pop_branch_waiter_alerts(branch_id):
     key = f"waiter_alerts:branch:{branch_id}"
     try:

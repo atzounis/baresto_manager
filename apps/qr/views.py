@@ -13,6 +13,7 @@ from django.views.generic import TemplateView
 
 from apps.common.mixins import RestaurantScopedMixin
 from apps.common.permissions import RolePermissionMixin
+from apps.menus.i18n import localized_name
 from apps.qr.menu_context import get_guest_menu_context
 from apps.qr.services import (
     build_shared_menu_qr_url,
@@ -21,9 +22,18 @@ from apps.qr.services import (
     qr_png_data_uri,
 )
 from apps.realtime import broadcast_guest_waiter_call
-from apps.restaurants.models import Restaurant, Table
+from apps.restaurants.models import CompanyLegalProfile, Restaurant, Table
 
 GUEST_CALL_WAITER_COOLDOWN_SECONDS = 30
+
+
+def _restaurant_brand_name(restaurant):
+    """Trade name from /company/, localized for the active UI language."""
+    try:
+        profile = restaurant.legal_profile
+    except CompanyLegalProfile.DoesNotExist:
+        return restaurant.name
+    return localized_name(profile, base="trade_name") or restaurant.name
 
 
 def _guest_call_throttle_key(request, scope_key):
@@ -219,6 +229,8 @@ class GuestMenuPrintView(MenuEditorMixin, TemplateView):
         if mode not in ("shared", "per_table"):
             mode = "shared"
 
+        brand_name = _restaurant_brand_name(restaurant)
+
         tables = []
         if branch and mode == "per_table":
             tables = list(
@@ -235,7 +247,7 @@ class GuestMenuPrintView(MenuEditorMixin, TemplateView):
         if mode == "shared":
             qr_cards.append(
                 {
-                    "title": restaurant.name,
+                    "title": brand_name,
                     "subtitle": _("Scan for digital menu"),
                     "detail": "",
                     "qr_data_uri": qr_png_data_uri(shared_url, box_size=12),
@@ -249,7 +261,7 @@ class GuestMenuPrintView(MenuEditorMixin, TemplateView):
                 qr_cards.append(
                     {
                         "title": label,
-                        "subtitle": restaurant.name,
+                        "subtitle": brand_name,
                         "detail": f"{table.floor.name} · {table.capacity} {_('seats')}",
                         "qr_data_uri": qr_png_data_uri(url, box_size=10),
                         "url": url,
@@ -259,6 +271,7 @@ class GuestMenuPrintView(MenuEditorMixin, TemplateView):
         ctx.update(
             {
                 "restaurant": restaurant,
+                "brand_name": brand_name,
                 "branch": branch,
                 "mode": mode,
                 "qr_cards": qr_cards,

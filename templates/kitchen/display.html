@@ -1,45 +1,130 @@
 {% extends "base.html" %}
-{% load i18n %}
+{% load i18n static %}
 {% block title %}{% trans "Kitchen Display" %}{% endblock %}
 {% block content %}
-<div class="mb-4 flex items-center justify-between">
-  <h1 class="text-3xl font-bold">{% trans "Kitchen" %}</h1>
+<div x-data="kitchenDisplay()" x-init="init()" class="space-y-4">
+  <div
+    x-show="newTicketModal.open"
+    x-cloak
+    @keydown.escape.window="dismissNewTicketModal()"
+    class="fixed inset-0 z-[200] flex items-end justify-center bg-black/75 p-4 sm:items-center"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="kitchen-new-ticket-title">
+    <div
+      @click.outside="dismissNewTicketModal()"
+      class="w-full max-w-md rounded-2xl border-2 border-new-order bg-kitchen-elevated p-6 shadow-2xl">
+      <div class="flex items-start gap-3">
+        <span class="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-new-order/25 text-2xl" aria-hidden="true">🍽️</span>
+        <div class="min-w-0 flex-1">
+          <h2 id="kitchen-new-ticket-title" class="text-xl font-bold text-new-order-light" x-text="i18n.newTicketTitle"></h2>
+          <p class="mt-2 text-base text-slate-300" x-text="i18n.newTicketBody"></p>
+          <p x-show="newTicketModal.isPriority" x-cloak class="mt-2 text-sm font-semibold uppercase tracking-wide text-new-order-light" x-text="i18n.priorityLabel"></p>
+          <div class="mt-4 rounded-xl border border-kitchen-border bg-kitchen px-4 py-3">
+            <p class="text-xs font-semibold uppercase tracking-wide text-slate-500" x-text="i18n.tableLabel"></p>
+            <p class="mt-1 text-lg font-bold text-white" x-text="newTicketModal.tableLabel"></p>
+            <p class="mt-1 text-sm text-slate-400" x-show="newTicketModal.floor" x-text="newTicketModal.floor"></p>
+          </div>
+          <ul class="mt-3 space-y-1 rounded-xl border border-kitchen-border bg-kitchen px-4 py-3 text-sm text-slate-300" x-show="newTicketModal.itemLines.length">
+            <template x-for="(line, idx) in newTicketModal.itemLines" :key="idx">
+              <li x-text="line"></li>
+            </template>
+          </ul>
+        </div>
+      </div>
+      <button type="button" @click="dismissNewTicketModal()"
+        class="btn-primary mt-6 min-h-12 w-full rounded-xl py-3 text-base font-bold"
+        x-text="i18n.dismiss"></button>
+    </div>
+  </div>
+
+  <div class="mb-4 flex items-center justify-between">
+    <h1 class="text-3xl font-bold">{% trans "Kitchen" %}</h1>
+  </div>
+  <div class="grid gap-4 md:grid-cols-2 xl:grid-cols-3" id="kds-tickets">
+    {% for order in orders %}
+    <article class="card p-4 {% if order.is_priority %}ring-2 ring-new-order{% endif %}">
+      <header class="mb-3 flex justify-between">
+        <span class="text-2xl font-bold">{{ order.session.table }}</span>
+        <span class="text-new-order">{{ order.get_status_display }}</span>
+      </header>
+      <ul class="space-y-2">
+        {% for item in order.items.all %}
+        <li class="flex items-center justify-between rounded-lg bg-kitchen px-3 py-2 ring-1 ring-kitchen-border">
+          <span>{{ item.quantity }}× {{ item.menu_item.name }} <small class="text-slate-500">({{ item.get_station_display }})</small></span>
+          {% if item.status != 'served' %}
+          <form method="post" action="{% url 'kitchen_item_status' item.pk %}">
+            {% csrf_token %}
+            <button class="btn-primary min-h-10 rounded-lg px-3 text-sm">{% trans "Advance" %}</button>
+          </form>
+          {% endif %}
+          <span class="rounded px-2 py-1 text-xs font-medium
+            {% if item.status == 'ready' %}bg-order text-kitchen
+            {% elif item.status == 'preparing' %}bg-new-order text-kitchen
+            {% else %}bg-kitchen-border text-slate-300{% endif %}">
+            {{ item.get_status_display }}
+          </span>
+        </li>
+        {% endfor %}
+      </ul>
+    </article>
+    {% empty %}
+    <p class="col-span-full py-20 text-center text-slate-500">{% trans "Waiting for tickets…" %}</p>
+    {% endfor %}
+  </div>
 </div>
-<div class="grid gap-4 md:grid-cols-2 xl:grid-cols-3" id="kds-tickets">
-  {% for order in orders %}
-  <article class="card p-4 {% if order.is_priority %}ring-2 ring-new-order{% endif %}">
-    <header class="mb-3 flex justify-between">
-      <span class="text-2xl font-bold">{{ order.session.table }}</span>
-      <span class="text-new-order">{{ order.get_status_display }}</span>
-    </header>
-    <ul class="space-y-2">
-      {% for item in order.items.all %}
-      <li class="flex items-center justify-between rounded-lg bg-kitchen px-3 py-2 ring-1 ring-kitchen-border">
-        <span>{{ item.quantity }}× {{ item.menu_item.name }} <small class="text-slate-500">({{ item.get_station_display }})</small></span>
-        {% if item.status != 'served' %}
-        <form method="post" action="{% url 'kitchen_item_status' item.pk %}">
-          {% csrf_token %}
-          <button class="btn-primary min-h-10 rounded-lg px-3 text-sm">{% trans "Advance" %}</button>
-        </form>
-        {% endif %}
-        <span class="rounded px-2 py-1 text-xs font-medium
-          {% if item.status == 'ready' %}bg-order text-kitchen
-          {% elif item.status == 'preparing' %}bg-new-order text-kitchen
-          {% else %}bg-kitchen-border text-slate-300{% endif %}">
-          {{ item.get_status_display }}
-        </span>
-      </li>
-      {% endfor %}
-    </ul>
-  </article>
-  {% empty %}
-  <p class="col-span-full py-20 text-center text-slate-500">{% trans "Waiting for tickets…" %}</p>
-  {% endfor %}
-</div>
+
+<script>
+function kitchenDisplay() {
+  return {
+    i18n: {
+      newTicketTitle: "{% trans 'New order from waiter'|escapejs %}",
+      newTicketBody: "{% trans 'A new ticket was sent to the kitchen.'|escapejs %}",
+      tableLabel: "{% trans 'Table'|escapejs %}",
+      priorityLabel: "{% trans 'Priority order'|escapejs %}",
+      dismiss: "{% trans 'OK'|escapejs %}",
+    },
+    newTicketModal: {
+      open: false,
+      tableLabel: "",
+      floor: "",
+      itemLines: [],
+      isPriority: false,
+    },
+    init() {
+      window.addEventListener("baresto-kitchen-new-ticket", (e) => {
+        this.showNewTicketModal(e.detail || {});
+      });
+      window.dispatchEvent(new CustomEvent("baresto-kitchen-ready"));
+    },
+    showNewTicketModal(data) {
+      this.newTicketModal = {
+        open: true,
+        tableLabel: data.table || "",
+        floor: data.floor || "",
+        itemLines: data.item_lines || [],
+        isPriority: !!data.is_priority,
+      };
+    },
+    dismissNewTicketModal() {
+      this.newTicketModal.open = false;
+      if (window.barestoKitchenDismissTicket) {
+        window.barestoKitchenDismissTicket();
+      }
+    },
+  };
+}
+</script>
 {% endblock %}
 {% block extra_js %}
 <script>
-  const ws = new WebSocket((location.protocol === 'https:' ? 'wss' : 'ws') + '://' + location.host + '/ws/kitchen/');
-  ws.onmessage = () => location.reload();
+  window.BARESTO_KITCHEN_ALERTS_POLL_URL = "{% url 'kitchen_alerts_poll' %}";
+  window.BARESTO_KITCHEN_ALERT_I18N = {
+    tableLabel: "{% trans 'Table'|escapejs %}",
+    itemsLabel: "{% trans 'items'|escapejs %}",
+    newTicketTitle: "{% trans 'New order from waiter'|escapejs %}",
+    enableAlerts: "{% trans 'Tap to enable sound & alerts'|escapejs %}",
+  };
 </script>
+<script src="{% static 'js/kitchen_alerts.js' %}?v=2"></script>
 {% endblock %}

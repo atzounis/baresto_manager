@@ -1358,6 +1358,22 @@ msgstr "Μενού επισκεπτών (χωρίς τραπέζι στο QR)"
 msgid "OK"
 msgstr "Εντάξει"
 
+#: templates/kitchen/display.html static/js/kitchen_alerts.js
+msgid "New order from waiter"
+msgstr "Νέα παραγγελία από σερβιτόρο"
+
+#: templates/kitchen/display.html
+msgid "A new ticket was sent to the kitchen."
+msgstr "Νέο δελτίο στάλθηκε στην κουζίνα."
+
+#: templates/kitchen/display.html
+msgid "Priority order"
+msgstr "Προτεραιότητα"
+
+#: templates/kitchen/display.html static/js/kitchen_alerts.js
+msgid "items"
+msgstr "είδη"
+
 #: templates/public/includes/legal_catalogue_block.html:15
 msgid "Tel."
 msgstr "Τηλ."

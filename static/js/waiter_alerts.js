@@ -13,6 +13,16 @@
   let wsConnected = false;
   let pollTimer = null;
   const seenAlerts = new Set();
+  let alertsBooted = false;
+  const pendingGuestCalls = [];
+
+  function bootAlerts() {
+    if (alertsBooted) return;
+    alertsBooted = true;
+    showEnableBanner();
+    connectWebSocket();
+    startPolling();
+  }
 
   function alertKey(data) {
     return [data.event, data.order_id, data.item_name || "", data.table || ""].join("|");
@@ -91,6 +101,13 @@
     return /^\/tables\/?$/.test(location.pathname);
   }
 
+  function deliverGuestCallToTables(data) {
+    window.dispatchEvent(new CustomEvent("baresto-guest-waiter-call", { detail: data }));
+    const title = i18n.guestCallTitle || "Customer requests a waiter";
+    const message = formatGuestCallMessage(data);
+    showToast(title + ": " + message, false);
+  }
+
   function handleGuestWaiterCall(data) {
     if (!data || data.event !== "guest.waiter_call") return;
 
@@ -112,11 +129,16 @@
     const message = formatGuestCallMessage(data);
     showBrowserNotification(title, message);
 
-    window.dispatchEvent(new CustomEvent("baresto-guest-waiter-call", { detail: data }));
-
-    if (!isTablesPage()) {
-      showToast(title + ": " + message, false);
+    if (isTablesPage()) {
+      if (!window.__barestoTablesReady) {
+        pendingGuestCalls.push(data);
+        return;
+      }
+      deliverGuestCallToTables(data);
+      return;
     }
+
+    showToast(title + ": " + message, false);
   }
 
   function formatMessage(data) {
@@ -308,14 +330,25 @@
   document.addEventListener("click", () => enableAlerts(false), { once: true, passive: true });
   document.addEventListener("touchstart", () => enableAlerts(false), { once: true, passive: true });
 
+  window.addEventListener("baresto-tables-ready", () => {
+    window.__barestoTablesReady = true;
+    pendingGuestCalls.splice(0).forEach(deliverGuestCallToTables);
+    bootAlerts();
+  });
+
   document.addEventListener("visibilitychange", () => {
-    if (!document.hidden) {
+    if (document.hidden) return;
+    if (isTablesPage() && !window.__barestoTablesReady) return;
+    if (alertsBooted) {
       connectWebSocket();
       pollAlerts();
     }
   });
 
-  showEnableBanner();
-  connectWebSocket();
-  startPolling();
+  if (isTablesPage()) {
+  // Wait for Alpine tables UI before polling — otherwise alerts are consumed with no listener.
+    window.setTimeout(bootAlerts, 8000);
+  } else {
+    bootAlerts();
+  }
 })();

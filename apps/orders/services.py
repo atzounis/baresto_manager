@@ -7,7 +7,12 @@ from django.utils import timezone
 from apps.analytics.utils import log_audit
 from apps.orders.models import Bill, Order, OrderItem
 from apps.orders.utils import TableCloseBlocked, close_table_blockers
-from apps.realtime import broadcast_order_event, broadcast_table_update, broadcast_waiter_kitchen_ready
+from apps.realtime import (
+    broadcast_kitchen_new_ticket,
+    broadcast_order_event,
+    broadcast_table_update,
+    broadcast_waiter_kitchen_ready,
+)
 
 
 @transaction.atomic
@@ -67,6 +72,7 @@ def confirm_order(order, user, request=None):
     order.save(update_fields=["status", "updated_at"])
     log_audit(user, "order.confirm", "orders.Order", order.pk, {}, request)
     broadcast_order_event(order, event="order.confirmed")
+    broadcast_kitchen_new_ticket(order)
     return order
 
 
