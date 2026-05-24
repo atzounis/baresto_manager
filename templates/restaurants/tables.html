@@ -7,6 +7,40 @@
 {% block content %}
 {% include "orders/partials/print_receipt_modal.html" %}
 <div x-data="floorTables()" x-init="init()" class="space-y-4">
+  <div
+  x-show="guestCallModal.open"
+  x-cloak
+  @keydown.escape.window="dismissGuestCallModal()"
+  class="fixed inset-0 z-[200] flex items-end justify-center bg-black/75 p-4 sm:items-center"
+  role="dialog"
+  aria-modal="true"
+  aria-labelledby="guest-call-modal-title">
+  <div
+    @click.outside="dismissGuestCallModal()"
+    class="w-full max-w-md rounded-2xl border-2 border-new-order bg-kitchen-elevated p-6 shadow-2xl">
+    <div class="flex items-start gap-3">
+      <span class="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-new-order/25 text-2xl" aria-hidden="true">🔔</span>
+      <div class="min-w-0 flex-1">
+        <h2 id="guest-call-modal-title" class="text-xl font-bold text-new-order-light" x-text="i18n.guestCallTitle"></h2>
+        <p class="mt-2 text-base text-slate-300" x-text="i18n.guestCallBody"></p>
+        <template x-if="guestCallModal.tableId">
+          <div class="mt-4 rounded-xl border border-kitchen-border bg-kitchen px-4 py-3">
+            <p class="text-xs font-semibold uppercase tracking-wide text-slate-500" x-text="i18n.tableLabel"></p>
+            <p class="mt-1 text-lg font-bold text-white" x-text="guestCallModal.tableLabel"></p>
+            <p class="mt-1 text-sm text-slate-400" x-show="guestCallModal.floor" x-text="guestCallModal.floor"></p>
+          </div>
+        </template>
+        <template x-if="!guestCallModal.tableId">
+          <p class="mt-4 rounded-xl border border-kitchen-border bg-kitchen px-4 py-3 text-sm text-slate-400" x-text="i18n.guestCallNoTable"></p>
+        </template>
+      </div>
+    </div>
+    <button type="button" @click="dismissGuestCallModal()"
+      class="btn-primary mt-6 min-h-12 w-full rounded-xl py-3 text-base font-bold"
+      x-text="i18n.guestCallDismiss"></button>
+  </div>
+  </div>
+
   <div class="flex flex-wrap items-center justify-between gap-4">
     <h1 class="text-2xl font-bold">{% trans "Tables" %}</h1>
     <div class="flex flex-wrap items-center gap-2">
@@ -134,6 +168,17 @@ function floorTables() {
       saveFailed: "{% trans 'Save failed'|escapejs %}",
       deleteConfirm: "{% trans 'Delete this table?'|escapejs %}",
       deleteFailed: "{% trans 'Could not delete table'|escapejs %}",
+      guestCallTitle: "{% trans 'Customer requests a waiter'|escapejs %}",
+      guestCallBody: "{% trans 'A guest is asking for assistance.'|escapejs %}",
+      guestCallNoTable: "{% trans 'Guest menu (no table on QR)'|escapejs %}",
+      guestCallDismiss: "{% trans 'OK'|escapejs %}",
+      tableLabel: "{% trans 'Table'|escapejs %}",
+    },
+    guestCallModal: {
+      open: false,
+      tableId: null,
+      tableLabel: "",
+      floor: "",
     },
     editMode: false,
     dragging: null,
@@ -171,6 +216,9 @@ function floorTables() {
     },
     init() {
       window.addEventListener("baresto-kitchen-ready", () => this.refreshReadyCounts());
+      window.addEventListener("baresto-guest-waiter-call", (e) => {
+        this.showGuestCallModal(e.detail || {});
+      });
       window.addEventListener("baresto-table-ready-counts", (e) => {
         this.applyReadyCounts(e.detail);
       });
@@ -192,6 +240,17 @@ function floorTables() {
       });
       this.refreshReadyCounts();
       this._readyPoll = setInterval(() => this.refreshReadyCounts(), 5000);
+    },
+    showGuestCallModal(data) {
+      this.guestCallModal = {
+        open: true,
+        tableId: data.table_id || null,
+        tableLabel: data.table || data.table_label || "",
+        floor: data.floor || "",
+      };
+    },
+    dismissGuestCallModal() {
+      this.guestCallModal.open = false;
     },
     onTablePointerDown(e, table) {
       if (!this.editMode) return;

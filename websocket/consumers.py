@@ -1,15 +1,31 @@
 import json
 
+from channels.db import database_sync_to_async
 from channels.generic.websocket import AsyncWebsocketConsumer
 
 
-def _get_staff_branch(user):
-    profile = getattr(user, "employee_profile", None)
+def _load_staff_ws_context(user_id):
+    """Load staff profile + branch IDs for WebSocket group membership (sync ORM)."""
+    from apps.accounts.models import EmployeeProfile
+
+    profile = (
+        EmployeeProfile.objects.select_related("branch", "restaurant")
+        .filter(user_id=user_id)
+        .first()
+    )
     if not profile:
         return None
-    if profile.branch_id:
-        return profile.branch
-    return profile.restaurant.branches.filter(is_active=True).first()
+
+    branch = profile.branch
+    if branch is None and profile.restaurant_id:
+        branch = profile.restaurant.branches.filter(is_active=True).only("id").first()
+
+    return {
+        "profile_id": profile.pk,
+        "role": profile.role,
+        "restaurant_id": profile.restaurant_id,
+        "branch_id": branch.pk if branch else None,
+    }
 
 
 class KitchenConsumer(AsyncWebsocketConsumer):
@@ -18,12 +34,14 @@ class KitchenConsumer(AsyncWebsocketConsumer):
         if user.is_anonymous:
             await self.close()
             return
-        branch = _get_staff_branch(user)
-        if not branch and not user.is_superuser:
+
+        ctx = await database_sync_to_async(_load_staff_ws_context)(user.pk)
+        branch_id = ctx["branch_id"] if ctx else None
+        if not branch_id and not user.is_superuser:
             await self.close()
             return
-        if branch:
-            self.group_name = f"kitchen.{branch.id}"
+        if branch_id:
+            self.group_name = f"kitchen.{branch_id}"
             await self.channel_layer.group_add(self.group_name, self.channel_name)
         await self.accept()
 
@@ -41,12 +59,14 @@ class DashboardConsumer(AsyncWebsocketConsumer):
         if user.is_anonymous:
             await self.close()
             return
-        branch = _get_staff_branch(user)
-        if not branch and not user.is_superuser:
+
+        ctx = await database_sync_to_async(_load_staff_ws_context)(user.pk)
+        branch_id = ctx["branch_id"] if ctx else None
+        if not branch_id and not user.is_superuser:
             await self.close()
             return
-        if branch:
-            self.group_name = f"dashboard.{branch.id}"
+        if branch_id:
+            self.group_name = f"dashboard.{branch_id}"
             await self.channel_layer.group_add(self.group_name, self.channel_name)
         await self.accept()
 
@@ -69,19 +89,18 @@ class WaiterConsumer(AsyncWebsocketConsumer):
         if user.is_anonymous:
             await self.close()
             return
-        profile = getattr(user, "employee_profile", None)
-        if profile and profile.pk != staff_id and not user.is_superuser:
+
+        ctx = await database_sync_to_async(_load_staff_ws_context)(user.pk)
+        if ctx and ctx["profile_id"] != staff_id and not user.is_superuser:
             await self.close()
             return
 
         self.group_names = [f"waiter.{staff_id}"]
-        branch = _get_staff_branch(user)
-        if profile and profile.role in self.ALERT_ROLES:
-            if branch:
-                self.group_names.append(f"waiters.branch.{branch.id}")
-            restaurant = profile.restaurant
-            if restaurant:
-                self.group_names.append(f"waiters.restaurant.{restaurant.id}")
+        if ctx and ctx["role"] in self.ALERT_ROLES:
+            if ctx["branch_id"]:
+                self.group_names.append(f"waiters.branch.{ctx['branch_id']}")
+            if ctx["restaurant_id"]:
+                self.group_names.append(f"waiters.restaurant.{ctx['restaurant_id']}")
 
         for group_name in self.group_names:
             await self.channel_layer.group_add(group_name, self.channel_name)

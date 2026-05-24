@@ -37,10 +37,21 @@ def _detect_lan_ip():
 # Extend .env ALLOWED_HOSTS with this machine's LAN IP in local dev.
 ALLOWED_HOSTS = list(ALLOWED_HOSTS)  # noqa: F405
 _lan_ip = _detect_lan_ip()
+LAN_IP = _lan_ip
 if _lan_ip and _lan_ip not in ALLOWED_HOSTS:
     ALLOWED_HOSTS.append(_lan_ip)
     if _lan_ip not in INTERNAL_IPS:
         INTERNAL_IPS.append(_lan_ip)
+
+# QR codes / guest menu links: use LAN IP when SITE_BASE_URL still points at localhost.
+if _lan_ip and env.bool("SITE_BASE_URL_AUTO_LAN", default=True):  # noqa: F405
+    from urllib.parse import urlparse
+
+    _site = urlparse(SITE_BASE_URL)  # noqa: F405
+    if (_site.hostname or "") in ("127.0.0.1", "localhost", "[::1]"):
+        _port = _site.port or DJANGO_PORT  # noqa: F405
+        _scheme = _site.scheme or "http"
+        SITE_BASE_URL = f"{_scheme}://{_lan_ip}:{_port}"  # noqa: F405
 
 # Optional extra hosts (e.g. ALLOWED_HOSTS_EXTRA=192.168.1.50,myhost.local)
 ALLOWED_HOSTS.extend(env.list("ALLOWED_HOSTS_EXTRA", default=[]))  # noqa: F405

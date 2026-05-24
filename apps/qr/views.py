@@ -1,9 +1,14 @@
+from django.conf import settings
+from django.core.cache import cache
+from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, render
 from django.urls import reverse
+from django.utils.decorators import method_decorator
 from django.utils.translation import gettext as _
 from django.views import View
 from django.views.decorators.clickjacking import xframe_options_sameorigin
-from django.utils.decorators import method_decorator
+from django.views.decorators.csrf import csrf_exempt
+from django.views.decorators.http import require_POST
 from django.views.generic import TemplateView
 
 from apps.common.mixins import RestaurantScopedMixin
@@ -15,7 +20,78 @@ from apps.qr.services import (
     generate_table_qr,
     qr_png_data_uri,
 )
+from apps.realtime import broadcast_guest_waiter_call
 from apps.restaurants.models import Restaurant, Table
+
+GUEST_CALL_WAITER_COOLDOWN_SECONDS = 30
+
+
+def _guest_call_throttle_key(request, scope_key):
+    ip = request.META.get("HTTP_X_FORWARDED_FOR", "").split(",")[0].strip()
+    if not ip:
+        ip = request.META.get("REMOTE_ADDR", "unknown")
+    return f"guest_call_waiter:{scope_key}:{ip}"
+
+
+def _guest_call_waiter_allowed(request, scope_key):
+    key = _guest_call_throttle_key(request, scope_key)
+    if cache.get(key):
+        return False
+    cache.set(key, 1, timeout=GUEST_CALL_WAITER_COOLDOWN_SECONDS)
+    return True
+
+
+@method_decorator(csrf_exempt, name="dispatch")
+@method_decorator(require_POST, name="dispatch")
+class GuestCallWaiterTableView(View):
+    """Public endpoint: guest at a table requests staff assistance."""
+
+    def post(self, request, table_token):
+        table = get_object_or_404(
+            Table.objects.select_related("floor__branch", "floor__branch__restaurant"),
+            qr_token=table_token,
+        )
+        scope = str(table_token)
+        if not _guest_call_waiter_allowed(request, scope):
+            return JsonResponse(
+                {"ok": False, "error": _("Please wait before calling again.")},
+                status=429,
+            )
+        branch = table.branch
+        broadcast_guest_waiter_call(
+            branch_id=branch.id,
+            restaurant_id=branch.restaurant_id,
+            table=table,
+        )
+        return JsonResponse({"ok": True})
+
+
+@method_decorator(csrf_exempt, name="dispatch")
+@method_decorator(require_POST, name="dispatch")
+class GuestCallWaiterSharedView(View):
+    """Public endpoint: guest on shared menu QR (no table) requests staff."""
+
+    def post(self, request, menu_token):
+        restaurant = get_object_or_404(
+            Restaurant,
+            menu_qr_token=menu_token,
+            is_active=True,
+        )
+        branch = restaurant.branches.filter(is_active=True).first()
+        if not branch:
+            return JsonResponse({"ok": False, "error": _("Restaurant unavailable.")}, status=503)
+        scope = f"shared:{menu_token}"
+        if not _guest_call_waiter_allowed(request, scope):
+            return JsonResponse(
+                {"ok": False, "error": _("Please wait before calling again.")},
+                status=429,
+            )
+        broadcast_guest_waiter_call(
+            branch_id=branch.id,
+            restaurant_id=restaurant.id,
+            table=None,
+        )
+        return JsonResponse({"ok": True})
 
 
 @method_decorator(xframe_options_sameorigin, name="dispatch")
@@ -28,6 +104,10 @@ class GuestMenuView(View):
             qr_token=table_token,
         )
         ctx = get_guest_menu_context(restaurant=table.restaurant, table=table)
+        ctx["call_waiter_url"] = reverse(
+            "guest_call_waiter",
+            kwargs={"table_token": table.qr_token},
+        )
         return render(request, self.template_name, ctx)
 
 
@@ -44,6 +124,10 @@ class GuestMenuSharedView(View):
             is_active=True,
         )
         ctx = get_guest_menu_context(restaurant=restaurant, table=None)
+        ctx["call_waiter_url"] = reverse(
+            "guest_call_waiter_shared",
+            kwargs={"menu_token": restaurant.menu_qr_token},
+        )
         return render(request, self.template_name, ctx)
 
 
@@ -99,7 +183,7 @@ class GuestMenuHubView(MenuEditorMixin, TemplateView):
             )
             preview_mode = "shared"
 
-        preview_url = self.request.build_absolute_uri(preview_path)
+        preview_url = f"{settings.SITE_BASE_URL.rstrip('/')}{preview_path}"
 
         ctx.update(
             {

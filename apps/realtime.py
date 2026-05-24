@@ -1,4 +1,5 @@
 import logging
+import time
 
 from asgiref.sync import async_to_sync
 from channels.layers import get_channel_layer
@@ -117,3 +118,34 @@ def broadcast_table_update(table):
     }
     _group_send(f"dashboard.{branch_id}", "dashboard.message", payload)
     _group_send(f"table.{table.pk}", "table.message", payload)
+
+
+def broadcast_guest_waiter_call(*, branch_id, restaurant_id, table=None):
+    """Notify staff when a guest taps Call waiter on the QR menu."""
+    if table is not None:
+        table_label = table.label or str(table.number)
+        table_display = str(table)
+        floor_name = table.floor.name if table.floor_id else ""
+        message = f"{table_display}"
+    else:
+        table_label = ""
+        table_display = ""
+        floor_name = ""
+        message = ""
+
+    payload = {
+        "event": "guest.waiter_call",
+        "table_id": table.pk if table else None,
+        "table": table_display,
+        "table_label": table_label,
+        "table_number": table.number if table else None,
+        "floor": floor_name,
+        "message": message,
+        "requested_at": time.time(),
+    }
+
+    _group_send(f"waiters.branch.{branch_id}", "waiter.message", payload)
+    _group_send(f"waiters.restaurant.{restaurant_id}", "waiter.message", payload)
+    if table and table.assigned_to_id:
+        _group_send(f"waiter.{table.assigned_to_id}", "waiter.message", payload)
+    _cache_waiter_alert(branch_id, payload)

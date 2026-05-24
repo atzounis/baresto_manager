@@ -69,6 +69,56 @@
     }
   }
 
+  function playGuestCallSound() {
+    playBeepSequence([659.25, 783.99, 987.77]);
+    if (navigator.vibrate) {
+      navigator.vibrate([100, 60, 100, 60, 200]);
+    }
+  }
+
+  function formatGuestCallMessage(data) {
+    const tableLbl = i18n.tableLabel || "Table";
+    if (data.table_id && data.table) {
+      return tableLbl + " " + data.table;
+    }
+    if (data.table_label) {
+      return tableLbl + " " + data.table_label;
+    }
+    return i18n.guestCallNoTable || "Guest menu (no table on QR)";
+  }
+
+  function isTablesPage() {
+    return /^\/tables\/?$/.test(location.pathname);
+  }
+
+  function handleGuestWaiterCall(data) {
+    if (!data || data.event !== "guest.waiter_call") return;
+
+    const key = [
+      data.event,
+      data.table_id || "shared",
+      data.requested_at || data.table || "",
+    ].join("|");
+    if (seenAlerts.has(key)) return;
+    seenAlerts.add(key);
+    if (seenAlerts.size > 100) {
+      seenAlerts.clear();
+      seenAlerts.add(key);
+    }
+
+    playGuestCallSound();
+
+    const title = i18n.guestCallTitle || "Customer requests a waiter";
+    const message = formatGuestCallMessage(data);
+    showBrowserNotification(title, message);
+
+    window.dispatchEvent(new CustomEvent("baresto-guest-waiter-call", { detail: data }));
+
+    if (!isTablesPage()) {
+      showToast(title + ": " + message, false);
+    }
+  }
+
   function formatMessage(data) {
     const tableLbl = i18n.tableLabel || "Table";
     const table = data.table || data.message || "";
@@ -216,7 +266,9 @@
 
     ws.onmessage = (ev) => {
       try {
-        handleKitchenAlert(JSON.parse(ev.data));
+        const data = JSON.parse(ev.data);
+        handleGuestWaiterCall(data);
+        handleKitchenAlert(data);
       } catch (e) {
         /* ignore */
       }
@@ -238,7 +290,10 @@
       const res = await fetch(pollUrl, { credentials: "same-origin", cache: "no-store" });
       if (!res.ok) return;
       const body = await res.json();
-      (body.alerts || []).forEach(handleKitchenAlert);
+      (body.alerts || []).forEach((alert) => {
+        handleGuestWaiterCall(alert);
+        handleKitchenAlert(alert);
+      });
     } catch (e) {
       /* ignore */
     }

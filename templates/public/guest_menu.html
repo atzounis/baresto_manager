@@ -92,10 +92,45 @@
     {% endif %}
   </main>
   <footer class="fixed bottom-0 left-0 right-0 z-20 border-t border-kitchen-border bg-kitchen-elevated p-4">
-    <button type="button" class="btn-primary min-h-12 w-full rounded-2xl"
-      onclick="alert('{% trans "A waiter has been notified."|escapejs %}')">
+    <button type="button" id="guest-call-waiter-btn" class="btn-primary min-h-12 w-full rounded-2xl"
+      {% if call_waiter_url %}data-call-url="{{ call_waiter_url }}"{% endif %}>
       {% trans "Call waiter" %}
     </button>
   </footer>
+  {% if call_waiter_url %}
+  <script>
+    (function () {
+      const btn = document.getElementById("guest-call-waiter-btn");
+      if (!btn) return;
+      const url = btn.dataset.callUrl;
+      const okMsg = "{% trans 'A waiter has been notified.'|escapejs %}";
+      const waitMsg = "{% trans 'Please wait before calling again.'|escapejs %}";
+      const failMsg = "{% trans 'Could not reach the restaurant. Try again.'|escapejs %}";
+      let busy = false;
+      btn.addEventListener("click", async function () {
+        if (busy || !url) return;
+        busy = true;
+        btn.disabled = true;
+        try {
+          const res = await fetch(url, {
+            method: "POST",
+            headers: { "X-Requested-With": "XMLHttpRequest" },
+          });
+          if (res.status === 429) {
+            alert(waitMsg);
+            return;
+          }
+          if (!res.ok) throw new Error("fail");
+          alert(okMsg);
+        } catch (e) {
+          alert(failMsg);
+        } finally {
+          busy = false;
+          btn.disabled = false;
+        }
+      });
+    })();
+  </script>
+  {% endif %}
 </body>
 </html>

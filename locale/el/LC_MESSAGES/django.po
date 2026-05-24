@@ -1330,6 +1330,34 @@ msgstr "Ειδοποιήθηκε ο σερβιτόρος."
 msgid "Call waiter"
 msgstr "Καλέστε σερβιτόρο"
 
+#: templates/public/guest_menu.html templates/qr/views.py
+msgid "Please wait before calling again."
+msgstr "Περιμένετε πριν καλέσετε ξανά."
+
+#: templates/public/guest_menu.html
+msgid "Could not reach the restaurant. Try again."
+msgstr "Δεν ήταν δυνατή η επικοινωνία. Δοκιμάστε ξανά."
+
+#: apps/qr/views.py
+msgid "Restaurant unavailable."
+msgstr "Το εστιατόριο δεν είναι διαθέσιμο."
+
+#: templates/base.html templates/restaurants/tables.html
+msgid "Customer requests a waiter"
+msgstr "Ο πελάτης ζητά σερβιτόρο"
+
+#: templates/base.html templates/restaurants/tables.html
+msgid "A guest is asking for assistance."
+msgstr "Ένας πελάτης ζητά βοήθεια."
+
+#: templates/base.html templates/restaurants/tables.html
+msgid "Guest menu (no table on QR)"
+msgstr "Μενού επισκεπτών (χωρίς τραπέζι στο QR)"
+
+#: templates/restaurants/tables.html
+msgid "OK"
+msgstr "Εντάξει"
+
 #: templates/public/includes/legal_catalogue_block.html:15
 msgid "Tel."
 msgstr "Τηλ."

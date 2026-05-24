@@ -12,9 +12,9 @@
 
 ## Screenshots / Στιγμιότυπα
 
-**EN:** Staff interface on desktop and mobile (waiter ordering on a phone over Wi‑Fi), plus guest QR menu preview and printout.
+**EN:** Staff interface on desktop and mobile (waiter ordering on a phone over Wi‑Fi), guest QR menu preview and printout, and what customers see after scanning a table QR.
 
-**EL:** Διεπαφή προσωπικού σε desktop και κινητό (παραγγελία σερβιτόρου από τηλέφωνο στο Wi‑Fi), καθώς και προεπισκόπηση και εκτύπωση QR μενού επισκεπτών.
+**EL:** Διεπαφή προσωπικού σε desktop και κινητό (παραγγελία σερβιτόρου από τηλέφωνο στο Wi‑Fi), προεπισκόπηση και εκτύπωση QR μενού επισκεπτών, και η εμπειρία πελάτη μετά το σκάναρισμα QR τραπεζιού.
 
 ### Desktop
 
@@ -35,6 +35,16 @@
 | Order flow | Tables |
 | :---: | :---: |
 | ![Mobile ordering — menu, live order drawer, send to kitchen](images/mobile-screen-1.PNG) | ![Mobile tables — list view, floor filter, open table](images/mobile-screen-2.PNG) |
+
+### Customer (QR menu)
+
+**EN:** What guests see on their phone after scanning the table QR — bilingual menu, allergens, and **Call waiter**.
+
+**EL:** Τι βλέπουν οι πελάτες στο κινητό μετά το σκάναρισμα QR τραπεζιού — δίγλωσσο μενού, αλλεργιογόνα και **Καλέστε σερβιτόρο**.
+
+| Menu & starters (EN) | Main dishes (ΕΛ) |
+| :---: | :---: |
+| ![Customer QR menu — table label, restaurant info, starters, Call waiter](images/baresto-manager-customer-1.PNG) | ![Customer QR menu — Greek main dishes, prices, dietary tags, Call waiter](images/baresto-manager-customer-2.PNG) |
 
 ---
 
