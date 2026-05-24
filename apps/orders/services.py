@@ -65,13 +65,24 @@ def add_item_to_order(order, menu_item, quantity=1, modifier_ids=None, station="
 
 
 @transaction.atomic
-def confirm_order(order, user, request=None):
+def confirm_order(order, user, request=None, notes=""):
+    send_notes = (notes or "").strip()
+    if send_notes:
+        order.notes = send_notes
+        order.save(update_fields=["notes", "updated_at"])
     order.confirm()
     for item in order.items.filter(status="pending"):
         item.mark_preparing()
     order.status = "preparing"
     order.save(update_fields=["status", "updated_at"])
-    log_audit(user, "order.confirm", "orders.Order", order.pk, {}, request)
+    log_audit(
+        user,
+        "order.confirm",
+        "orders.Order",
+        order.pk,
+        {"notes": send_notes} if send_notes else {},
+        request,
+    )
     broadcast_order_event(order, event="order.confirmed")
     broadcast_kitchen_new_ticket(order)
     return order
@@ -127,10 +138,12 @@ def update_item_status(order_item, new_status, user=None, request=None):
 
 
 @transaction.atomic
-def create_bill(order, tax_rate=Decimal("0.10"), discount=Decimal("0")):
+def create_bill(order, tax_rate=Decimal("0.10"), discount=Decimal("0"), payment_method="cash"):
     subtotal = order.subtotal
     tax = (subtotal * tax_rate).quantize(Decimal("0.01"))
     total = subtotal + tax - discount
+    if payment_method not in dict(Bill.PAYMENT_METHODS):
+        payment_method = "cash"
     bill, _ = Bill.objects.update_or_create(
         order=order,
         defaults={
@@ -138,6 +151,7 @@ def create_bill(order, tax_rate=Decimal("0.10"), discount=Decimal("0")):
             "tax": tax,
             "discount": discount,
             "total": total,
+            "payment_method": payment_method,
         },
     )
     order.status = "bill_requested"
@@ -147,7 +161,7 @@ def create_bill(order, tax_rate=Decimal("0.10"), discount=Decimal("0")):
 
 
 @transaction.atomic
-def close_table_session(session, user, request=None):
+def close_table_session(session, user, request=None, payment_method="cash"):
     """
     Issue the bill and free the table once all items are sent, prepared, and delivered.
     """
@@ -174,7 +188,7 @@ def close_table_session(session, user, request=None):
             order.status = "preparing"
             order.save(update_fields=["status", "updated_at"])
             broadcast_order_event(order, event="order.confirmed")
-        create_bill(order)
+        create_bill(order, payment_method=payment_method)
 
     session.is_active = False
     session.closed_at = timezone.now()
@@ -185,7 +199,14 @@ def close_table_session(session, user, request=None):
     broadcast_table_update(table)
 
     if order:
-        log_audit(user, "table.close", "restaurants.TableSession", session.pk, {"order_id": order.pk}, request)
+        log_audit(
+            user,
+            "table.close",
+            "restaurants.TableSession",
+            session.pk,
+            {"order_id": order.pk, "payment_method": payment_method},
+            request,
+        )
         broadcast_table_closed(order, table)
 
     return order

@@ -8,6 +8,8 @@
 
 **EL:** Ελαφρύ σύστημα διαχείρισης εστιατορίου — ψηφιακά μενού QR, παραγγελίες σερβιτόρων, οθόνη κουζίνας (KDS), πίνακας διαχείρισης και ενημερώσεις σε πραγματικό χρόνο.
 
+**Website / Ιστοσελίδα:** [barestomanager.eu](https://barestomanager.eu)
+
 ---
 
 ## Screenshots / Στιγμιότυπα
@@ -54,6 +56,7 @@
 
 ## Contents / Περιεχόμενα
 
+- [Website / Ιστοσελίδα](https://barestomanager.eu)
 - [Screenshots / Στιγμιότυπα](#screenshots--στιγμιότυπα)
 - [User guide (HTML) / Οδηγός χρήσης](docs/user-guide.html)
 - [English](#english)
@@ -1083,9 +1086,9 @@ cp images/barestomanager-vertical-logo.png static/brand/baresto-vertical.png
 
 ## License / Άδεια
 
-**EN:** Copyright © 2026 [Antonis Tzounis](https://github.com/atzounis). Released under the **MIT License** — see [LICENSE](LICENSE) for the full text.
+**EN:** Copyright © 2026 [Antonis Tzounis](https://github.com/atzounis). Released under the **MIT License** — see [LICENSE](LICENSE) for the full text. Project website: [barestomanager.eu](https://barestomanager.eu).
 
-**EL:** Πνευματικά δικαιώματα © 2026 [Antonis Tzounis](https://github.com/atzounis). Διατίθεται υπό **MIT License** — δείτε το [LICENSE](LICENSE) για το πλήρες κείμενο.
+**EL:** Πνευματικά δικαιώματα © 2026 [Antonis Tzounis](https://github.com/atzounis). Διατίθεται υπό **MIT License** — δείτε το [LICENSE](LICENSE) για το πλήρες κείμενο. Ιστοσελίδα: [barestomanager.eu](https://barestomanager.eu).
 
 ### Third-party software / Λογισμικό τρίτων
 

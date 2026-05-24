@@ -28,7 +28,22 @@
 </div>
 
 <div id="order-summary"
+  x-data="{ drawerOpen: true, showPaymentStep: false, showSendStep: false, paymentMethod: 'cash', kitchenNotes: '' }"
   class="fixed bottom-0 left-0 right-0 z-30 border-t border-kitchen-border bg-kitchen-elevated/98 p-4 shadow-[0_-8px_30px_rgba(0,0,0,0.35)] backdrop-blur">
   {% include "mobile/partials/order_summary.html" %}
 </div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  document.body.addEventListener('htmx:afterSettle', function (evt) {
+    var root = evt.detail.elt;
+    if (root.id !== 'order-summary') {
+      root = root.closest ? root.closest('#order-summary') : null;
+    }
+    if (root && window.Alpine) {
+      Alpine.initTree(root);
+    }
+  });
+</script>
 {% endblock %}

@@ -149,11 +149,28 @@
     showToast(title + ": " + message, false);
   }
 
-  function deliverTableClosedToTables(data) {
-    window.dispatchEvent(new CustomEvent("baresto-table-closed", { detail: data }));
+  function formatPaymentMethod(data) {
+    if (!data || !data.payment_method) return "";
+    if (data.payment_method === "card") return i18n.paymentCard || "Credit card";
+    if (data.payment_method === "cash") return i18n.paymentCash || "Cash";
+    return data.payment_method;
+  }
+
+  function formatTableClosedMessage(data) {
     const title = i18n.tableClosedTitle || "Table is closed.";
     const tableLbl = data.table || data.table_label || "";
-    showToast(title + (tableLbl ? " " + tableLbl : ""), true);
+    const payment = formatPaymentMethod(data);
+    let message = title + (tableLbl ? " " + tableLbl : "");
+    if (payment) {
+      const paymentLbl = i18n.paymentLabel || "Payment";
+      message += " · " + paymentLbl + ": " + payment;
+    }
+    return message;
+  }
+
+  function deliverTableClosedToTables(data) {
+    window.dispatchEvent(new CustomEvent("baresto-table-closed", { detail: data }));
+    showToast(formatTableClosedMessage(data), true);
   }
 
   function handleTableClosed(data) {
@@ -175,7 +192,13 @@
 
     const title = i18n.tableClosedTitle || "Table is closed.";
     const tableLbl = data.table || data.table_label || "";
-    showBrowserNotification(title, tableLbl);
+    const payment = formatPaymentMethod(data);
+    let body = tableLbl;
+    if (payment) {
+      const paymentLbl = i18n.paymentLabel || "Payment";
+      body = (body ? body + " · " : "") + paymentLbl + ": " + payment;
+    }
+    showBrowserNotification(title, body);
 
     if (isTablesPage()) {
       if (!window.__barestoTablesReady) {
@@ -186,7 +209,7 @@
       return;
     }
 
-    showToast(title + (tableLbl ? " " + tableLbl : ""), true);
+    showToast(formatTableClosedMessage(data), true);
   }
 
   function handleGuestWaiterCall(data) {

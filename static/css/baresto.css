@@ -234,3 +234,52 @@ select.input-field {
   white-space: nowrap;
   border: 0;
 }
+
+/* Waiter / cashier — slightly larger type on phones (tables, ordering, history) */
+@media (max-width: 767px) {
+  body.waiter-mobile {
+    font-size: 1.0625rem;
+  }
+
+  body.waiter-mobile .text-xs {
+    font-size: 0.875rem;
+    line-height: 1.25rem;
+  }
+
+  body.waiter-mobile .text-sm {
+    font-size: 1rem;
+    line-height: 1.5rem;
+  }
+
+  body.waiter-mobile .text-base {
+    font-size: 1.125rem;
+    line-height: 1.75rem;
+  }
+
+  body.waiter-mobile .text-lg {
+    font-size: 1.375rem;
+    line-height: 1.875rem;
+  }
+
+  body.waiter-mobile .text-xl {
+    font-size: 1.5rem;
+    line-height: 2rem;
+  }
+
+  body.waiter-mobile .text-2xl {
+    font-size: 2rem;
+    line-height: 2.5rem;
+  }
+
+  body.waiter-mobile .btn-primary,
+  body.waiter-mobile .btn-secondary {
+    font-size: 1.0625rem;
+  }
+
+  body.waiter-mobile .input-field,
+  body.waiter-mobile .menu-input,
+  body.waiter-mobile select.input-field,
+  body.waiter-mobile textarea {
+    font-size: 1.0625rem;
+  }
+}

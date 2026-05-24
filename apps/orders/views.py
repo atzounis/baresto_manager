@@ -174,13 +174,24 @@ class CloseTableView(RestaurantScopedMixin, RolePermissionMixin, View):
         if not can_close_table_session(session):
             messages.error(request, close_table_blocked_message(session))
             return redirect("order_new", session_id=session_id)
+
+        payment_method = request.POST.get("payment_method", "cash")
+        if payment_method not in ("cash", "card"):
+            messages.error(request, _("Please choose cash or credit card."))
+            return redirect("order_new", session_id=session_id)
+
         try:
-            order = close_table_session(session, request.user, request)
+            order = close_table_session(session, request.user, request, payment_method=payment_method)
         except TableCloseBlocked as exc:
             messages.error(request, exc.message)
             return redirect("order_new", session_id=session_id)
 
-        messages.success(request, _("Table is closed."))
+        bill = Bill.objects.filter(order_id=order.pk).first() if order else None
+        method_label = bill.get_payment_method_display() if bill else dict(Bill.PAYMENT_METHODS).get(payment_method, payment_method)
+        messages.success(
+            request,
+            _("Table is closed. Payment: %(method)s") % {"method": method_label},
+        )
 
         params = {}
         if order and Bill.objects.filter(order_id=order.pk).exists():
@@ -433,7 +444,8 @@ class OrderConfirmView(RestaurantScopedMixin, RolePermissionMixin, View):
         elif not order.items.filter(is_deleted=False).exists():
             messages.error(request, _("Add items before sending to the kitchen."))
         else:
-            confirm_order(order, request.user, request)
+            notes = request.POST.get("notes", "").strip()
+            confirm_order(order, request.user, request, notes=notes)
             messages.success(request, _("Order sent to kitchen."))
         if request.headers.get("HX-Request"):
             session = order.session

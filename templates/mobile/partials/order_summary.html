@@ -4,7 +4,7 @@
   {% include "mobile/partials/order_ready_badge.html" %}
 </div>
 {% endif %}
-<div class="mx-auto max-w-6xl" x-data="{ drawerOpen: true }">
+<div class="mx-auto max-w-6xl">
   <button type="button" @click="drawerOpen = !drawerOpen"
     class="mb-2 flex w-full items-center justify-between text-left text-sm text-slate-400">
     <span>{% trans "Current order" %}</span>
@@ -130,22 +130,90 @@
     </div>
     <div class="flex flex-wrap gap-2">
       {% if order and order.status == 'open' and new_item_count %}
-      <form method="post" action="{% url 'order_confirm' order.pk %}" hx-post="{% url 'order_confirm' order.pk %}"
-        hx-target="#order-summary" hx-swap="innerHTML">
-        {% csrf_token %}
-        <button type="submit" class="btn-secondary min-h-12 rounded-xl px-4 py-2 text-sm font-semibold">
+      <div x-show="!showSendStep" class="w-full sm:w-auto">
+        <button type="button" @click="showSendStep = true; kitchenNotes = ''; drawerOpen = true"
+          class="btn-secondary min-h-12 w-full rounded-xl px-4 py-2 text-sm font-semibold sm:w-auto">
           {% trans "Send to kitchen" %}
         </button>
-      </form>
+      </div>
+      <template x-teleport="body">
+        <div x-show="showSendStep" x-cloak
+          class="fixed inset-0 z-[100] flex items-end justify-center bg-black/65 p-4 pb-[max(1rem,env(safe-area-inset-bottom))] backdrop-blur-sm sm:items-center"
+          @click.self="showSendStep = false"
+          @keydown.escape.window="showSendStep = false">
+          <div class="max-h-[min(90dvh,100%)] w-full max-w-md overflow-y-auto rounded-2xl border border-kitchen-border bg-kitchen-elevated p-5 shadow-2xl"
+            role="dialog" aria-modal="true" aria-labelledby="send-kitchen-step-title">
+            <p id="send-kitchen-step-title" class="text-base font-semibold text-order-light">{% trans "Send to kitchen" %}</p>
+            <p class="mt-2 text-sm text-slate-400">{% trans "Add an optional note for the kitchen, or send the order now." %}</p>
+            <form method="post" action="{% url 'order_confirm' order.pk %}"
+              hx-post="{% url 'order_confirm' order.pk %}"
+              hx-target="#order-summary" hx-swap="innerHTML"
+              @submit="showSendStep = false"
+              class="mt-4 space-y-4">
+              {% csrf_token %}
+              <div>
+                <label for="kitchen-notes-{{ order.pk }}" class="mb-1 block text-xs font-medium text-slate-400">{% trans "Kitchen note (optional)" %}</label>
+                <textarea id="kitchen-notes-{{ order.pk }}" name="notes" rows="3" maxlength="500"
+                  x-model="kitchenNotes"
+                  placeholder="{% trans 'e.g. Allergy, no ice, serve together…' %}"
+                  class="w-full rounded-xl border border-kitchen-border bg-kitchen px-3 py-2 text-sm text-white placeholder:text-slate-500"></textarea>
+              </div>
+              <div class="flex flex-col gap-3">
+                <button type="submit" class="btn-primary min-h-12 w-full rounded-xl px-4 py-2 text-sm font-semibold">
+                  {% trans "Send order" %}
+                </button>
+                <button type="button" @click="showSendStep = false"
+                  class="btn-secondary min-h-12 w-full rounded-xl px-4 py-2 text-sm font-semibold">
+                  {% trans "Cancel" %}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </template>
       {% endif %}
       {% if can_close_table %}
-      <form method="post" action="{% url 'close_table' session.pk %}"
-        onsubmit="return confirm('{% trans "Close this table and request the bill?"|escapejs %}');">
-        {% csrf_token %}
-        <button type="submit" class="btn-primary min-h-12 rounded-xl px-4 py-2 text-sm font-semibold">
+      <div x-show="!showPaymentStep" class="w-full sm:w-auto">
+        <button type="button" @click="showPaymentStep = true; drawerOpen = true"
+          class="btn-primary min-h-12 w-full rounded-xl px-4 py-2 text-sm font-semibold sm:w-auto">
           {% trans "Close table" %}
         </button>
-      </form>
+      </div>
+      <template x-teleport="body">
+        <div x-show="showPaymentStep" x-cloak
+          class="fixed inset-0 z-[100] flex items-end justify-center bg-black/65 p-4 pb-[max(1rem,env(safe-area-inset-bottom))] backdrop-blur-sm sm:items-center"
+          @click.self="showPaymentStep = false"
+          @keydown.escape.window="showPaymentStep = false">
+          <div class="max-h-[min(90dvh,100%)] w-full max-w-md overflow-y-auto rounded-2xl border border-kitchen-border bg-kitchen-elevated p-5 shadow-2xl"
+            role="dialog" aria-modal="true" aria-labelledby="payment-step-title">
+            <p id="payment-step-title" class="text-base font-semibold text-order-light">{% trans "Payment" %}</p>
+            <p class="mt-2 text-sm text-slate-400">{% trans "How will the guest pay?" %}</p>
+            <div class="mt-4 grid grid-cols-2 gap-3">
+              <button type="button" @click="paymentMethod = 'cash'"
+                class="min-h-14 rounded-xl border px-3 py-2 text-sm font-bold transition"
+                :class="paymentMethod === 'cash' ? 'border-order bg-order/20 text-order-light ring-2 ring-order' : 'border-kitchen-border bg-kitchen text-slate-200'">
+                {% trans "Cash" %}
+              </button>
+              <button type="button" @click="paymentMethod = 'card'"
+                class="min-h-14 rounded-xl border px-3 py-2 text-sm font-bold transition"
+                :class="paymentMethod === 'card' ? 'border-order bg-order/20 text-order-light ring-2 ring-order' : 'border-kitchen-border bg-kitchen text-slate-200'">
+                {% trans "Credit card" %}
+              </button>
+            </div>
+            <form method="post" action="{% url 'close_table' session.pk %}" class="mt-4 flex flex-col gap-3">
+              {% csrf_token %}
+              <input type="hidden" name="payment_method" x-bind:value="paymentMethod">
+              <button type="submit" class="btn-primary min-h-12 w-full rounded-xl px-4 py-2 text-sm font-semibold">
+                {% trans "Confirm and close" %}
+              </button>
+              <button type="button" @click="showPaymentStep = false"
+                class="btn-secondary min-h-12 w-full rounded-xl px-4 py-2 text-sm font-semibold">
+                {% trans "Cancel" %}
+              </button>
+            </form>
+          </div>
+        </div>
+      </template>
       {% endif %}
     </div>
   </div>

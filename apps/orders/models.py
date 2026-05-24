@@ -122,9 +122,9 @@ class OrderItem(TimeStampedModel):
 
 class Bill(TimeStampedModel):
     PAYMENT_METHODS = [
-        ("cash", "Cash"),
-        ("card", "Card"),
-        ("split", "Split"),
+        ("cash", _("Cash")),
+        ("card", _("Credit card")),
+        ("split", _("Split")),
     ]
 
     order = models.OneToOneField(Order, on_delete=models.CASCADE, related_name="bill")

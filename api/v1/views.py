@@ -109,7 +109,8 @@ class OrderViewSet(RestaurantScopedMixin, viewsets.ModelViewSet):
     @action(detail=True, methods=["post"])
     def confirm(self, request, pk=None):
         order = self.get_object()
-        confirm_order(order, request.user, request)
+        notes = request.data.get("notes", "") if hasattr(request, "data") else request.POST.get("notes", "")
+        confirm_order(order, request.user, request, notes=notes or "")
         return Response(OrderSerializer(order).data)
 
     @action(detail=True, methods=["post"], url_path="items")

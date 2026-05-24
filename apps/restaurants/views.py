@@ -44,6 +44,27 @@ def _resolve_floor_filter(request, floors_qs):
     return None
 
 
+def _table_closed_modal_payload(order):
+    """Data for the tables-page “table closed” modal (Alpine + realtime)."""
+    if not order:
+        return None
+    bill = getattr(order, "bill", None)
+    if bill is None:
+        return None
+    table = order.session.table
+    return {
+        "event": "table.closed",
+        "table_id": table.pk,
+        "table": str(table),
+        "table_label": table.label or f"T{table.number}",
+        "floor": table.floor.name if table.floor_id else "",
+        "order_id": order.pk,
+        "bill_total": str(bill.total),
+        "payment_method": bill.payment_method or "cash",
+        "can_print_receipt": True,
+    }
+
+
 def _build_tables_url(request, floor_pk=None, view_mode=None, *, strip_close_params=False):
     """Build tables page URL preserving manage params and optional floor filter."""
     q = request.GET.copy()
@@ -223,6 +244,8 @@ class TableFloorView(RestaurantScopedMixin, RolePermissionMixin, TemplateView):
         if print_receipt_id and restaurant:
             print_receipt_order = get_print_receipt_order(restaurant, print_receipt_id)
         ctx["print_receipt_order"] = print_receipt_order
+        modal_payload = _table_closed_modal_payload(print_receipt_order)
+        ctx["table_closed_modal_initial_json"] = json.dumps(modal_payload) if modal_payload else "null"
         ctx["dismiss_print_modal_url"] = _build_tables_url(
             self.request,
             floor_pk=filter_floor_id,

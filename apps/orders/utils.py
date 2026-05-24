@@ -100,6 +100,6 @@ def get_print_receipt_order(restaurant, order_id):
             status__in=["bill_requested", "paid"],
             bill__isnull=False,
         )
-        .select_related("session__table", "bill")
+        .select_related("session__table__floor", "bill")
         .first()
     )

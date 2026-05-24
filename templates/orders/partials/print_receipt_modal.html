@@ -19,6 +19,10 @@
           · {% trans "Order" %} #{{ print_receipt_order.pk }}
           · <span class="text-price">€{{ print_receipt_order.bill.total }}</span>
         </p>
+        <p class="mt-2 text-sm font-bold text-slate-200">
+          {% trans "Payment" %}:
+          <span class="text-order-light">{{ print_receipt_order.bill.get_payment_method_display }}</span>
+        </p>
         <p class="mt-2 text-sm text-slate-400">{% trans "Do you want to print a receipt?" %}</p>
       </div>
     </div>

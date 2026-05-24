@@ -131,6 +131,7 @@ def broadcast_kitchen_new_ticket(order):
     if remaining > 0:
         item_lines.append(f"+{remaining}")
 
+    notes = (order.notes or "").strip()
     payload = {
         "event": "order.new_ticket",
         "order_id": order.pk,
@@ -142,6 +143,8 @@ def broadcast_kitchen_new_ticket(order):
         "is_priority": order.is_priority,
         "sent_at": time.time(),
     }
+    if notes:
+        payload["notes"] = notes
     _group_send(f"kitchen.{branch_id}", "kitchen.message", payload)
     _cache_kitchen_alert(branch_id, payload)
 
@@ -194,6 +197,7 @@ def broadcast_table_closed(order, table):
         "floor": table.floor.name if table.floor_id else "",
         "order_id": order.pk if order else None,
         "bill_total": str(bill.total) if bill else None,
+        "payment_method": bill.payment_method if bill else "cash",
         "can_print_receipt": bill is not None,
         "closed_at": time.time(),
     }

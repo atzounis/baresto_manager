@@ -357,6 +357,7 @@
       <h2 data-lang="en">Contents</h2>
       <ol>
         <li><a href="#start" data-lang="el">Έναρξη &amp; σύνδεση</a><a href="#start" data-lang="en">Getting started &amp; login</a></li>
+        <li><a href="#windows" data-lang="el">Windows — γρήγορη εκκίνηση</a><a href="#windows" data-lang="en">Windows — quick start</a></li>
         <li><a href="#roles" data-lang="el">Ρόλοι &amp; δικαιώματα</a><a href="#roles" data-lang="en">Roles &amp; permissions</a></li>
         <li><a href="#waiter" data-lang="el">Σερβιτόρος / ταμείο</a><a href="#waiter" data-lang="en">Waiter / cashier</a></li>
         <li><a href="#kitchen" data-lang="el">Κουζίνα (KDS)</a><a href="#kitchen" data-lang="en">Kitchen (KDS)</a></li>
@@ -425,6 +426,24 @@
       </div>
     </section>
 
+    <!-- Windows quick start -->
+    <section id="windows">
+      <h2 data-lang="el">Windows — γρήγορη εκκίνηση</h2>
+      <h2 data-lang="en">Windows — quick start</h2>
+
+      <p data-lang="el">Για PC με Windows 10/11 χωρίς Command Prompt: κατεβάστε το ZIP από GitHub, εξαγάγετέ το και κάντε διπλό κλικ στο <strong>Start-BarestoManager.bat</strong> (δίπλα στο <code>manage.py</code>).</p>
+      <p data-lang="en">On Windows 10/11 without using Command Prompt: download the GitHub ZIP, extract it, and double-click <strong>Start-BarestoManager.bat</strong> (next to <code>manage.py</code>).</p>
+
+      <ol class="steps">
+        <li data-lang="el">Την <strong>πρώτη φορά</strong>, ο launcher εγκαθιστά Python (μέσω <code>winget</code> αν λείπει), βιβλιοθήκες, <code>.env</code> και migrations — μπορεί να πάρει 5–15 λεπτά.</li>
+        <li data-lang="en">On <strong>first run</strong>, the launcher installs Python (via <code>winget</code> if missing), libraries, <code>.env</code>, and migrations — may take 5–15 minutes.</li>
+        <li data-lang="el">Ανοίγει αυτόματα ο browser στο <span class="path">/login/</span>. Αφήστε το παράθυρο κονσόλας ανοιχτό· <strong>Ctrl+C</strong> για διακοπή.</li>
+        <li data-lang="en">Your browser opens <span class="path">/login/</span> automatically. Leave the console window open; press <strong>Ctrl+C</strong> to stop.</li>
+        <li data-lang="el">Προαιρετικά: χτίστε <strong>BarestoManager.exe</strong> με <code>scripts\windows\build-exe.bat</code> (μόνο σε Windows).</li>
+        <li data-lang="en">Optional: build <strong>BarestoManager.exe</strong> with <code>scripts\windows\build-exe.bat</code> (Windows PC only).</li>
+      </ol>
+    </section>
+
     <!-- Roles -->
     <section id="roles">
       <h2 data-lang="el">Ρόλοι &amp; δικαιώματα</h2>
@@ -435,8 +454,8 @@
 
       <div class="card">
         <p class="card-title"><span class="badge badge-waiter">Waiter</span> <span data-lang="el">Σερβιτόρος</span><span data-lang="en">Waiter</span></p>
-        <p data-lang="el">Τραπέζια, παραγγελίες, αποστολή στην κουζίνα, παράδοση έτοιμων πιάτων, κλείσιμο τραπεζιού, ιστορικό παραγγελιών.</p>
-        <p data-lang="en">Tables, orders, send to kitchen, mark ready items delivered, close table, order history.</p>
+        <p data-lang="el">Τραπέζια, παραγγελίες, αποστολή στην κουζίνα, παράδοση έτοιμων πιάτων, κλείσιμο τραπεζιού (με επιλογή πληρωμής), ιστορικό παραγγελιών.</p>
+        <p data-lang="en">Tables, orders, send to kitchen, mark ready items delivered, close table (with payment selection), order history.</p>
       </div>
 
       <div class="card">
@@ -484,8 +503,22 @@
         <div class="status status-ready" data-lang="en">Ready items (badge)</div>
       </div>
 
-      <p data-lang="el">Το badge «έτοιμα» δείχνει πόσα πιάτα είναι έτοιμα από την κουζίνα αλλά δεν έχουν παραδοθεί ακόμα.</p>
-      <p data-lang="en">The ready badge shows how many kitchen-ready items have not been delivered yet.</p>
+      <p data-lang="el">Το badge «έτοιμα» δείχνει πόσα πιάτα είναι έτοιμα από την κουζίνα αλλά δεν έχουν παραδοθεί ακόμα. Στην κεφαλίδα παραγγελίας εμφανίζεται <strong>ένα</strong> badge (όχι διπλότυπο).</p>
+      <p data-lang="en">The ready badge shows how many kitchen-ready items have not been delivered yet. On the order screen, a <strong>single</strong> badge appears in the header.</p>
+
+      <h3 data-lang="el">Ειδοποιήσεις στην οθόνη τραπεζιών</h3>
+      <h3 data-lang="en">Alerts on the tables screen</h3>
+
+      <ul data-lang="el">
+        <li><strong>Κλήση σερβιτόρου:</strong> όταν πελάτης πατά «Καλέστε σερβιτόρο» στο QR μενού, εμφανίζεται modal με τραπέζι/όροφο (ήχος + ειδοποίηση).</li>
+        <li><strong>Τραπέζι έκλεισε:</strong> όταν άλλος σερβιτόρος κλείνει τραπέζι, η οθόνη <span class="path">/tables/</span> ενημερώνεται live (modal «Το τραπέζι έκλεισε», επιλογή εκτύπωσης απόδειξης).</li>
+        <li>Σε κινητό: πατήστε την μπάρα <strong>Tap to enable sound &amp; alerts</strong> μία φορά για ήχο και ειδοποιήσεις.</li>
+      </ul>
+      <ul data-lang="en">
+        <li><strong>Guest calls waiter:</strong> when a customer taps <strong>Call waiter</strong> on the QR menu, a modal shows table/floor (sound + notification).</li>
+        <li><strong>Table closed:</strong> when another device closes a table, <span class="path">/tables/</span> updates live (modal “Table is closed”, option to print receipt).</li>
+        <li>On mobile: tap <strong>Tap to enable sound &amp; alerts</strong> once for sound and notifications.</li>
+      </ul>
 
       <h3 data-lang="el">2. Άνοιγμα τραπεζιού &amp; παραγγελία</h3>
       <h3 data-lang="en">2. Open table &amp; order</h3>
@@ -499,13 +532,25 @@
         <li data-lang="en">Tap category → dish to add. The order drawer (bottom) shows the live total.</li>
         <li data-lang="el">Προαιρετικά: σημειώσεις ανά πιάτο, modifiers αν υπάρχουν.</li>
         <li data-lang="en">Optional: notes per item, modifiers where configured.</li>
+        <li data-lang="el">Σε κινητό, η οθόνη παραγγελίας χρησιμοποιεί μεγαλύτερα γράμματα και κουμπιά για ευκολότερη χρήση με το δάχτυλο.</li>
+        <li data-lang="en">On mobile, the order screen uses larger text and buttons for easier one-handed use.</li>
       </ol>
 
       <h3 data-lang="el">3. Αποστολή στην κουζίνα</h3>
       <h3 data-lang="en">3. Send to kitchen</h3>
 
-      <p data-lang="el">Πατήστε <strong>Αποστολή στην κουζίνα</strong>. Τα νέα πιάτα περνούν στην κουζίνα· η οθόνη KDS ενημερώνεται σε πραγματικό χρόνο. Μπορείτε να συνεχίσετε να προσθέτετε πιάτα και να στέλνετε ξανά.</p>
-      <p data-lang="en">Tap <strong>Send to kitchen</strong>. New items go to the kitchen; the KDS updates in real time. You can keep adding items and sending again.</p>
+      <ol class="steps">
+        <li data-lang="el">Όταν υπάρχουν <strong>νέα πιάτα</strong> (δεν έχουν σταλεί ακόμα), πατήστε <strong>Αποστολή στην κουζίνα</strong> στο συρτάρι παραγγελίας (κάτω).</li>
+        <li data-lang="en">When there are <strong>new items</strong> (not yet sent), tap <strong>Send to kitchen</strong> in the order drawer (bottom).</li>
+        <li data-lang="el">Ανοίγει πλήρους οθόνης βήμα: προαιρετικά γράψτε <strong>Σημείωση κουζίνας</strong> (π.χ. αλλεργία, χωρίς πάγο, σερβίρετε μαζί).</li>
+        <li data-lang="en">A full-screen step opens: optionally enter a <strong>Kitchen note</strong> (e.g. allergy, no ice, serve together).</li>
+        <li data-lang="el">Πατήστε <strong>Αποστολή παραγγελίας</strong> για αποστολή ή <strong>Ακύρωση</strong> για επιστροφή χωρίς αποστολή.</li>
+        <li data-lang="en">Tap <strong>Send order</strong> to send, or <strong>Cancel</strong> to go back without sending.</li>
+        <li data-lang="el">Τα νέα πιάτα περνούν στην κουζίνα· η οθόνη KDS ενημερώνεται σε πραγματικό χρόνο. Η σημείωση εμφανίζεται στην κουζίνα στο ticket και στο modal νέας παραγγελίας.</li>
+        <li data-lang="en">New items go to the kitchen; the KDS updates in real time. The note appears on kitchen tickets and in the new-order alert modal.</li>
+        <li data-lang="el">Μπορείτε να συνεχίσετε να προσθέτετε πιάτα και να στέλνετε ξανά (κάθε αποστολή μπορεί να έχει δική της σημείωση).</li>
+        <li data-lang="en">You can keep adding items and sending again (each send can include its own note).</li>
+      </ol>
 
       <h3 data-lang="el">4. Έτοιμα πιάτα &amp; ειδοποιήσεις</h3>
       <h3 data-lang="en">4. Ready items &amp; alerts</h3>
@@ -513,25 +558,29 @@
       <p data-lang="el">Όταν η κουζίνα σημάνει πιάτο ως <strong>έτοιμο</strong>, λαμβάνετε ειδοποίηση (ήχος / websocket). Στην παραγγελία ή στα τραπέζια, σημειώστε το πιάτο ως <strong>παραδομένο</strong> όταν το σερβίρετε.</p>
       <p data-lang="en">When the kitchen marks an item <strong>ready</strong>, you get an alert (sound / WebSocket). On the order or tables screen, mark the item <strong>delivered</strong> when served.</p>
 
-      <h3 data-lang="el">5. Κλείσιμο τραπεζιού &amp; απόδειξη</h3>
-      <h3 data-lang="en">5. Close table &amp; receipt</h3>
+      <h3 data-lang="el">5. Κλείσιμο τραπεζιού, πληρωμή &amp; απόδειξη</h3>
+      <h3 data-lang="en">5. Close table, payment &amp; receipt</h3>
 
       <ol class="steps">
         <li data-lang="el">Πατήστε <strong>Κλείσιμο τραπεζιού</strong> όταν οι πελάτες φύγουν.</li>
         <li data-lang="en">Tap <strong>Close table</strong> when guests leave.</li>
+        <li data-lang="el">Επιλέξτε <strong>Πληρωμή</strong> σε πλήρους οθόνης παράθυρο: <strong>Μετρητά</strong> ή <strong>Πιστωτική κάρτα</strong>, μετά <strong>Επιβεβαίωση και κλείσιμο</strong> (ή <strong>Ακύρωση</strong> για επιστροφή).</li>
+        <li data-lang="en">Choose <strong>Payment</strong> in a full-screen step: <strong>Cash</strong> or <strong>Credit card</strong>, then <strong>Confirm and close</strong> (or <strong>Cancel</strong> to go back).</li>
         <li data-lang="el">Το σύστημα <strong>δεν επιτρέπει</strong> κλείσιμο αν: υπάρχουν μη αποσταλμένα πιάτα, πιάτα ακόμα στην κουζίνα, ή έτοιμα πιάτα που δεν παραδόθηκαν.</li>
         <li data-lang="en">The system <strong>blocks</strong> closing if: unsent items remain, items are still in the kitchen, or ready items were not delivered.</li>
-        <li data-lang="el">Μετά το επιτυχές κλείσιμο: δημιουργείται λογαριασμός, το τραπέζι γίνεται ελεύθερο, εμφανίζεται παράθυρο εκτύπωσης απόδειξης.</li>
-        <li data-lang="en">After successful close: a bill is created, the table becomes free, a receipt print dialog appears.</li>
-        <li data-lang="el">Οριστικοποιήστε την πληρωμή από την οθόνη απόδειξης (<span class="path">/orders/&lt;id&gt;/receipt/</span>).</li>
-        <li data-lang="en">Finalize payment from the receipt screen (<span class="path">/orders/&lt;id&gt;/receipt/</span>).</li>
+        <li data-lang="el">Μετά το κλείσιμο: δημιουργείται λογαριασμός με τον τρόπο πληρωμής, το τραπέζι γίνεται ελεύθερο, ανακατευθύνεστε στο <span class="path">/tables/</span>.</li>
+        <li data-lang="en">After closing: a bill is created with the payment method, the table becomes free, you are redirected to <span class="path">/tables/</span>.</li>
+        <li data-lang="el">Εμφανίζεται μήνυμα <strong>«Το τραπέζι έκλεισε»</strong> και modal με τρόπο πληρωμής (έντονα), <strong>Εκτύπωση απόδειξης</strong>, <strong>Όχι τώρα</strong> ή κουμπί κλεισίματος (×). Η απόδειξη δείχνει τον τρόπο πληρωμής.</li>
+        <li data-lang="en">A <strong>“Table is closed”</strong> message and modal appear with the payment method (bold), <strong>Print receipt</strong>, <strong>Not now</strong>, or close (×). The receipt shows the payment method.</li>
+        <li data-lang="el">Άλλες συσκευές στην <span class="path">/tables/</span> (π.χ. PC ταμείου) λαμβάνουν την ίδια ειδοποίηση σε πραγματικό χρόνο.</li>
+        <li data-lang="en">Other devices on <span class="path">/tables/</span> (e.g. cashier PC) receive the same alert in real time.</li>
       </ol>
 
-      <div class="warn" data-lang="el">
-        <strong>Ιστορικό παραγγελιών:</strong> <span class="path">/orders/</span> — φιλτράρετε ανά ημερομηνία, επανεκτύπωση απόδειξης, εξαγωγή CSV (διαχειριστές).
+      <div class="tip" data-lang="el">
+        <strong>Ιστορικό / επανεκτύπωση:</strong> <span class="path">/orders/</span> — φιλτράρετε ανά ημερομηνία και ξανατυπώνετε απόδειξη. CSV για διαχειριστές.
       </div>
-      <div class="warn" data-lang="en">
-        <strong>Order history:</strong> <span class="path">/orders/</span> — filter by date, reprint receipts; CSV export for managers.
+      <div class="tip" data-lang="en">
+        <strong>History / reprint:</strong> <span class="path">/orders/</span> — filter by date and reprint receipts. CSV export for managers.
       </div>
     </section>
 
@@ -550,6 +599,7 @@
         <li>Οι παραγγελίες εμφανίζονται ως tickets ανά τραπέζι, με νεότερες πρώτες.</li>
         <li>Φιλτράρετε ανά <strong>σταθμό</strong>: κουζίνα, bar, grill.</li>
         <li>Για κάθε πιάτο: <strong>Επόμενο</strong> / Advance — κατάσταση: αναμονή → προετοιμασία → έτοιμο → σερβιρισμένο.</li>
+        <li>Αν ο σερβιτόρος έγραψε <strong>σημείωση κουζίνας</strong>, εμφανίζεται έντονα στο ticket και στο modal νέας παραγγελίας.</li>
         <li>Νέες παραγγελίες: ηχητική ειδοποίηση (αν ενεργή στο browser).</li>
         <li>Οι ενημερώσεις συγχρονίζονται live (WebSocket) σε όλες τις οθόνες κουζίνας.</li>
       </ul>
@@ -557,6 +607,7 @@
         <li>Orders appear as tickets per table, newest first.</li>
         <li>Filter by <strong>station</strong>: kitchen, bar, grill.</li>
         <li>Per item: <strong>Advance</strong> — status flow: pending → preparing → ready → served.</li>
+        <li>If the waiter entered a <strong>kitchen note</strong>, it appears prominently on the ticket and in the new-order alert modal.</li>
         <li>New orders trigger a sound alert (if enabled in the browser).</li>
         <li>Updates sync live (WebSocket) across all kitchen screens.</li>
       </ul>
@@ -564,9 +615,15 @@
       <div class="tip" data-lang="el">
         Κρατήστε τον browser σε πλήρη οθόνη (F11) σε dedicated οθόνη κουζίνας. Μην κλείνετε το tab — η ουρά εξαφανίζεται μόνο όταν όλα τα πιάτα σημειωθούν σερβιρισμένα ή η παραγγελία πληρωθεί.
       </div>
-      <div for="tip" data-lang="en">
+      <div class="tip" data-lang="en">
         Use full-screen browser (F11) on a dedicated kitchen monitor. Keep the tab open — tickets clear when all items are served or the order is paid.
       </div>
+
+      <h3 data-lang="el">Νέα παραγγελία — modal ειδοποίησης</h3>
+      <h3 data-lang="en">New order — alert modal</h3>
+
+      <p data-lang="el">Όταν ο σερβιτόρος στέλνει νέα πιάτα, εμφανίζεται modal <strong>«Νέα παραγγελία από σερβιτόρο»</strong> με τραπέζι, όροφο, λίστα πιάτων και προαιρετική <strong>σημείωση κουζίνας</strong> (ήχος + ειδοποίηση). Πατήστε <strong>OK</strong> ή κλείστε (×) για να συνεχίσετε. Σε κινητό/tablet: πατήστε μία φορά <strong>Tap to enable sound &amp; alerts</strong>.</p>
+      <p data-lang="en">When a waiter sends new items, a <strong>“New order from waiter”</strong> modal shows table, floor, item list, and an optional <strong>kitchen note</strong> (sound + notification). Tap <strong>OK</strong> or close (×) to continue. On mobile/tablet: tap <strong>Tap to enable sound &amp; alerts</strong> once.</p>
     </section>
 
     <!-- Manager -->
@@ -682,8 +739,8 @@
         </tbody>
       </table>
 
-      <p data-lang="el">Οι πελάτες σκανάρουν το QR, βλέπουν το μενού στη γλώσσα τους (GR/EN), allergens και διαθεσιμότητα.</p>
-      <p data-lang="en">Customers scan the QR, view the menu in their language (GR/EN), allergens, and availability.</p>
+      <p data-lang="el">Οι πελάτες σκανάρουν το QR, βλέπουν το μενού στη γλώσσα τους (GR/EN), allergens και διαθεσιμότητα. Μπορούν να πατήσουν <strong>Καλέστε σερβιτόρο</strong> — οι σερβιτόροι στην <span class="path">/tables/</span> λαμβάνουν ειδοποίηση με τραπέζι/όροφο.</p>
+      <p data-lang="en">Customers scan the QR, view the menu in their language (GR/EN), allergens, and availability. They can tap <strong>Call waiter</strong> — waiters on <span class="path">/tables/</span> get an alert with table/floor.</p>
     </section>
 
     <!-- URLs -->
@@ -707,6 +764,9 @@
           <tr><td><span class="path">/orders/new/&lt;session&gt;/</span></td><td data-lang="el">Παραγγελία σερβιτόρου</td><td data-lang="en">Waiter ordering</td></tr>
           <tr><td><span class="path">/orders/</span></td><td data-lang="el">Ιστορικό παραγγελιών</td><td data-lang="en">Order history</td></tr>
           <tr><td><span class="path">/kitchen/</span></td><td data-lang="el">Οθόνη κουζίνας</td><td data-lang="en">Kitchen display</td></tr>
+          <tr><td><span class="path">/tables/closed-alerts/</span></td><td data-lang="el">Polling ειδοποιήσεων κλεισίματος τραπεζιού</td><td data-lang="en">Table-closed alert polling</td></tr>
+          <tr><td><span class="path">/kitchen/alerts/</span></td><td data-lang="el">Polling νέων παραγγελιών κουζίνας</td><td data-lang="en">Kitchen new-order alert polling</td></tr>
+          <tr><td><span class="path">/orders/&lt;id&gt;/receipt/</span></td><td data-lang="el">Απόδειξη / εκτύπωση</td><td data-lang="en">Receipt / print</td></tr>
           <tr><td><span class="path">/menu/</span></td><td data-lang="el">Διαχείριση μενού</td><td data-lang="en">Menu management</td></tr>
           <tr><td><span class="path">/menu/guest/</span></td><td data-lang="el">Μενού επισκεπτών &amp; QR</td><td data-lang="en">Guest menu &amp; QR</td></tr>
           <tr><td><span class="path">/company/</span></td><td data-lang="el">Στοιχεία εταιρείας</td><td data-lang="en">Company details</td></tr>
@@ -727,6 +787,9 @@
         <li><strong>Real-time:</strong> Τοπικά χρησιμοποιείται in-memory WebSocket· αν η κουζίνα δεν ενημερώνεται, ανανεώστε τη σελίδα ή ελέγξτε ότι ο server τρέχει.</li>
         <li><strong>Κινητό δεν συνδέεται:</strong> Ίδιο Wi‑Fi, firewall, σωστή IP και θύρα 8765.</li>
         <li><strong>QR δεν ανοίγει στο κινητό:</strong> Ελέγξτε <code>SITE_BASE_URL</code> και τρέξτε <code>python manage.py generate_qr_codes</code>.</li>
+        <li><strong>Ήχος &amp; ειδοποιήσεις:</strong> Σε κινητό/tablet, πατήστε <strong>Tap to enable sound &amp; alerts</strong> μία φορά στην <span class="path">/tables/</span> ή <span class="path">/kitchen/</span>.</li>
+        <li><strong>Αποστολή στην κουζίνα:</strong> Μετά την προσθήκη πιάτων, πατήστε <strong>Αποστολή στην κουζίνα</strong> — δεν χρειάζεται ανανέωση σελίδας. Αν δεν βλέπετε το κουμπί <strong>Αποστολή παραγγελίας</strong>, κάντε scroll στο modal ή ακυρώστε και ξανανοίξτε το βήμα.</li>
+        <li><strong>Κλείσιμο τραπεζιού:</strong> Επιλέξτε τρόπο πληρωμής (μετρητά/κάρτα) πριν την επιβεβαίωση· η απόδειξη εμφανίζει τον τρόπο πληρωμής.</li>
         <li><strong>Δεν κλείνει το τραπέζι:</strong> Στείλτε όλα τα πιάτα, περιμένετε την κουζίνα, παραδώστε τα έτοιμα — μετά δοκιμάστε ξανά.</li>
         <li><strong>Αποσύνδεση:</strong> Από το μενού προφίλ — τερματίζει και την ενεργή βάρδια.</li>
       </ul>
@@ -735,6 +798,9 @@
         <li><strong>Real-time:</strong> Local dev uses in-memory WebSockets; if KDS stalls, refresh or confirm the server is running.</li>
         <li><strong>Phone won’t connect:</strong> Same Wi‑Fi, firewall, correct IP and port 8765.</li>
         <li><strong>QR won’t open on phone:</strong> Check <code>SITE_BASE_URL</code> and run <code>python manage.py generate_qr_codes</code>.</li>
+        <li><strong>Sound &amp; alerts:</strong> On mobile/tablet, tap <strong>Tap to enable sound &amp; alerts</strong> once on <span class="path">/tables/</span> or <span class="path">/kitchen/</span>.</li>
+        <li><strong>Send to kitchen:</strong> After adding items, tap <strong>Send to kitchen</strong> — no page refresh needed. If you don’t see <strong>Send order</strong>, scroll within the modal or cancel and open the step again.</li>
+        <li><strong>Close table:</strong> Choose payment method (cash/card) before confirming; the receipt shows how the bill was paid.</li>
         <li><strong>Can’t close table:</strong> Send all items, wait for kitchen, deliver ready items — then retry.</li>
         <li><strong>Logout:</strong> From the profile menu — also ends the active shift.</li>
       </ul>

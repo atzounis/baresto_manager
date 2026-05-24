@@ -5,7 +5,7 @@
 <script src="{% static 'js/floor_field.js' %}"></script>
 {% endblock %}
 {% block content %}
-{% include "orders/partials/print_receipt_modal.html" %}
+<script id="table-closed-modal-initial" type="application/json">{{ table_closed_modal_initial_json }}</script>
 <div x-data="floorTables()" x-init="init()" class="space-y-4">
   <div
   x-show="guestCallModal.open"
@@ -68,6 +68,10 @@
           <span x-text="i18n.orderLabel"></span>
           #<span x-text="tableClosedModal.orderId"></span>
           · €<span x-text="tableClosedModal.billTotal"></span>
+        </p>
+        <p class="mt-2 text-sm font-bold text-slate-200" x-show="tableClosedModal.billTotal">
+          <span x-text="i18n.paymentLabel"></span>:
+          <span class="text-order-light" x-text="paymentMethodLabel(tableClosedModal.paymentMethod || 'cash')"></span>
         </p>
         <p class="mt-2 text-sm text-slate-400" x-show="tableClosedModal.canPrint" x-text="i18n.tableClosedPrompt"></p>
       </div>
@@ -223,6 +227,9 @@ function floorTables() {
       printReceipt: "{% trans 'Print receipt'|escapejs %}",
       notNow: "{% trans 'Not now'|escapejs %}",
       orderLabel: "{% trans 'Order'|escapejs %}",
+      paymentLabel: "{% trans 'Payment'|escapejs %}",
+      paymentCash: "{% trans 'Cash'|escapejs %}",
+      paymentCard: "{% trans 'Credit card'|escapejs %}",
       close: "{% trans 'Close'|escapejs %}",
     },
     guestCallModal: {
@@ -238,6 +245,7 @@ function floorTables() {
       floor: "",
       orderId: null,
       billTotal: null,
+      paymentMethod: "",
       canPrint: false,
       printUrl: "",
     },
@@ -304,6 +312,15 @@ function floorTables() {
       });
       this.refreshReadyCounts();
       this._readyPoll = setInterval(() => this.refreshReadyCounts(), 5000);
+      const initialClosedNode = document.getElementById("table-closed-modal-initial");
+      if (initialClosedNode) {
+        try {
+          const initialClosed = JSON.parse(initialClosedNode.textContent);
+          if (initialClosed) this.showTableClosedModal(initialClosed);
+        } catch (e) {
+          /* ignore */
+        }
+      }
       window.dispatchEvent(new CustomEvent("baresto-tables-ready"));
     },
     showGuestCallModal(data) {
@@ -333,6 +350,11 @@ function floorTables() {
         }
       });
     },
+    paymentMethodLabel(code) {
+      if (code === "card") return this.i18n.paymentCard;
+      if (code === "cash") return this.i18n.paymentCash;
+      return code || "";
+    },
     showTableClosedModal(data) {
       if (!data || this.isTableClosedDismissed(data)) return;
       this.applyTableClosed(data);
@@ -345,6 +367,7 @@ function floorTables() {
         floor: data.floor || "",
         orderId,
         billTotal: data.bill_total || null,
+        paymentMethod: data.payment_method || "cash",
         canPrint,
         printUrl: canPrint ? `/orders/${orderId}/receipt/print-now/` : "",
       };

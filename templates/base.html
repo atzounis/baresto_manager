@@ -32,12 +32,12 @@
       },
     };
   </script>
-  <link rel="stylesheet" href="{% static 'css/baresto.css' %}?v=2">
+  <link rel="stylesheet" href="{% static 'css/baresto.css' %}?v=3">
   <script src="https://unpkg.com/htmx.org@2.0.4"></script>
   {% block extra_head %}{% endblock %}
   <script defer src="https://unpkg.com/alpinejs@3.14.3/dist/cdn.min.js"></script>
 </head>
-<body class="min-h-full bg-kitchen text-slate-100" x-data="{ offline: !navigator.onLine }" @online.window="offline=false" @offline.window="offline=true">
+<body class="min-h-full bg-kitchen text-slate-100{% if staff_profile and staff_profile.role == 'waiter' or staff_profile and staff_profile.role == 'cashier' %} waiter-mobile{% endif %}" x-data="{ offline: !navigator.onLine }" @online.window="offline=false" @offline.window="offline=true">
   <div x-show="offline" class="bg-new-order text-center py-2 text-sm font-semibold text-kitchen">{% trans "Offline — changes will sync when reconnected" %}</div>
   {% if user.is_authenticated and staff_profile %}
   <nav class="sticky top-0 z-40 border-b border-kitchen-border bg-kitchen-elevated/95 backdrop-blur"
@@ -142,9 +142,12 @@
       guestCallNoTable: "{% trans 'Guest menu (no table on QR)'|escapejs %}",
       guestCallBody: "{% trans 'A guest is asking for assistance.'|escapejs %}",
       tableClosedTitle: "{% trans 'Table is closed.'|escapejs %}",
+      paymentLabel: "{% trans 'Payment'|escapejs %}",
+      paymentCash: "{% trans 'Cash'|escapejs %}",
+      paymentCard: "{% trans 'Credit card'|escapejs %}",
     };
   </script>
-  <script src="{% static 'js/waiter_alerts.js' %}?v=4"></script>
+  <script src="{% static 'js/waiter_alerts.js' %}?v=5"></script>
   {% endif %}
   {% block extra_js %}{% endblock %}
 </body>

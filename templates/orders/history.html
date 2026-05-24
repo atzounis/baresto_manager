@@ -46,6 +46,12 @@
           {% trans "Order" %} #{{ order.pk }}
           · {% if order.session.closed_at %}{{ order.session.closed_at|date:"d/m/Y H:i" }}{% else %}{{ order.updated_at|date:"d/m/Y H:i" }}{% endif %}
         </p>
+        {% if order.bill %}
+        <p class="text-sm text-slate-400">
+          {% trans "Payment" %}:
+          <strong class="font-bold text-order-light">{{ order.bill.get_payment_method_display }}</strong>
+        </p>
+        {% endif %}
         {% if order.waiter %}
         <p class="text-xs text-slate-500">{{ order.waiter.user.get_full_name|default:order.waiter.user.username }}</p>
         {% endif %}
