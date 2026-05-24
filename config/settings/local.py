@@ -4,6 +4,9 @@ from .base import *  # noqa: F403
 
 DEBUG = env.bool("DEBUG", default=False)  # noqa: F405
 
+# runserver must still serve /static/ and /media/ when DEBUG is False (e.g. hide DjDT).
+SERVE_STATIC_IN_DEV = True  # noqa: F405
+
 # Local dev never requires a Redis daemon. (Production uses Redis via config/settings/production.py.)
 CACHES = {  # noqa: F405
     "default": {
@@ -12,9 +15,9 @@ CACHES = {  # noqa: F405
     }
 }
 
-INSTALLED_APPS += ["debug_toolbar"]  # noqa: F405
-
-MIDDLEWARE.insert(0, "debug_toolbar.middleware.DebugToolbarMiddleware")  # noqa: F405
+if DEBUG:
+    INSTALLED_APPS += ["debug_toolbar"]  # noqa: F405
+    MIDDLEWARE.insert(0, "debug_toolbar.middleware.DebugToolbarMiddleware")  # noqa: F405
 
 INTERNAL_IPS = ["127.0.0.1", "localhost"]
 

@@ -11,9 +11,8 @@ from django.views.generic import TemplateView
 
 from apps.common.mixins import RestaurantScopedMixin
 from apps.common.permissions import RolePermissionMixin, get_employee_role, role_has_permission
-from apps.orders.models import Order
-from apps.orders.utils import ready_item_counts_by_table_id
-from apps.realtime import broadcast_table_update
+from apps.orders.utils import get_print_receipt_order, ready_item_counts_by_table_id
+from apps.realtime import broadcast_table_update, peek_table_closed_alerts
 from apps.restaurants.forms import CompanyLegalProfileForm, FloorForm, TableForm
 from apps.restaurants.models import CompanyLegalProfile, Floor, Table, TableSession
 
@@ -45,9 +44,12 @@ def _resolve_floor_filter(request, floors_qs):
     return None
 
 
-def _build_tables_url(request, floor_pk=None, view_mode=None):
+def _build_tables_url(request, floor_pk=None, view_mode=None, *, strip_close_params=False):
     """Build tables page URL preserving manage params and optional floor filter."""
     q = request.GET.copy()
+    if strip_close_params:
+        for key in ("print_receipt", "closed_table", "closed_order"):
+            q.pop(key, None)
     if floor_pk:
         q["floor"] = str(floor_pk)
     else:
@@ -97,6 +99,23 @@ class TableReadyCountsView(RestaurantScopedMixin, RolePermissionMixin, View):
     def get(self, request):
         counts = ready_item_counts_by_table_id(self.get_branch())
         return JsonResponse({"counts": {str(k): v for k, v in counts.items()}})
+
+
+class TableClosedAlertsView(RestaurantScopedMixin, RolePermissionMixin, View):
+    """Recent table-close events for other devices on the tables screen (non-destructive poll)."""
+
+    required_permission = "take_order"
+
+    def get(self, request):
+        branch = self.get_branch()
+        if not branch:
+            return JsonResponse({"alerts": []})
+        try:
+            since = float(request.GET.get("since", 0))
+        except (TypeError, ValueError):
+            since = 0
+        alerts = peek_table_closed_alerts(branch.id, since)
+        return JsonResponse({"alerts": alerts})
 
 
 class TableFloorView(RestaurantScopedMixin, RolePermissionMixin, TemplateView):
@@ -173,7 +192,12 @@ class TableFloorView(RestaurantScopedMixin, RolePermissionMixin, TemplateView):
             table_form = TableForm(branch=branch, initial=initial or None)
         ctx["table_form"] = table_form
         ctx["open_manage"] = self.request.GET.get("manage") == "1"
-        ctx["tables_url"] = self.request.get_full_path()
+        ctx["tables_url"] = _build_tables_url(
+            self.request,
+            floor_pk=filter_floor_id,
+            view_mode=view_mode,
+            strip_close_params=True,
+        )
         floor_index = {}
         plan_tables = []
         for t in all_tables:
@@ -195,27 +219,16 @@ class TableFloorView(RestaurantScopedMixin, RolePermissionMixin, TemplateView):
         ctx["floor_field_config"] = None
         print_receipt_order = None
         print_receipt_id = self.request.GET.get("print_receipt")
-        if print_receipt_id and branch:
-            try:
-                print_receipt_order = (
-                    Order.objects.filter(
-                        pk=int(print_receipt_id),
-                        session__table__floor__branch=branch,
-                        is_deleted=False,
-                        status__in=["bill_requested", "paid"],
-                        bill__isnull=False,
-                    )
-                    .select_related("session__table", "bill")
-                    .first()
-                )
-            except (TypeError, ValueError):
-                print_receipt_order = None
+        restaurant = self.get_restaurant()
+        if print_receipt_id and restaurant:
+            print_receipt_order = get_print_receipt_order(restaurant, print_receipt_id)
         ctx["print_receipt_order"] = print_receipt_order
-        if print_receipt_order:
-            q = self.request.GET.copy()
-            q.pop("print_receipt", None)
-            dismiss = reverse("tables")
-            ctx["dismiss_print_modal_url"] = f"{dismiss}?{q.urlencode()}" if q else dismiss
+        ctx["dismiss_print_modal_url"] = _build_tables_url(
+            self.request,
+            floor_pk=filter_floor_id,
+            view_mode=view_mode,
+            strip_close_params=True,
+        )
         if table_form and branch:
             from django.middleware.csrf import get_token
 

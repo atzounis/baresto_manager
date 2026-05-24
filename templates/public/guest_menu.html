@@ -42,7 +42,7 @@
       {% include "includes/language_switcher.html" %}
     </div>
   </header>
-  <main class="mx-auto max-w-lg px-4 py-6 pb-32">
+  <main class="mx-auto max-w-lg px-4 py-6 pb-40">
     {% if legal_profile %}
     <section class="card mb-6 p-4">
       {% include "public/includes/legal_catalogue_block.html" with profile=legal_profile restaurant=restaurant compact=True %}
@@ -92,6 +92,9 @@
     {% endif %}
   </main>
   <footer class="fixed bottom-0 left-0 right-0 z-20 border-t border-kitchen-border bg-kitchen-elevated p-4">
+    <div class="mb-3 text-center text-xs">
+      {% include "includes/site_credits.html" %}
+    </div>
     <button type="button" id="guest-call-waiter-btn" class="btn-primary min-h-12 w-full rounded-2xl"
       {% if call_waiter_url %}data-call-url="{{ call_waiter_url }}"{% endif %}>
       {% trans "Call waiter" %}

@@ -41,6 +41,49 @@
   </div>
   </div>
 
+  <div
+  x-show="tableClosedModal.open"
+  x-cloak
+  @keydown.escape.window="dismissTableClosedModal()"
+  class="fixed inset-0 z-[250] flex items-end justify-center bg-black/75 p-4 sm:items-center"
+  role="dialog"
+  aria-modal="true"
+  aria-labelledby="table-closed-modal-title">
+  <div
+    @click.outside="dismissTableClosedModal()"
+    class="relative w-full max-w-md rounded-2xl border border-kitchen-border bg-kitchen-elevated p-6 shadow-2xl">
+    <button type="button" @click="dismissTableClosedModal()"
+      class="absolute right-3 top-3 z-10 flex h-10 w-10 items-center justify-center rounded-full text-slate-400 hover:bg-kitchen-border/40 hover:text-white"
+      :aria-label="i18n.close">
+      <span class="sr-only" x-text="i18n.close"></span>
+      <span aria-hidden="true" class="text-2xl leading-none">×</span>
+    </button>
+    <div class="flex items-start gap-3 pr-8">
+      <span class="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-order/20 text-2xl text-order-light" aria-hidden="true">✓</span>
+      <div class="min-w-0 flex-1">
+        <h2 id="table-closed-modal-title" class="text-xl font-bold text-white" x-text="i18n.tableClosedTitle"></h2>
+        <p class="mt-2 text-base text-slate-300" x-text="tableClosedModal.tableLabel"></p>
+        <p class="mt-1 text-sm text-slate-400" x-show="tableClosedModal.floor" x-text="tableClosedModal.floor"></p>
+        <p class="mt-2 text-sm text-slate-400" x-show="tableClosedModal.billTotal">
+          <span x-text="i18n.orderLabel"></span>
+          #<span x-text="tableClosedModal.orderId"></span>
+          · €<span x-text="tableClosedModal.billTotal"></span>
+        </p>
+        <p class="mt-2 text-sm text-slate-400" x-show="tableClosedModal.canPrint" x-text="i18n.tableClosedPrompt"></p>
+      </div>
+    </div>
+    <div class="mt-6 flex flex-col gap-3">
+      <form method="post" x-show="tableClosedModal.canPrint" x-bind:action="tableClosedModal.printUrl" target="_blank" rel="noopener">
+        {% csrf_token %}
+        <button type="submit" class="btn-primary min-h-14 w-full rounded-xl py-3 text-base font-bold shadow-lg" x-text="i18n.printReceipt"></button>
+      </form>
+      <button type="button" @click="dismissTableClosedModal()"
+        class="btn-secondary min-h-12 w-full rounded-xl py-3 text-base font-semibold"
+        x-text="i18n.notNow"></button>
+    </div>
+  </div>
+  </div>
+
   <div class="flex flex-wrap items-center justify-between gap-4">
     <h1 class="text-2xl font-bold">{% trans "Tables" %}</h1>
     <div class="flex flex-wrap items-center gap-2">
@@ -153,8 +196,10 @@ function floorTables() {
     selectedFloorId: {% if filter_floor_id %}{{ filter_floor_id }}{% else %}null{% endif %},
     canEdit: {{ can_edit_plan|yesno:"true,false" }},
     manageTables: {{ open_manage|yesno:"true,false" }},
+    viewMode: "{{ view_mode|escapejs }}",
     tablesUrl: "{{ tables_url|escapejs }}",
     csrfToken: "{{ csrf_token }}",
+    dismissedTableClosedKey: "baresto_dismissed_table_closed",
     i18n: {
       editLayout: "{% trans 'Edit layout'|escapejs %}",
       doneEditing: "{% trans 'Done editing'|escapejs %}",
@@ -173,12 +218,28 @@ function floorTables() {
       guestCallNoTable: "{% trans 'Guest menu (no table on QR)'|escapejs %}",
       guestCallDismiss: "{% trans 'OK'|escapejs %}",
       tableLabel: "{% trans 'Table'|escapejs %}",
+      tableClosedTitle: "{% trans 'Table is closed.'|escapejs %}",
+      tableClosedPrompt: "{% trans 'Do you want to print a receipt?'|escapejs %}",
+      printReceipt: "{% trans 'Print receipt'|escapejs %}",
+      notNow: "{% trans 'Not now'|escapejs %}",
+      orderLabel: "{% trans 'Order'|escapejs %}",
+      close: "{% trans 'Close'|escapejs %}",
     },
     guestCallModal: {
       open: false,
       tableId: null,
       tableLabel: "",
       floor: "",
+    },
+    tableClosedModal: {
+      open: false,
+      tableId: null,
+      tableLabel: "",
+      floor: "",
+      orderId: null,
+      billTotal: null,
+      canPrint: false,
+      printUrl: "",
     },
     editMode: false,
     dragging: null,
@@ -219,6 +280,9 @@ function floorTables() {
       window.addEventListener("baresto-guest-waiter-call", (e) => {
         this.showGuestCallModal(e.detail || {});
       });
+      window.addEventListener("baresto-table-closed", (e) => {
+        this.showTableClosedModal(e.detail || {});
+      });
       window.addEventListener("baresto-table-ready-counts", (e) => {
         this.applyReadyCounts(e.detail);
       });
@@ -252,6 +316,76 @@ function floorTables() {
     },
     dismissGuestCallModal() {
       this.guestCallModal.open = false;
+    },
+    applyTableClosed(data) {
+      if (!data || !data.table_id) return;
+      const table = this.tables.find((t) => t.id === data.table_id);
+      if (table) {
+        table.status = "free";
+        table.ready_count = 0;
+        table.session_id = null;
+        table.open_url = null;
+      }
+      document.querySelectorAll("[data-table-ready-badge]").forEach((el) => {
+        if (String(el.dataset.tableId) === String(data.table_id)) {
+          el.textContent = "0";
+          el.classList.add("hidden");
+        }
+      });
+    },
+    showTableClosedModal(data) {
+      if (!data || this.isTableClosedDismissed(data)) return;
+      this.applyTableClosed(data);
+      const orderId = data.order_id || null;
+      const canPrint = !!(data.can_print_receipt && orderId);
+      this.tableClosedModal = {
+        open: true,
+        tableId: data.table_id || null,
+        tableLabel: data.table || data.table_label || "",
+        floor: data.floor || "",
+        orderId,
+        billTotal: data.bill_total || null,
+        canPrint,
+        printUrl: canPrint ? `/orders/${orderId}/receipt/print-now/` : "",
+      };
+    },
+    tableClosedDismissToken(orderId, tableId) {
+      return [orderId || "", tableId || ""].filter(Boolean).join(":");
+    },
+    isTableClosedDismissed(data) {
+      try {
+        const list = JSON.parse(sessionStorage.getItem(this.dismissedTableClosedKey) || "[]");
+        const token = this.tableClosedDismissToken(data.order_id, data.table_id);
+        return token && list.includes(token);
+      } catch (e) {
+        return false;
+      }
+    },
+    rememberTableClosedDismissed(orderId, tableId) {
+      try {
+        const token = this.tableClosedDismissToken(orderId, tableId);
+        if (!token) return;
+        const list = JSON.parse(sessionStorage.getItem(this.dismissedTableClosedKey) || "[]");
+        if (!list.includes(token)) list.push(token);
+        while (list.length > 40) list.shift();
+        sessionStorage.setItem(this.dismissedTableClosedKey, JSON.stringify(list));
+      } catch (e) {
+        /* ignore */
+      }
+    },
+    cleanTablesUrl() {
+      const url = new URL(this.tablesUrl || "/tables/", window.location.origin);
+      url.searchParams.delete("print_receipt");
+      url.searchParams.delete("closed_table");
+      url.searchParams.delete("closed_order");
+      return url.pathname + url.search;
+    },
+    dismissTableClosedModal() {
+      const { orderId, tableId } = this.tableClosedModal;
+      this.tableClosedModal.open = false;
+      this.rememberTableClosedDismissed(orderId, tableId);
+      const target = this.cleanTablesUrl();
+      window.location.assign(target);
     },
     onTablePointerDown(e, table) {
       if (!this.editMode) return;

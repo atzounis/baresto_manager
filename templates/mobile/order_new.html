@@ -13,11 +13,7 @@
       <div class="flex flex-wrap items-center gap-2">
         <h1 class="text-2xl font-bold">{{ session.table }}</h1>
         <span id="order-ready-badge">
-          {% if ready_item_count %}
-          <span
-            class="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-red-600 text-base font-extrabold leading-none text-white shadow-[0_2px_12px_rgba(220,38,38,0.85)] ring-2 ring-white"
-            title="{% blocktrans count counter=ready_item_count %}{{ counter }} ready to serve{% plural %}{{ counter }} ready to serve{% endblocktrans %}">{{ ready_item_count }}</span>
-          {% endif %}
+          {% include "mobile/partials/order_ready_badge.html" %}
         </span>
       </div>
     </div>

@@ -10,6 +10,7 @@ from apps.orders.utils import TableCloseBlocked, close_table_blockers
 from apps.realtime import (
     broadcast_kitchen_new_ticket,
     broadcast_order_event,
+    broadcast_table_closed,
     broadcast_table_update,
     broadcast_waiter_kitchen_ready,
 )
@@ -185,6 +186,7 @@ def close_table_session(session, user, request=None):
 
     if order:
         log_audit(user, "table.close", "restaurants.TableSession", session.pk, {"order_id": order.pk}, request)
+        broadcast_table_closed(order, table)
 
     return order
 

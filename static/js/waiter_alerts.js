@@ -4,6 +4,7 @@
 (function () {
   const staffId = window.BARESTO_WAITER_ID;
   const pollUrl = window.BARESTO_ALERTS_POLL_URL;
+  const tableClosedPollUrl = window.BARESTO_TABLE_CLOSED_URL;
   if (!staffId) return;
 
   const i18n = window.BARESTO_ALERT_I18N || {};
@@ -12,9 +13,48 @@
   let ws = null;
   let wsConnected = false;
   let pollTimer = null;
+  let tableClosedPollTimer = null;
+  let lastTableClosedSeen = 0;
   const seenAlerts = new Set();
   let alertsBooted = false;
   const pendingGuestCalls = [];
+  const pendingTableClosed = [];
+
+  function skipTableClosedFromRedirect() {
+    const params = new URLSearchParams(location.search);
+    return params.has("print_receipt");
+  }
+
+  function tableClosedDismissKey(data) {
+    return [data.order_id || "", data.table_id || ""].filter(Boolean).join(":");
+  }
+
+  function isTableClosedDismissed(data) {
+    try {
+      const list = JSON.parse(sessionStorage.getItem("baresto_dismissed_table_closed") || "[]");
+      return list.includes(tableClosedDismissKey(data));
+    } catch (e) {
+      return false;
+    }
+  }
+
+  function markTableClosedDismissed(data) {
+    try {
+      const key = "baresto_dismissed_table_closed";
+      const token = tableClosedDismissKey(data);
+      if (!token) return;
+      const list = JSON.parse(sessionStorage.getItem(key) || "[]");
+      if (!list.includes(token)) list.push(token);
+      while (list.length > 40) list.shift();
+      sessionStorage.setItem(key, JSON.stringify(list));
+    } catch (e) {
+      /* ignore */
+    }
+  }
+
+  if (skipTableClosedFromRedirect()) {
+    window.__barestoSkipTableClosedAlertsUntil = Date.now() + 20000;
+  }
 
   function bootAlerts() {
     if (alertsBooted) return;
@@ -22,6 +62,7 @@
     showEnableBanner();
     connectWebSocket();
     startPolling();
+    startTableClosedPolling();
   }
 
   function alertKey(data) {
@@ -106,6 +147,46 @@
     const title = i18n.guestCallTitle || "Customer requests a waiter";
     const message = formatGuestCallMessage(data);
     showToast(title + ": " + message, false);
+  }
+
+  function deliverTableClosedToTables(data) {
+    window.dispatchEvent(new CustomEvent("baresto-table-closed", { detail: data }));
+    const title = i18n.tableClosedTitle || "Table is closed.";
+    const tableLbl = data.table || data.table_label || "";
+    showToast(title + (tableLbl ? " " + tableLbl : ""), true);
+  }
+
+  function handleTableClosed(data) {
+    if (!data || data.event !== "table.closed") return;
+    if (isTableClosedDismissed(data)) return;
+    if (window.__barestoSkipTableClosedAlertsUntil && Date.now() < window.__barestoSkipTableClosedAlertsUntil) {
+      return;
+    }
+
+    const key = [data.event, data.order_id || "", data.table_id || "", data.closed_at || ""].join("|");
+    if (seenAlerts.has(key)) return;
+    seenAlerts.add(key);
+    if (seenAlerts.size > 100) {
+      seenAlerts.clear();
+      seenAlerts.add(key);
+    }
+
+    playItemReadySound();
+
+    const title = i18n.tableClosedTitle || "Table is closed.";
+    const tableLbl = data.table || data.table_label || "";
+    showBrowserNotification(title, tableLbl);
+
+    if (isTablesPage()) {
+      if (!window.__barestoTablesReady) {
+        pendingTableClosed.push(data);
+        return;
+      }
+      deliverTableClosedToTables(data);
+      return;
+    }
+
+    showToast(title + (tableLbl ? " " + tableLbl : ""), true);
   }
 
   function handleGuestWaiterCall(data) {
@@ -291,6 +372,7 @@
         const data = JSON.parse(ev.data);
         handleGuestWaiterCall(data);
         handleKitchenAlert(data);
+        handleTableClosed(data);
       } catch (e) {
         /* ignore */
       }
@@ -315,10 +397,40 @@
       (body.alerts || []).forEach((alert) => {
         handleGuestWaiterCall(alert);
         handleKitchenAlert(alert);
+        handleTableClosed(alert);
       });
     } catch (e) {
       /* ignore */
     }
+  }
+
+  async function pollTableClosedAlerts() {
+    if (!tableClosedPollUrl || !isTablesPage()) return;
+    try {
+      const res = await fetch(
+        tableClosedPollUrl + "?since=" + encodeURIComponent(String(lastTableClosedSeen)),
+        { credentials: "same-origin", cache: "no-store" }
+      );
+      if (!res.ok) return;
+      const body = await res.json();
+      (body.alerts || []).forEach((alert) => {
+        const closedAt = alert.closed_at || 0;
+        if (closedAt <= lastTableClosedSeen) return;
+        if (closedAt > lastTableClosedSeen) {
+          lastTableClosedSeen = closedAt;
+        }
+        handleTableClosed(alert);
+      });
+    } catch (e) {
+      /* ignore */
+    }
+  }
+
+  function startTableClosedPolling() {
+    if (tableClosedPollTimer || !tableClosedPollUrl) return;
+    lastTableClosedSeen = Date.now() / 1000;
+    tableClosedPollTimer = setInterval(pollTableClosedAlerts, 3000);
+    setTimeout(pollTableClosedAlerts, 500);
   }
 
   function startPolling() {
@@ -333,6 +445,7 @@
   window.addEventListener("baresto-tables-ready", () => {
     window.__barestoTablesReady = true;
     pendingGuestCalls.splice(0).forEach(deliverGuestCallToTables);
+    pendingTableClosed.splice(0).forEach(deliverTableClosedToTables);
     bootAlerts();
   });
 
@@ -342,6 +455,7 @@
     if (alertsBooted) {
       connectWebSocket();
       pollAlerts();
+      pollTableClosedAlerts();
     }
   });
 

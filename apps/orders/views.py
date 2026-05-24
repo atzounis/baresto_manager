@@ -1,5 +1,6 @@
 from decimal import Decimal
 from datetime import datetime, timedelta, time
+from urllib.parse import urlencode
 from zoneinfo import ZoneInfo
 
 from django.conf import settings
@@ -28,7 +29,12 @@ from apps.orders.services import (
     order_with_items,
     update_item_status,
 )
-from apps.orders.utils import TableCloseBlocked, can_close_table_session, close_table_blocked_message
+from apps.orders.utils import (
+    TableCloseBlocked,
+    can_close_table_session,
+    close_table_blocked_message,
+    get_print_receipt_order,
+)
 from apps.restaurants.models import TableSession
 
 
@@ -173,10 +179,14 @@ class CloseTableView(RestaurantScopedMixin, RolePermissionMixin, View):
         except TableCloseBlocked as exc:
             messages.error(request, exc.message)
             return redirect("order_new", session_id=session_id)
+
+        messages.success(request, _("Table is closed."))
+
+        params = {}
         if order and Bill.objects.filter(order_id=order.pk).exists():
-            return redirect(f"{reverse('tables')}?print_receipt={order.pk}")
-        messages.success(request, _("Table closed."))
-        return redirect("tables")
+            params["print_receipt"] = order.pk
+        query = urlencode(params)
+        return redirect(f"{reverse('tables')}?{query}" if params else reverse("tables"))
 
 
 def _receipt_order_queryset(restaurant):

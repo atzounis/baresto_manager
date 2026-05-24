@@ -5,6 +5,7 @@ from . import views
 urlpatterns = [
     path("tables/", views.TableFloorView.as_view(), name="tables"),
     path("tables/ready-counts/", views.TableReadyCountsView.as_view(), name="table_ready_counts"),
+    path("tables/closed-alerts/", views.TableClosedAlertsView.as_view(), name="table_closed_alerts"),
     path("floors/", views.FloorAPIView.as_view(), name="floor_api"),
     path("floors/<int:pk>/", views.FloorDetailAPIView.as_view(), name="floor_detail_api"),
     path("tables/new/", views.TableCreateView.as_view(), name="table_create"),

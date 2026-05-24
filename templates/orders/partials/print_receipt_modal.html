@@ -1,13 +1,27 @@
 {% load i18n %}
 {% if print_receipt_order %}
-<div class="fixed inset-0 z-[100] flex items-end justify-center bg-black/70 p-4 sm:items-center" role="dialog" aria-modal="true" aria-labelledby="print-receipt-modal-title">
-  <div class="w-full max-w-md rounded-2xl border border-kitchen-border bg-kitchen-elevated p-6 shadow-2xl">
-    <h2 id="print-receipt-modal-title" class="text-xl font-bold text-white">{% trans "Table closed" %}</h2>
-    <p class="mt-3 text-base text-slate-300">{% trans "Do you want to print a receipt?" %}</p>
-    <p class="mt-1 text-sm text-slate-500">
-      {{ print_receipt_order.session.table }} · {% trans "Order" %} #{{ print_receipt_order.pk }}
-      · <span class="text-price">€{{ print_receipt_order.bill.total }}</span>
-    </p>
+<div class="fixed inset-0 z-[250] flex items-end justify-center bg-black/70 p-4 sm:items-center" role="dialog" aria-modal="true" aria-labelledby="print-receipt-modal-title" data-table-closed-overlay
+  onclick="if (event.target === this) { window.location.href='{{ dismiss_print_modal_url|escapejs }}'; }">
+  <div class="relative w-full max-w-md rounded-2xl border border-kitchen-border bg-kitchen-elevated p-6 shadow-2xl" onclick="event.stopPropagation()">
+    <a href="{{ dismiss_print_modal_url }}"
+      class="absolute right-3 top-3 z-10 flex h-10 w-10 items-center justify-center rounded-full text-slate-400 hover:bg-kitchen-border/40 hover:text-white"
+      aria-label="{% trans 'Close' %}"
+      data-dismiss-table-closed>
+      <span class="sr-only">{% trans "Close" %}</span>
+      <span aria-hidden="true" class="text-2xl leading-none">×</span>
+    </a>
+    <div class="flex items-start gap-3 pr-8">
+      <span class="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-order/20 text-2xl text-order-light" aria-hidden="true">✓</span>
+      <div class="min-w-0 flex-1">
+        <h2 id="print-receipt-modal-title" class="text-xl font-bold text-white">{% trans "Table is closed." %}</h2>
+        <p class="mt-2 text-base text-slate-300">
+          {{ print_receipt_order.session.table }}
+          · {% trans "Order" %} #{{ print_receipt_order.pk }}
+          · <span class="text-price">€{{ print_receipt_order.bill.total }}</span>
+        </p>
+        <p class="mt-2 text-sm text-slate-400">{% trans "Do you want to print a receipt?" %}</p>
+      </div>
+    </div>
     <div class="mt-6 flex flex-col gap-3">
       <form method="post" action="{% url 'order_receipt_print_now' print_receipt_order.pk %}" target="_blank" rel="noopener">
         {% csrf_token %}
@@ -16,10 +30,46 @@
         </button>
       </form>
       <a href="{{ dismiss_print_modal_url }}"
-        class="btn-secondary block min-h-12 rounded-xl py-3 text-center text-base font-semibold">
+        class="btn-secondary block min-h-12 rounded-xl py-3 text-center text-base font-semibold"
+        data-dismiss-table-closed>
         {% trans "Not now" %}
       </a>
     </div>
   </div>
 </div>
+<script>
+(function () {
+  const orderId = {{ print_receipt_order.pk }};
+  const tableId = {{ print_receipt_order.session.table_id }};
+  const dismissUrl = "{{ dismiss_print_modal_url|escapejs }}";
+  const storageKey = "baresto_dismissed_table_closed";
+  const token = orderId + ":" + tableId;
+
+  function remember() {
+    try {
+      const list = JSON.parse(sessionStorage.getItem(storageKey) || "[]");
+      if (!list.includes(token)) list.push(token);
+      sessionStorage.setItem(storageKey, JSON.stringify(list));
+    } catch (e) { /* ignore */ }
+  }
+
+  try {
+    const list = JSON.parse(sessionStorage.getItem(storageKey) || "[]");
+    if (list.includes(token)) {
+      location.replace(dismissUrl);
+      return;
+    }
+  } catch (e) { /* ignore */ }
+
+  document.querySelectorAll("[data-dismiss-table-closed]").forEach((el) => {
+    el.addEventListener("click", remember);
+  });
+  const overlay = document.querySelector("[data-table-closed-overlay]");
+  if (overlay) {
+    overlay.addEventListener("click", function (ev) {
+      if (ev.target === overlay) remember();
+    });
+  }
+})();
+</script>
 {% endif %}

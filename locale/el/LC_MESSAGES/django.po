@@ -375,7 +375,7 @@ msgid "Deliver all ready items before closing the table."
 msgstr "Παραδώστε όλα τα έτοιμα πιάτα πριν κλείσετε το τραπέζι."
 
 #: apps/orders/views.py:178
-msgid "Table closed."
+msgid "Table is closed."
 msgstr "Το τραπέζι έκλεισε."
 
 #: apps/orders/views.py:214 templates/dashboard.html:17
@@ -1253,9 +1253,10 @@ msgstr "Σελίδα %(num)s από %(total)s"
 msgid "Next"
 msgstr "Επόμενη"
 
-#: templates/orders/partials/print_receipt_modal.html:5
-msgid "Table closed"
-msgstr "Το τραπέζι έκλεισε"
+#: templates/orders/partials/print_receipt_modal.html:8
+#: templates/restaurants/tables.html:12
+msgid "Table is closed."
+msgstr "Το τραπέζι έκλεισε."
 
 #: templates/orders/partials/print_receipt_modal.html:6
 msgid "Do you want to print a receipt?"
@@ -1357,6 +1358,10 @@ msgstr "Μενού επισκεπτών (χωρίς τραπέζι στο QR)"
 #: templates/restaurants/tables.html
 msgid "OK"
 msgstr "Εντάξει"
+
+#: templates/includes/site_credits.html
+msgid "Support"
+msgstr "Υποστήριξη"
 
 #: templates/kitchen/display.html static/js/kitchen_alerts.js
 msgid "New order from waiter"

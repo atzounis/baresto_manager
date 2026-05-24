@@ -1,7 +1,7 @@
 from django.db.models import Count
 from django.utils.translation import gettext_lazy as _
 
-from apps.orders.models import OrderItem
+from apps.orders.models import Order, OrderItem
 
 # Orders in these statuses are not on the kitchen line for waiters.
 _KITCHEN_EXCLUDED_ORDER_STATUSES = ("open", "paid", "cancelled")
@@ -82,3 +82,24 @@ def ready_item_counts_by_table_id(branch):
         .annotate(count=Count("pk"))
     )
     return {row["order__session__table_id"]: row["count"] for row in rows}
+
+
+def get_print_receipt_order(restaurant, order_id):
+    """Order eligible for the post-close receipt prompt on the tables screen."""
+    if not order_id or restaurant is None:
+        return None
+    try:
+        pk = int(order_id)
+    except (TypeError, ValueError):
+        return None
+    return (
+        Order.objects.filter(
+            pk=pk,
+            session__table__floor__branch__restaurant=restaurant,
+            is_deleted=False,
+            status__in=["bill_requested", "paid"],
+            bill__isnull=False,
+        )
+        .select_related("session__table", "bill")
+        .first()
+    )

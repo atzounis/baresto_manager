@@ -157,6 +157,54 @@ def pop_branch_waiter_alerts(branch_id):
         return []
 
 
+def peek_table_closed_alerts(branch_id, since=0):
+    key = f"table_closed_alerts:branch:{branch_id}"
+    try:
+        alerts = cache.get(key) or []
+        return [a for a in alerts if a.get("closed_at", 0) > since]
+    except Exception:
+        logger.exception("Failed to read table closed alerts for branch %s", branch_id)
+        return []
+
+
+def _cache_table_closed_alert(branch_id, payload):
+    key = f"table_closed_alerts:branch:{branch_id}"
+    try:
+        alerts = cache.get(key) or []
+        alerts.append(payload)
+        cache.set(key, alerts[-20:], timeout=600)
+    except Exception:
+        logger.exception("Failed to cache table closed alert for branch %s", branch_id)
+
+
+def broadcast_table_closed(order, table):
+    """Notify all staff devices when a waiter closes a table (tables screen + receipt prompt)."""
+    from apps.orders.models import Bill
+
+    branch = table.branch
+    branch_id = branch.id
+    restaurant_id = branch.restaurant_id
+    bill = Bill.objects.filter(order_id=order.pk).first() if order else None
+
+    payload = {
+        "event": "table.closed",
+        "table_id": table.pk,
+        "table": str(table),
+        "table_label": table.label or f"T{table.number}",
+        "floor": table.floor.name if table.floor_id else "",
+        "order_id": order.pk if order else None,
+        "bill_total": str(bill.total) if bill else None,
+        "can_print_receipt": bill is not None,
+        "closed_at": time.time(),
+    }
+
+    _group_send(f"waiters.branch.{branch_id}", "waiter.message", payload)
+    _group_send(f"waiters.restaurant.{restaurant_id}", "waiter.message", payload)
+    if table.assigned_to_id:
+        _group_send(f"waiter.{table.assigned_to_id}", "waiter.message", payload)
+    _cache_table_closed_alert(branch_id, payload)
+
+
 def broadcast_table_update(table):
     branch_id = table.branch.id
     payload = {

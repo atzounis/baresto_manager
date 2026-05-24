@@ -122,11 +122,15 @@
     {% endif %}
     {% block content %}{% endblock %}
   </main>
+  <footer class="mx-auto mt-8 max-w-6xl border-t border-kitchen-border px-4 py-6 text-center text-sm">
+    {% include "includes/site_credits.html" %}
+  </footer>
   {% if staff_profile and staff_profile.role == "waiter" or staff_profile and staff_profile.role == "cashier" or staff_profile and staff_profile.role == "manager" or staff_profile and staff_profile.role == "admin" %}
   <script>
     window.BARESTO_WAITER_ID = {{ staff_profile.pk }};
     window.BARESTO_ALERTS_POLL_URL = "{% url 'waiter_alerts_poll' %}";
     window.BARESTO_TABLE_READY_URL = "{% url 'table_ready_counts' %}";
+    window.BARESTO_TABLE_CLOSED_URL = "{% url 'table_closed_alerts' %}";
     window.BARESTO_ALERT_I18N = {
       tableLabel: "{% trans 'Table'|escapejs %}",
       itemReadySuffix: "{% trans 'is ready'|escapejs %}",
@@ -137,9 +141,10 @@
       guestCallTitle: "{% trans 'Customer requests a waiter'|escapejs %}",
       guestCallNoTable: "{% trans 'Guest menu (no table on QR)'|escapejs %}",
       guestCallBody: "{% trans 'A guest is asking for assistance.'|escapejs %}",
+      tableClosedTitle: "{% trans 'Table is closed.'|escapejs %}",
     };
   </script>
-  <script src="{% static 'js/waiter_alerts.js' %}?v=2"></script>
+  <script src="{% static 'js/waiter_alerts.js' %}?v=4"></script>
   {% endif %}
   {% block extra_js %}{% endblock %}
 </body>

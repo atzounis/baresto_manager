@@ -1,11 +1,9 @@
 {% load i18n menu_i18n %}
+{% if request.META.HTTP_HX_REQUEST %}
 <div id="order-ready-badge" hx-swap-oob="innerHTML">
-  {% if ready_item_count %}
-  <span
-    class="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-red-600 text-base font-extrabold leading-none text-white shadow-[0_2px_12px_rgba(220,38,38,0.85)] ring-2 ring-white"
-    title="{% blocktrans count counter=ready_item_count %}{{ counter }} ready to serve{% plural %}{{ counter }} ready to serve{% endblocktrans %}">{{ ready_item_count }}</span>
-  {% endif %}
+  {% include "mobile/partials/order_ready_badge.html" %}
 </div>
+{% endif %}
 <div class="mx-auto max-w-6xl" x-data="{ drawerOpen: true }">
   <button type="button" @click="drawerOpen = !drawerOpen"
     class="mb-2 flex w-full items-center justify-between text-left text-sm text-slate-400">
@@ -16,9 +14,8 @@
   <div x-show="drawerOpen" class="mb-3 max-h-56 space-y-3 overflow-y-auto rounded-xl border border-kitchen-border bg-kitchen p-2">
     {% if ready_sent_items %}
     <section>
-      <h3 class="mb-1 flex items-center gap-2 px-1 text-xs font-semibold uppercase tracking-wide text-order-light">
+      <h3 class="mb-1 px-1 text-xs font-semibold uppercase tracking-wide text-order-light">
         {% trans "Ready to serve" %}
-        <span class="inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-red-600 text-sm font-extrabold leading-none text-white ring-2 ring-white">{{ ready_item_count }}</span>
       </h3>
       <ul class="divide-y divide-order/30 rounded-lg bg-order/10 ring-2 ring-order/50">
         {% for line in ready_sent_items %}
