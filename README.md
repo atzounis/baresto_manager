@@ -12,9 +12,9 @@
 
 ## Screenshots / Στιγμιότυπα
 
-**EN:** Staff interface on desktop and mobile (waiter ordering on a phone over Wi‑Fi).
+**EN:** Staff interface on desktop and mobile (waiter ordering on a phone over Wi‑Fi), plus guest QR menu preview and printout.
 
-**EL:** Διεπαφή προσωπικού σε desktop και κινητό (παραγγελία σερβιτόρου από τηλέφωνο στο Wi‑Fi).
+**EL:** Διεπαφή προσωπικού σε desktop και κινητό (παραγγελία σερβιτόρου από τηλέφωνο στο Wi‑Fi), καθώς και προεπισκόπηση και εκτύπωση QR μενού επισκεπτών.
 
 ### Desktop
 
@@ -25,6 +25,10 @@
 | Floor plan | Tables list |
 | :---: | :---: |
 | ![Floor plan — drag-and-drop table layout with ready badges](images/baresto-manager-screen-3.png) | ![Tables list — floor filter, occupied/free status, ready badges on Continue order](images/baresto-manager-screen-4.png) |
+
+| Guest menu & QR hub | QR menu card |
+| :---: | :---: |
+| ![Guest menu hub — table preview, live mobile preview, open in new tab](images/baresto-manager-screen-5.png) | ![Printed QR menu card — scan for digital menu (GR/EN)](images/baresto-menu-qr.png) |
 
 ### Mobile (waiter)
 
