@@ -81,14 +81,18 @@ pip install -r requirements/local.txt
 # 4. Environment (copy and adjust port / URLs if needed)
 cp .env.example .env
 
-# 5. Database
-python manage.py migrate
+# 5. Run development server (pre-seeded db.sqlite3 + media/ included)
+python manage.py runserver
+```
 
-# 6. Demo data (restaurant, menu, tables, staff)
+Open **http://127.0.0.1:8765/login/** — see [Development server](#development-server) below.
+
+To start from an empty database instead:
+
+```bash
+python manage.py migrate
 python manage.py seed_demo
 python manage.py generate_qr_codes
-
-# 7. Run development server
 python manage.py runserver
 ```
 
@@ -332,18 +336,20 @@ pip install -r requirements/local.txt
 # 4. Ρυθμίσεις περιβάλλοντος (αντιγραφή .env — προσαρμογή θύρας / URL)
 cp .env.example .env
 
-# 5. Βάση δεδομένων
-python manage.py migrate
-
-# 6. Δεδομένα επίδειξης (εστιατόριο, μενού, τραπέζια, προσωπικό)
-python manage.py seed_demo
-python manage.py generate_qr_codes
-
-# 7. Εκκίνηση server ανάπτυξης
+# 5. Εκκίνηση server ανάπτυξης (περιλαμβάνονται db.sqlite3 + media/)
 python manage.py runserver
 ```
 
-Ανοίξτε **http://127.0.0.1:8765/login/** — δείτε [Εκκίνηση server](#εκκίνηση-server) παρακάτω.
+Ανοίξτε **http://127.0.0.1:8765/login/** — δείτε [Development server](#development-server) παρακάτω.
+
+Για καθαρή βάση από την αρχή:
+
+```bash
+python manage.py migrate
+python manage.py seed_demo
+python manage.py generate_qr_codes
+python manage.py runserver
+```
 
 ### Ρυθμίσεις (.env)
 
